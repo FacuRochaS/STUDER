@@ -1,0 +1,77 @@
+<div class="notification-panel">
+  <div class="notification-panel__header">
+    <h3 class="notification-panel__title">{{ 'notifications.title' | translate }}</h3>
+  </div>
+
+  <div class="notification-panel__filters">
+    <button
+      type="button"
+      class="notification-filter-btn"
+      [class.notification-filter-btn--active]="activeFilter === 'ALL'"
+      (click)="setFilter('ALL')">
+      {{ 'notifications.all' | translate }}
+    </button>
+    <button
+      type="button"
+      class="notification-filter-btn"
+      [class.notification-filter-btn--active]="activeFilter === 'UNREAD'"
+      (click)="setFilter('UNREAD')">
+      {{ 'notifications.unread' | translate }}
+    </button>
+  </div>
+
+  <div class="notification-panel__list">
+    @if (loading && notifications.length === 0) {
+      <div class="notification-panel__empty">
+        <span class="pi pi-spin pi-spinner"></span>
+      </div>
+    }
+
+    @for (notification of notifications; track notification.id) {
+      <div
+        class="notification-item"
+        [class.notification-item--unread]="!notification.read"
+        (click)="navigateTo(notification)"
+        role="button"
+        tabindex="0">
+        <div class="notification-item__icon">
+          <span [class]="getIconForType(notification.type)"></span>
+        </div>
+        <div class="notification-item__content">
+          <span class="notification-item__title">{{ notification.title }}</span>
+          <span class="notification-item__message">{{ notification.message }}</span>
+          <span class="notification-item__time">{{ notification.createdAt | relativeTime }}</span>
+        </div>
+        @if (!notification.read) {
+          <button
+            type="button"
+            class="notification-item__mark-read"
+            (click)="markAsRead(notification, $event)"
+            [title]="'notifications.mark_read' | translate">
+            <span class="pi pi-check"></span>
+          </button>
+        }
+      </div>
+    }
+
+    @if (!loading && notifications.length === 0) {
+      <div class="notification-panel__empty">
+        <span class="pi pi-inbox"></span>
+        <span>{{ 'notifications.empty' | translate }}</span>
+      </div>
+    }
+  </div>
+
+  @if (hasMore) {
+    <div class="notification-panel__footer">
+      <button
+        type="button"
+        class="notification-load-more"
+        [disabled]="loading"
+        (click)="loadMore()">
+        {{ 'notifications.load_more' | translate }}
+      </button>
+    </div>
+  }
+</div>
+

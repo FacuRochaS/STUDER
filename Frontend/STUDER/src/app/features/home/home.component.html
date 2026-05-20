@@ -1,0 +1,32 @@
+@if (!user) {
+  <studer-loader></studer-loader>
+} @else {
+<div class="home">
+  <div class="home__welcome">
+    <h1 class="home__title">
+      {{ 'home.welcome' | translate: { name: user.firstName || '' } }}
+    </h1>
+    <p class="home__subtitle">{{ 'home.subtitle' | translate }}</p>
+  </div>
+
+  <div class="home__cards">
+    <div class="home__card home__card--courses">
+      <span class="pi pi-book home__card-icon"></span>
+      <span class="home__card-label">{{ 'sidebar.courses' | translate }}</span>
+    </div>
+    <div class="home__card home__card--calendar">
+      <span class="pi pi-calendar home__card-icon"></span>
+      <span class="home__card-label">{{ 'sidebar.calendar' | translate }}</span>
+    </div>
+    <div class="home__card home__card--discussions">
+      <span class="pi pi-megaphone home__card-icon"></span>
+      <span class="home__card-label">{{ 'sidebar.discussions' | translate }}</span>
+    </div>
+    <div class="home__card home__card--messages">
+      <span class="pi pi-comments home__card-icon"></span>
+      <span class="home__card-label">{{ 'sidebar.messages' | translate }}</span>
+    </div>
+  </div>
+</div>
+}
+

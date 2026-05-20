@@ -1,0 +1,27 @@
+<footer
+  class="footer"
+  [class.footer--expanded]="expanded"
+  (click)="toggle()"
+  role="contentinfo">
+  <div class="footer__collapsed">
+    <span class="footer__brand">Studer</span>
+    <span class="pi" [class.pi-chevron-up]="!expanded" [class.pi-chevron-down]="expanded"></span>
+  </div>
+
+  @if (expanded) {
+    <div class="footer__content">
+      <div class="footer__section">
+        <span class="footer__label">{{ 'footer.version' | translate }}</span>
+        <span class="footer__value">1.0.0</span>
+      </div>
+      <div class="footer__section">
+        <span class="footer__label">{{ 'footer.support' | translate }}</span>
+        <span class="footer__value">support&#64;studer.app</span>
+      </div>
+      <div class="footer__section">
+        <span class="footer__label">© 2026 Studer</span>
+      </div>
+    </div>
+  }
+</footer>
+

@@ -1,0 +1,19 @@
+<div class="overlay-wrapper">
+  <div class="overlay-trigger" (click)="toggle()">
+    <ng-content></ng-content>
+  </div>
+
+  @if (isOpen) {
+    <div
+      #overlayPanel
+      class="overlay-panel"
+      [class.overlay-panel--bottom-left]="position === 'bottom-left'"
+      [class.overlay-panel--bottom-right]="position === 'bottom-right'"
+      [class.overlay-panel--bottom-center]="position === 'bottom-center'"
+      role="dialog"
+      aria-modal="false">
+      <ng-container [ngTemplateOutlet]="contentTemplate"></ng-container>
+    </div>
+  }
+</div>
+

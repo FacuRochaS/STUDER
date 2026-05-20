@@ -1,0 +1,21 @@
+<div class="tag-input">
+  <div class="tag-input__tags">
+    @for (tag of tags; track tag; let i = $index) {
+      <span class="tag-input__chip">
+        <studer-tag [name]="tag"></studer-tag>
+        <button type="button" class="tag-input__remove" (click)="removeTag(i)">
+          <span class="pi pi-times"></span>
+        </button>
+      </span>
+    }
+    <input
+      type="text"
+      class="tag-input__field"
+      [(ngModel)]="inputValue"
+      [placeholder]="tags.length === 0 ? placeholder : ''"
+      (keydown)="onKeyDown($event)"
+      (blur)="onBlur()" />
+  </div>
+  <span class="tag-input__hint">{{ 'discussions.tag_input_hint' | translate }}</span>
+</div>
+
