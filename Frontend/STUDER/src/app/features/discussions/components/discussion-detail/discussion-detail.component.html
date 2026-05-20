@@ -1,0 +1,164 @@
+@if (loading) {
+  <studer-loader></studer-loader>
+} @else {
+  <div class="detail">
+    <!-- Top bar -->
+    <div class="detail__topbar">
+      <button type="button" class="detail__back-btn" (click)="goBack()">
+        <span class="pi pi-arrow-left"></span>
+        {{ 'discussions.back' | translate }}
+      </button>
+    </div>
+
+    <!-- Discussion header card -->
+    @if (discussion) {
+      <div class="detail__header-card">
+        <div class="detail__header-top">
+          <h1 class="detail__title">{{ discussion.title }}</h1>
+          <div class="detail__header-actions">
+            <button
+              type="button"
+              class="detail__action-btn"
+              [class.detail__action-btn--active]="discussion.favourite"
+              (click)="toggleFavourite()"
+              [title]="'discussions.favourite' | translate">
+              <span class="pi" [class.pi-star-fill]="discussion.favourite" [class.pi-star]="!discussion.favourite"></span>
+            </button>
+            @if (discussion.closed) {
+              <span class="detail__closed-badge">
+                <span class="pi pi-lock"></span>
+                {{ 'discussions.closed' | translate }}
+              </span>
+            }
+          </div>
+        </div>
+        <p class="detail__description">{{ discussion.description }}</p>
+        <div class="detail__meta">
+          <studer-username [username]="discussion.ownerUsername"></studer-username>
+          <span class="detail__meta-sep">·</span>
+          <span class="detail__meta-time">{{ discussion.createdAt | relativeTime }}</span>
+          <span class="detail__meta-sep">·</span>
+          <span class="detail__meta-stat">
+            <span class="pi pi-comment"></span>
+            {{ discussion.messageCount }}
+          </span>
+        </div>
+        @if (discussion.tags && discussion.tags.length > 0) {
+          <div class="detail__tags">
+            @for (tag of discussion.tags; track tag) {
+              <studer-tag [name]="tag"></studer-tag>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Messages + Input (contained block) -->
+    <div class="detail__messages-container">
+      <div class="detail__messages">
+        @if (messagesLoading && messages.length === 0) {
+          <studer-loader></studer-loader>
+        }
+
+        @for (msg of messages; track msg.id) {
+          <ng-container *ngTemplateOutlet="messageTemplate; context: { $implicit: msg, depth: 0 }"></ng-container>
+        }
+
+        @if (!messagesLoading && messages.length === 0) {
+          <div class="detail__empty">
+            <span class="pi pi-comments"></span>
+            <span>{{ 'discussions.no_messages' | translate }}</span>
+          </div>
+        }
+
+        @if (hasMore) {
+          <button
+            type="button"
+            class="detail__load-more"
+            [disabled]="messagesLoading"
+            (click)="loadMoreMessages()">
+            {{ 'discussions.load_more' | translate }}
+          </button>
+        }
+      </div>
+
+      <!-- New message input -->
+      @if (!discussion?.closed) {
+        <div class="detail__input-area">
+          @if (replyingTo) {
+            <div class="detail__replying">
+              <span>{{ 'discussions.replying_to' | translate }} <strong>{{'@' + replyingTo.senderUsername}}</strong></span>
+              <button type="button" class="detail__replying-cancel" (click)="cancelReply()">
+                <span class="pi pi-times"></span>
+              </button>
+            </div>
+          }
+          <div class="detail__input-row">
+            <textarea
+              class="detail__input"
+              [(ngModel)]="newMessageContent"
+              [placeholder]="'discussions.message_placeholder' | translate"
+              rows="2"
+              (keydown.enter)="$any($event).ctrlKey && sendMessage()"></textarea>
+            <button
+              type="button"
+              class="detail__send-btn"
+              [disabled]="sending || !newMessageContent.trim()"
+              (click)="sendMessage()">
+              @if (sending) {
+                <span class="pi pi-spin pi-spinner"></span>
+              } @else {
+                <span class="pi pi-send"></span>
+              }
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- Message template (recursive for children) -->
+<ng-template #messageTemplate let-msg let-depth="depth">
+  <div class="message" [class.message--root]="depth === 0" [class.message--reply]="depth > 0">
+    <div class="message__body">
+      @if (depth > 0) {
+        <div class="message__reply-indicator">
+          <span class="pi pi-reply"></span>
+          {{ 'discussions.reply' | translate }}
+        </div>
+      }
+      <div class="message__header">
+        <studer-username [username]="msg.senderUsername"></studer-username>
+        <span class="message__time">{{ msg.createdAt | relativeTime }}</span>
+      </div>
+      <p class="message__content">{{ msg.content }}</p>
+      <div class="message__actions">
+        <button
+          type="button"
+          class="message__action-btn"
+          [class.message__action-btn--liked]="msg.likedByCurrentUser"
+          (click)="toggleLike(msg, $event)">
+          <span class="pi" [class.pi-heart-fill]="msg.likedByCurrentUser" [class.pi-heart]="!msg.likedByCurrentUser"></span>
+          {{ msg.likeCount }}
+        </button>
+        <button
+          type="button"
+          class="message__action-btn"
+          (click)="setReply(msg)">
+          <span class="pi pi-reply"></span>
+          {{ 'discussions.reply' | translate }}
+        </button>
+      </div>
+    </div>
+
+    @if (msg.children?.length) {
+      <div class="message__children">
+        @for (child of msg.children; track child.id) {
+          <ng-container *ngTemplateOutlet="messageTemplate; context: { $implicit: child, depth: depth + 1 }"></ng-container>
+        }
+      </div>
+    }
+  </div>
+</ng-template>
+

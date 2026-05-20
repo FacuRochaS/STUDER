@@ -1,0 +1,68 @@
+.footer {
+  background: var(--footer-bg);
+  color: var(--color-text-secu);
+  cursor: pointer;
+  transition: height 0.3s ease, padding 0.3s ease;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  user-select: none;
+}
+
+.footer__collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: var(--footer-height-collapsed);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.footer__collapsed .pi {
+  font-size: 0.6rem;
+  transition: transform 0.3s;
+}
+
+.footer__brand {
+  color: var(--color-primary);
+  font-family: 'Baloo Thambi', 'Baloo Thambi 2', system-ui, sans-serif;
+  font-size: 0.85rem;
+}
+
+.footer__content {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 0.75rem 1rem 1rem;
+  font-size: 0.8rem;
+  animation: footerSlideIn 0.25s ease-out;
+}
+
+.footer__section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.footer__label {
+  font-weight: 600;
+  color: var(--color-text-prim);
+}
+
+.footer__value {
+  color: var(--color-text-secu);
+}
+
+@keyframes footerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

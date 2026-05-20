@@ -1,0 +1,226 @@
+
+<div class="auth-card">
+
+  <!-- ===== Mode tabs ===== -->
+  <div class="auth-tabs">
+    <button
+      type="button"
+      class="auth-tab"
+      [class.auth-tab--active]="!isRegisterMode"
+      (click)="isRegisterMode && switchMode()">
+      {{ 'login.title' | translate }}
+    </button>
+    <button
+      type="button"
+      class="auth-tab"
+      [class.auth-tab--active]="isRegisterMode"
+      (click)="!isRegisterMode && switchMode()">
+      {{ 'register.title' | translate }}
+    </button>
+    <span class="auth-tabs__indicator" [class.auth-tabs__indicator--right]="isRegisterMode"></span>
+  </div>
+
+  <!-- ===== LOGIN ===== -->
+  @if (!isRegisterMode) {
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="submitLogin()"
+      class="auth-form"
+      novalidate>
+
+      <div class="auth-field">
+        <div class="auth-input-wrap" [class.auth-input-wrap--invalid]="isControlInvalid(getLoginControl('username'))">
+          <span class="pi pi-user auth-input-icon"></span>
+          <input
+            id="login-username"
+            type="text"
+            class="auth-input"
+            formControlName="username"
+            [placeholder]="'login.username' | translate" />
+        </div>
+        @if (isControlInvalid(getLoginControl('username'))) {
+          <span class="auth-field-error">{{ 'login.username_error' | translate }}</span>
+        }
+      </div>
+
+      <div class="auth-field">
+        <div class="auth-input-wrap" [class.auth-input-wrap--invalid]="isControlInvalid(getLoginControl('password'))">
+          <span class="pi pi-lock auth-input-icon"></span>
+          <input
+            id="login-password"
+            type="password"
+            class="auth-input"
+            formControlName="password"
+            [placeholder]="'login.password' | translate" />
+        </div>
+        @if (isControlInvalid(getLoginControl('password'))) {
+          <span class="auth-field-error">{{ 'login.password_error' | translate }}</span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="auth-submit"
+        [disabled]="loading || loginForm.invalid">
+        @if (loading) {
+          <span class="pi pi-spin pi-spinner"></span>
+        } @else {
+          {{ 'login.submit' | translate }}
+        }
+      </button>
+
+      @if (error) {
+        <div class="auth-error" role="alert">
+          <span class="pi pi-exclamation-circle"></span>
+          {{ error }}
+        </div>
+      }
+    </form>
+  } @else {
+
+    <!-- Stepper -->
+    <div class="auth-stepper">
+      <div class="auth-step" [class.auth-step--active]="registerStep === 0" [class.auth-step--done]="registerStep > 0">
+        <span class="auth-step__dot">
+          @if (registerStep > 0) {
+            <span class="pi pi-check"></span>
+          } @else {
+            1
+          }
+        </span>
+        <span class="auth-step__label">{{ 'register.step_personal' | translate }}</span>
+      </div>
+      <span class="auth-step__line" [class.auth-step__line--active]="registerStep > 0"></span>
+      <div class="auth-step" [class.auth-step--active]="registerStep === 1">
+        <span class="auth-step__dot">2</span>
+        <span class="auth-step__label">{{ 'register.step_account' | translate }}</span>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    @if (registerStep === 0) {
+      <form
+        [formGroup]="registerForm"
+        (ngSubmit)="nextStep()"
+        class="auth-form"
+        novalidate>
+
+        <div class="auth-field">
+            <div class="auth-input-wrap" [class.auth-input-wrap--invalid]="isControlInvalid(getRegisterControl('firstName'))">
+              <span class="pi pi-user auth-input-icon"></span>
+              <input type="text" class="auth-input" formControlName="firstName" [placeholder]="'register.first_name' | translate" />
+            </div>
+            @if (isControlInvalid(getRegisterControl('firstName'))) {
+              <span class="auth-field-error">{{ 'register.first_name_error' | translate }}</span>
+            }
+        </div>
+        <div class="auth-field">
+            <div class="auth-input-wrap" [class.auth-input-wrap--invalid]="isControlInvalid(getRegisterControl('lastName'))">
+              <span class="pi pi-user auth-input-icon"></span>
+              <input type="text" class="auth-input" formControlName="lastName" [placeholder]="'register.last_name' | translate" />
+            </div>
+            @if (isControlInvalid(getRegisterControl('lastName'))) {
+              <span class="auth-field-error">{{ 'register.last_name_error' | translate }}</span>
+            }
+        </div>
+
+        <div class="auth-field">
+          <div class="auth-input-wrap" [class.auth-input-wrap--invalid]="isControlInvalid(getRegisterControl('birthDate'))">
+            <span class="pi pi-calendar auth-input-icon"></span>
+            <input type="date" class="auth-input" formControlName="birthDate" />
+          </div>
+          @if (isControlInvalid(getRegisterControl('birthDate'))) {
+            <span class="auth-field-error">{{ 'register.birthdate_error' | translate }}</span>
+          }
+        </div>
+
+        <div class="auth-field">
+          <div class="auth-input-wrap" [class.auth-input-wrap--invalid]="isControlInvalid(getRegisterControl('email'))">
+            <span class="pi pi-envelope auth-input-icon"></span>
+            <input type="email" class="auth-input" formControlName="email" [placeholder]="'register.email' | translate" />
+          </div>
+          @if (isControlInvalid(getRegisterControl('email'))) {
+            <span class="auth-field-error">{{ 'register.email_error' | translate }}</span>
+          }
+        </div>
+
+        <button type="submit" class="auth-submit" [disabled]="loading">
+          {{ 'register.next' | translate }}
+          <span class="pi pi-arrow-right"></span>
+        </button>
+      </form>
+    } @else {
+      <form
+        [formGroup]="registerForm"
+        (ngSubmit)="submitRegister()"
+        class="auth-form"
+        novalidate>
+
+        <div class="auth-field">
+          <div class="auth-input-wrap" [class.auth-input-wrap--invalid]="isControlInvalid(getRegisterControl('username'))">
+            <span class="pi pi-at auth-input-icon"></span>
+            <input type="text" class="auth-input" formControlName="username" [placeholder]="'register.username' | translate" />
+          </div>
+          @if (isControlInvalid(getRegisterControl('username'))) {
+            <span class="auth-field-error">{{ 'register.username_error' | translate }}</span>
+          }
+        </div>
+
+        <div class="auth-field">
+          <div class="auth-input-wrap" [class.auth-input-wrap--invalid]="isControlInvalid(getRegisterControl('password'))">
+            <span class="pi pi-lock auth-input-icon"></span>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="auth-input"
+              formControlName="password"
+              [placeholder]="'register.password' | translate" />
+            <button type="button" class="auth-eye-btn" (click)="toggleShowPassword()" tabindex="-1">
+              <span class="pi" [class.pi-eye]="!showPassword" [class.pi-eye-slash]="showPassword"></span>
+            </button>
+          </div>
+          @if (isControlInvalid(getRegisterControl('password'))) {
+            <span class="auth-field-error">{{ 'register.password_error' | translate }}</span>
+          }
+        </div>
+
+        <div class="auth-field">
+          <div class="auth-input-wrap" [class.auth-input-wrap--invalid]="isControlInvalid(getRegisterControl('confirmPassword'))">
+            <span class="pi pi-lock auth-input-icon"></span>
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              class="auth-input"
+              formControlName="confirmPassword"
+              [placeholder]="'register.confirm_password' | translate" />
+            <button type="button" class="auth-eye-btn" (click)="toggleShowConfirmPassword()" tabindex="-1">
+              <span class="pi" [class.pi-eye]="!showConfirmPassword" [class.pi-eye-slash]="showConfirmPassword"></span>
+            </button>
+          </div>
+          @if (isControlInvalid(getRegisterControl('confirmPassword')) || (registerForm.hasError('passwordsMismatch') && getRegisterControl('confirmPassword')?.touched)) {
+            <span class="auth-field-error">{{ 'register.confirm_password_error' | translate }}</span>
+          }
+        </div>
+
+        <div class="auth-actions">
+          <button type="button" class="auth-back-btn" (click)="prevStep()">
+            <span class="pi pi-arrow-left"></span>
+            {{ 'register.prev' | translate }}
+          </button>
+          <button type="submit" class="auth-submit auth-submit--flex" [disabled]="loading || registerForm.invalid">
+            @if (loading) {
+              <span class="pi pi-spin pi-spinner"></span>
+            } @else {
+              {{ 'register.submit' | translate }}
+            }
+          </button>
+        </div>
+
+        @if (error) {
+          <div class="auth-error" role="alert">
+            <span class="pi pi-exclamation-circle"></span>
+            {{ error }}
+          </div>
+        }
+      </form>
+    }
+  }
+</div>

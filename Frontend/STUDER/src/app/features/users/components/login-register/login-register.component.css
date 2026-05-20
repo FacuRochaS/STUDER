@@ -1,0 +1,379 @@
+/* ============================================================
+   HOST – When used as a standalone route (/login)
+   ============================================================ */
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   AUTH CARD – Glassmorphism
+   ============================================================ */
+.auth-card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 1.25rem;
+  padding: 2.25rem 2rem 2rem;
+  width: 100%;
+  max-width: 460px;
+  box-sizing: border-box;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  color: var(--color-text-prim);
+  animation: authCardIn 0.45s cubic-bezier(.4, 0, .2, 1);
+}
+
+@keyframes authCardIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+:host-context(body.theme-dark) .auth-card {
+  background: rgba(30, 30, 34, 0.78);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+.auth-tabs {
+  position: relative;
+  display: flex;
+  background: var(--input-background);
+  border-radius: 0.65rem;
+  padding: 0.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.auth-tab {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  background: none;
+  border: none;
+  padding: 0.65rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-text-secu);
+  transition: color 0.25s;
+  border-radius: 0.5rem;
+  font-family: inherit;
+}
+
+.auth-tab--active {
+  color: var(--color-primary);
+}
+
+.auth-tabs__indicator {
+  position: absolute;
+  top: 0.2rem;
+  bottom: 0.2rem;
+  left: 0.2rem;
+  width: calc(50% - 0.2rem);
+  background: var(--color-bg);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 4px var(--box-shadow-color);
+  transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
+  z-index: 0;
+}
+
+.auth-tabs__indicator--right {
+  transform: translateX(100%);
+}
+
+/* ============================================================
+   FORM
+   ============================================================ */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-row {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.auth-row .auth-field {
+  flex: 1;
+}
+
+/* ---- Input wrap with icon ---- */
+.auth-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--input-background);
+  border: 1.5px solid transparent;
+  border-radius: 0.6rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.auth-input-wrap:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+}
+
+.auth-input-wrap--invalid {
+  border-color: var(--color-error) !important;
+  box-shadow: 0 0 0 3px rgba(255, 49, 49, 0.08) !important;
+}
+
+.auth-input-icon {
+  padding: 0 0 0 0.75rem;
+  font-size: 0.95rem;
+  color: var(--color-text-secu);
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: color 0.2s;
+}
+
+.auth-input-wrap:focus-within .auth-input-icon {
+  color: var(--color-primary);
+  opacity: 1;
+}
+
+.auth-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.8rem 0.85rem;
+  font-size: 0.95rem;
+  color: var(--color-text-prim);
+  outline: none;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.auth-input::placeholder {
+  color: var(--color-text-secu);
+  opacity: 0.55;
+}
+
+/* ---- Eye toggle ---- */
+.auth-eye-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.7rem;
+  color: var(--color-text-secu);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.auth-eye-btn:hover {
+  color: var(--color-primary);
+}
+
+/* ---- Field error ---- */
+.auth-field-error {
+  font-size: 0.78rem;
+  color: var(--color-error);
+  margin-top: 0.25rem;
+  padding-left: 0.15rem;
+}
+
+/* ============================================================
+   STEPPER
+   ============================================================ */
+.auth-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 1.35rem;
+}
+
+.auth-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  flex: 0 0 auto;
+}
+
+.auth-step__dot {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--input-background);
+  color: var(--color-text-secu);
+  border: 2px solid var(--input-background);
+  transition: background 0.25s, border-color 0.25s, color 0.25s, transform 0.25s;
+}
+
+.auth-step--active .auth-step__dot {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-btn);
+  transform: scale(1.1);
+}
+
+.auth-step--done .auth-step__dot {
+  background: var(--color-correct);
+  border-color: var(--color-correct);
+  color: var(--color-text-btn);
+}
+
+.auth-step__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-secu);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: color 0.25s;
+}
+
+.auth-step--active .auth-step__label {
+  color: var(--color-primary);
+}
+
+.auth-step--done .auth-step__label {
+  color: var(--color-correct);
+}
+
+.auth-step__line {
+  width: 3rem;
+  height: 2px;
+  background: var(--input-background);
+  border-radius: 1px;
+  margin: 0 0.6rem;
+  margin-bottom: 1.2rem;
+  transition: background 0.3s;
+}
+
+.auth-step__line--active {
+  background: var(--color-correct);
+}
+
+/* ============================================================
+   SUBMIT
+   ============================================================ */
+.auth-submit {
+  width: 100%;
+  padding: 0.85rem;
+  margin-top: 0.5rem;
+  border: none;
+  border-radius: 0.6rem;
+  background: var(--color-primary);
+  color: var(--color-text-btn);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  font-family: inherit;
+}
+
+.auth-submit:hover:not(:disabled) {
+  background: var(--color-primary-accent);
+  box-shadow: 0 4px 14px rgba(66, 133, 244, 0.3);
+  transform: translateY(-1px);
+}
+
+.auth-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-submit--flex {
+  flex: 1;
+}
+
+/* ============================================================
+   ACTIONS ROW (step 2)
+   ============================================================ */
+.auth-actions {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.35rem;
+}
+
+.auth-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 0.6rem;
+  padding: 0.65rem 1rem;
+  color: var(--color-text-secu);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  font-family: inherit;
+}
+
+.auth-back-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+.auth-error {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 49, 49, 0.07);
+  color: var(--color-error);
+  font-size: 0.82rem;
+  font-weight: 500;
+  animation: errorShake 0.35s ease;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-4px); }
+  40%      { transform: translateX(4px); }
+  60%      { transform: translateX(-2px); }
+  80%      { transform: translateX(2px); }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.5rem 1.25rem 1.25rem;
+    border-radius: 1rem;
+  }
+
+  .auth-row {
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+}

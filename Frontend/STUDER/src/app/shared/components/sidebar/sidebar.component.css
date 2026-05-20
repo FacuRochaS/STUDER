@@ -1,0 +1,138 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 1px 0 4px var(--box-shadow-color);
+  padding-top: var(--header-height);
+}
+
+.sidebar__nav {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sidebar__item {
+  width: 100%;
+}
+
+.sidebar__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.65rem 0.5rem;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  margin: 0 0.35rem;
+  position: relative;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+}
+
+/* Inactive state: all grey */
+.sidebar__icon {
+  font-size: 1.6rem;
+  font-weight: 900;
+  transition: color 0.25s, transform 0.25s;
+  color: var(--nav-color-inactive);
+  -webkit-text-stroke: 0.5px currentColor;
+}
+
+.sidebar__label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  transition: color 0.25s;
+  color: var(--nav-color-inactive);
+  text-align: center;
+}
+
+/* ===================== Hover states ===================== */
+.sidebar__link:hover {
+  background: var(--sidebar-hover-bg);
+}
+
+.sidebar__link:hover .sidebar__icon {
+  transform: scale(1.15);
+}
+
+/* Per-section hover colors */
+.sidebar__link.nav--home:hover .sidebar__icon,
+.sidebar__link.nav--home:hover .sidebar__label {
+  color: var(--nav-color-home);
+}
+
+.sidebar__link.nav--courses:hover .sidebar__icon,
+.sidebar__link.nav--courses:hover .sidebar__label {
+  color: var(--nav-color-courses);
+}
+
+.sidebar__link.nav--calendar:hover .sidebar__icon,
+.sidebar__link.nav--calendar:hover .sidebar__label {
+  color: var(--nav-color-calendar);
+}
+
+.sidebar__link.nav--discussions:hover .sidebar__icon,
+.sidebar__link.nav--discussions:hover .sidebar__label {
+  color: var(--nav-color-discussions);
+}
+
+.sidebar__link.nav--messages:hover .sidebar__icon,
+.sidebar__link.nav--messages:hover .sidebar__label {
+  color: var(--nav-color-messages);
+}
+
+.sidebar__link.nav--account:hover .sidebar__icon,
+.sidebar__link.nav--account:hover .sidebar__label {
+  color: var(--nav-color-account);
+}
+
+/* ===================== Active states ===================== */
+
+.sidebar__link--active .sidebar__icon {
+  transform: scale(1.1);
+}
+
+.sidebar__link--active.nav--home .sidebar__icon,
+.sidebar__link--active.nav--home .sidebar__label {
+  color: var(--nav-color-home);
+}
+
+.sidebar__link--active.nav--courses .sidebar__icon,
+.sidebar__link--active.nav--courses .sidebar__label {
+  color: var(--nav-color-courses);
+}
+
+.sidebar__link--active.nav--calendar .sidebar__icon,
+.sidebar__link--active.nav--calendar .sidebar__label {
+  color: var(--nav-color-calendar);
+}
+
+.sidebar__link--active.nav--discussions .sidebar__icon,
+.sidebar__link--active.nav--discussions .sidebar__label {
+  color: var(--nav-color-discussions);
+}
+
+.sidebar__link--active.nav--messages .sidebar__icon,
+.sidebar__link--active.nav--messages .sidebar__label {
+  color: var(--nav-color-messages);
+}
+
+.sidebar__link--active.nav--account .sidebar__icon,
+.sidebar__link--active.nav--account .sidebar__label {
+  color: var(--nav-color-account);
+}
+

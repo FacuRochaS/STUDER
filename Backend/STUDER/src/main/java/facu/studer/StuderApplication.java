@@ -19,7 +19,7 @@ public class StuderApplication {
 				System.setProperty(entry.getKey(), entry.getValue());
 			}
 		});
-		SpringApplication.run(LoginApplication.class, args);
+		SpringApplication.run(StuderApplication.class, args);
 	}
 
 }

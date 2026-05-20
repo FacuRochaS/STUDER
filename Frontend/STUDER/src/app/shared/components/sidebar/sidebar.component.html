@@ -1,0 +1,18 @@
+<nav class="sidebar" aria-label="Main navigation">
+  <ul class="sidebar__nav">
+    @for (item of navItems; track item.route) {
+      <li class="sidebar__item">
+        <a
+          class="sidebar__link"
+          [class]="'sidebar__link ' + item.colorClass"
+          [routerLink]="item.route"
+          routerLinkActive="sidebar__link--active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/home' }">
+          <span class="sidebar__icon" [class]="'sidebar__icon ' + item.icon"></span>
+          <span class="sidebar__label">{{ item.label | translate }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+

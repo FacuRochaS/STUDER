@@ -1,0 +1,114 @@
+<div class="landing">
+  <!-- Navbar flotante -->
+  <nav class="landing-nav">
+    <div class="landing-nav__logo">
+      <studer-logo [size]="1.6" animation="bounce"></studer-logo>
+    </div>
+    <div class="landing-nav__actions">
+      <a class="landing-nav__link" href="#features">{{ 'landing.nav_features' | translate }}</a>
+      <a class="landing-nav__link" href="#about">{{ 'landing.nav_about' | translate }}</a>
+      <button class="landing-nav__cta" (click)="scrollToLogin()">{{ 'login.submit' | translate }}</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="landing-hero" id="hero">
+    <div class="hero__content">
+      <div class="hero__text">
+        <div class="hero__logo">
+          <studer-logo [size]="5" animation="bounce"></studer-logo>
+        </div>
+        <div class="hero__phrases">
+          <studer-phrases [phrases]="phraseKeys" [colorClasses]="sloganColors"></studer-phrases>
+        </div>
+      </div>
+      <div class="hero__form" id="login-section">
+        <app-login-register></app-login-register>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="landing-features" id="features">
+    <h2 class="features__title">{{ 'landing.features_title' | translate }}</h2>
+    <p class="features__subtitle">{{ 'landing.features_subtitle' | translate }}</p>
+
+    <div class="features__grid">
+      <div class="feature-card landing-section">
+        <div class="feature-card__icon feature-card__icon--primary">
+          <span class="pi pi-book"></span>
+        </div>
+        <h3 class="feature-card__title">{{ 'landing.feat_courses_title' | translate }}</h3>
+        <p class="feature-card__text">{{ 'landing.feat_courses_text' | translate }}</p>
+      </div>
+
+      <div class="feature-card landing-section">
+        <div class="feature-card__icon feature-card__icon--correct">
+          <span class="pi pi-check-circle"></span>
+        </div>
+        <h3 class="feature-card__title">{{ 'landing.feat_exercises_title' | translate }}</h3>
+        <p class="feature-card__text">{{ 'landing.feat_exercises_text' | translate }}</p>
+      </div>
+
+      <div class="feature-card landing-section">
+        <div class="feature-card__icon feature-card__icon--error">
+          <span class="pi pi-sync"></span>
+        </div>
+        <h3 class="feature-card__title">{{ 'landing.feat_reuse_title' | translate }}</h3>
+        <p class="feature-card__text">{{ 'landing.feat_reuse_text' | translate }}</p>
+      </div>
+
+      <div class="feature-card landing-section">
+        <div class="feature-card__icon feature-card__icon--warning">
+          <span class="pi pi-users"></span>
+        </div>
+        <h3 class="feature-card__title">{{ 'landing.feat_social_title' | translate }}</h3>
+        <p class="feature-card__text">{{ 'landing.feat_social_text' | translate }}</p>
+      </div>
+
+      <div class="feature-card landing-section">
+        <div class="feature-card__icon feature-card__icon--info">
+          <span class="pi pi-chart-bar"></span>
+        </div>
+        <h3 class="feature-card__title">{{ 'landing.feat_analytics_title' | translate }}</h3>
+        <p class="feature-card__text">{{ 'landing.feat_analytics_text' | translate }}</p>
+      </div>
+
+      <div class="feature-card landing-section">
+        <div class="feature-card__icon feature-card__icon--restriction">
+          <span class="pi pi-microchip-ai"></span>
+        </div>
+        <h3 class="feature-card__title">{{ 'landing.feat_ai_title' | translate }}</h3>
+        <p class="feature-card__text">{{ 'landing.feat_ai_text' | translate }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About / Value -->
+  <section class="landing-about" id="about">
+    <div class="about__content landing-section">
+      <div class="about__text">
+        <h2 class="about__title">{{ 'landing.about_title' | translate }}</h2>
+        <p class="about__description">{{ 'landing.about_text' | translate }}</p>
+      </div>
+      <div class="about__logo">
+        <studer-logo [size]="6" animation="spin"></studer-logo>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA final -->
+  <section class="landing-cta landing-section">
+    <h2 class="cta__title">{{ 'landing.cta_title' | translate }}</h2>
+    <p class="cta__text">{{ 'landing.cta_text' | translate }}</p>
+    <button class="cta__btn" (click)="scrollToLogin()">{{ 'landing.cta_btn' | translate }}</button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <span class="landing-footer__brand">
+      <studer-logo [size]="1" animation="pulse"></studer-logo>
+    </span>
+    <span class="landing-footer__copy">© 2026 Studer — {{ 'landing.footer_rights' | translate }}</span>
+  </footer>
+</div>

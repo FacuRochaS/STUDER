@@ -1,0 +1,165 @@
+<div class="discussions">
+  <!-- Header -->
+  <div class="discussions__header">
+    <h1 class="discussions__title">{{ 'discussions.title' | translate }}</h1>
+    <button
+      type="button"
+      class="discussions__create-btn"
+      (click)="openCreateModal()">
+      <span class="pi pi-plus"></span>
+      {{ 'discussions.create' | translate }}
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="discussions__tabs">
+    <button
+      type="button"
+      class="discussions__tab"
+      [class.discussions__tab--active]="activeTab === 'PUBLIC'"
+      (click)="setTab('PUBLIC')">
+      {{ 'discussions.public' | translate }}
+    </button>
+    <button
+      type="button"
+      class="discussions__tab"
+      [class.discussions__tab--active]="activeTab === 'MINE'"
+      (click)="setTab('MINE')">
+      {{ 'discussions.mine' | translate }}
+    </button>
+  </div>
+
+  <!-- List -->
+  <div class="discussions__list">
+    @if (loading && discussions.length === 0) {
+      <studer-loader></studer-loader>
+    }
+
+    @for (discussion of discussions; track discussion.id) {
+      <div
+        class="discussion-card"
+        [class.discussion-card--closed]="discussion.closed"
+        (click)="openDiscussion(discussion)">
+        <div class="discussion-card__header">
+          <div class="discussion-card__title-row">
+            <h3 class="discussion-card__title">{{ discussion.title }}</h3>
+            @if (discussion.closed) {
+              <span class="discussion-card__closed-badge">
+                <span class="pi pi-lock"></span>
+                {{ 'discussions.closed' | translate }}
+              </span>
+            }
+          </div>
+          <studer-username [username]="discussion.ownerUsername" (click)="$event.stopPropagation()"></studer-username>
+        </div>
+
+        <p class="discussion-card__description">{{ discussion.description }}</p>
+
+        @if (discussion.tags && discussion.tags.length > 0) {
+          <div class="discussion-card__tags">
+            @for (tag of discussion.tags; track tag) {
+              <studer-tag [name]="tag"></studer-tag>
+            }
+          </div>
+        }
+
+        <div class="discussion-card__footer">
+          <div class="discussion-card__stats">
+            <span class="discussion-card__stat">
+              <span class="pi pi-comment"></span>
+              {{ discussion.messageCount }}
+            </span>
+            <span class="discussion-card__stat">
+              {{ discussion.createdAt | relativeTime }}
+            </span>
+            @if (discussion.participationType !== 'NONE') {
+              <span class="discussion-card__participation" [title]="discussion.participationType">
+                <span [class]="getParticipationIcon(discussion.participationType)"></span>
+              </span>
+            }
+          </div>
+          <button
+            type="button"
+            class="discussion-card__fav-btn"
+            [class.discussion-card__fav-btn--active]="discussion.favourite"
+            (click)="toggleFavourite(discussion, $event)"
+            [title]="'discussions.favourite' | translate">
+            <span class="pi" [class.pi-star-fill]="discussion.favourite" [class.pi-star]="!discussion.favourite"></span>
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (!loading && discussions.length === 0) {
+      <div class="discussions__empty">
+        <span class="pi pi-megaphone"></span>
+        <span>{{ 'discussions.empty' | translate }}</span>
+      </div>
+    }
+  </div>
+
+  @if (hasMore) {
+    <div class="discussions__load-more">
+      <button
+        type="button"
+        class="discussions__load-more-btn"
+        [disabled]="loading"
+        (click)="loadMore()">
+        {{ 'discussions.load_more' | translate }}
+      </button>
+    </div>
+  }
+</div>
+
+<!-- Create discussion modal -->
+<studer-modal
+  [title]="'discussions.create_title' | translate"
+  [(visible)]="showCreateModal"
+  (closed)="closeCreateModal()">
+  <div class="create-form">
+    <div class="create-form__group">
+      <label class="create-form__label">{{ 'discussions.form_title' | translate }}</label>
+      <input
+        type="text"
+        class="create-form__input"
+        [(ngModel)]="newTitle"
+        [placeholder]="'discussions.form_title_placeholder' | translate" />
+    </div>
+    <div class="create-form__group">
+      <label class="create-form__label">{{ 'discussions.form_description' | translate }}</label>
+      <textarea
+        class="create-form__textarea"
+        [(ngModel)]="newDescription"
+        [placeholder]="'discussions.form_description_placeholder' | translate"
+        rows="3"></textarea>
+    </div>
+    <div class="create-form__group">
+      <label class="create-form__label">{{ 'discussions.form_tags' | translate }}</label>
+      <studer-tag-input
+        [(tags)]="newTags"
+        [placeholder]="'discussions.form_tags_placeholder' | translate">
+      </studer-tag-input>
+    </div>
+    @if (createError) {
+      <div class="create-form__error">{{ createError | translate }}</div>
+    }
+    <div class="create-form__actions">
+      <button
+        type="button"
+        class="create-form__cancel"
+        (click)="closeCreateModal()">
+        {{ 'discussions.cancel' | translate }}
+      </button>
+      <button
+        type="button"
+        class="create-form__submit"
+        [disabled]="creating || !newTitle.trim() || !newDescription.trim()"
+        (click)="submitCreate()">
+        @if (creating) {
+          <span class="pi pi-spin pi-spinner"></span>
+        }
+        {{ 'discussions.submit' | translate }}
+      </button>
+    </div>
+  </div>
+</studer-modal>

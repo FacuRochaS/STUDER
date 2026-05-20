@@ -1,0 +1,59 @@
+<header class="header">
+  <!-- Logo -->
+  <div class="header__logo">
+    <studer-logo [size]="1.5" animation="bounce" (logoClick)="goHome()"></studer-logo>
+  </div>
+
+  <!-- Search -->
+  <div class="header__search">
+    <span class="pi pi-search header__search-icon"></span>
+    <input
+      type="text"
+      class="header__search-input"
+      [placeholder]="'header.search_placeholder' | translate"
+      [(ngModel)]="searchQuery"
+      (keydown.enter)="onSearch()" />
+    <button
+      type="button"
+      class="header__search-filter"
+      [title]="'header.search_filters' | translate">
+      <span class="pi pi-sliders-h"></span>
+    </button>
+  </div>
+
+  <!-- Controls -->
+  <div class="header__controls">
+    <!-- Theme toggle -->
+    <button
+      type="button"
+      class="header__control-btn"
+      (click)="toggleTheme()"
+      [title]="'header.toggle_theme' | translate">
+      <span [class]="currentThemeIcon"></span>
+    </button>
+
+    <!-- Language toggle -->
+    <button
+      type="button"
+      class="header__control-btn header__lang-btn"
+      (click)="toggleLanguage()"
+      [title]="'header.toggle_language' | translate">
+      {{ currentLanguageLabel }}
+    </button>
+
+    <!-- Notifications -->
+    <studer-overlay position="bottom-right" [contentTemplate]="notificationContent">
+      <div class="header__notification-trigger">
+        <span class="pi pi-bell"></span>
+        @if (unreadCount > 0) {
+          <span class="header__notification-badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
+        }
+      </div>
+    </studer-overlay>
+  </div>
+</header>
+
+<ng-template #notificationContent>
+  <studer-notification-panel></studer-notification-panel>
+</ng-template>
+

@@ -1,15 +1,13 @@
-# Usar una imagen oficial de Java como base
-FROM eclipse-temurin:17-jre-alpine
-
-# Directorio de trabajo
+# Etapa 1: Build con Maven
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copiar el jar construido
-COPY target/login-0.0.1-SNAPSHOT.jar app.jar
-
-# Exponer el puerto
-EXPOSE 8080
-
-# Comando para ejecutar la app
+# Etapa 2: Imagen ligera para producción
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/STUDER-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8081
 ENTRYPOINT ["java","-jar","app.jar"]
-
