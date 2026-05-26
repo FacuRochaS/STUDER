@@ -5,16 +5,18 @@ import { LayoutComponent } from './shared/components/layout/layout.component';
 import { HomeComponent } from './features/home/home.component';
 import { DiscussionListComponent } from './features/discussions/components/discussion-list/discussion-list.component';
 import { DiscussionDetailComponent } from './features/discussions/components/discussion-detail/discussion-detail.component';
+import { TestComponent } from './features/test/test.component';
 import { authGuard } from './core/auth/auth.guard';
 import { publicGuard } from './core/auth/public.guard';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'login', component: LoginRegisterComponent},
+  { path: 'test', component: TestComponent },
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [authGuard],
+    //canActivate: [authGuard],
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'discussions', component: DiscussionListComponent },

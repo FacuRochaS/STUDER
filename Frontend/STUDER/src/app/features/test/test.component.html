@@ -1,0 +1,98 @@
+<div class="test-container">
+  <header class="test-header">
+    <h1>🧪 Prueba de Texto Enriquecido con Entidades Interactivas</h1>
+    <p>Este es un componente de prueba para visualizar todas las entidades: &#64;usuario, #tag, &curso, $contest, %bloque</p>
+  </header>
+
+  <section class="legend">
+    <h2>Leyenda de Colores</h2>
+    <ul class="legend-list">
+      <li><span class="entity entity--user">&#64;usuario</span> - Usuarios (Azul)</li>
+      <li><span class="entity entity--tag">#tag</span> - Tags (Morado)</li>
+      <li><span class="entity entity--course">&curso</span> - Cursos (Verde)</li>
+      <li><span class="entity entity--contest">$contest</span> - Contests (Rojo)</li>
+      <li><span class="entity entity--block">%bloque</span> - Bloques (Naranja)</li>
+    </ul>
+  </section>
+
+  <section class="messages-section">
+    <h2>Hilo de Conversación</h2>
+    <div class="messages-container">
+      @for (message of messages; track $index) {
+        <div class="message">
+          <div class="message-header">
+            <studer-manual-entity
+              type="user"
+              [value]="message.authorUsername"
+              (entityClick)="handleAuthorClick($event)"
+              class="author">
+              {{ message.authorName }}
+            </studer-manual-entity>
+            <span class="message-time">{{ message.createdAt | date:'short' }}</span>
+          </div>
+
+          <div class="message-content">
+            <studer-rich-text
+              [text]="message.content"
+              (entityClick)="handleEntityClick($event)">
+            </studer-rich-text>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="examples-section">
+    <h2>Ejemplos de Uso</h2>
+    <div class="examples-grid">
+      <div class="example-card">
+        <h3>Usuario Único</h3>
+        <p class="example-text">Hola <studer-rich-text [text]="'@john'" (entityClick)="handleEntityClick($event)"></studer-rich-text></p>
+      </div>
+
+      <div class="example-card">
+        <h3>Tag Único</h3>
+        <p class="example-text">Aprendí sobre <studer-rich-text [text]="'#programacion'" (entityClick)="handleEntityClick($event)"></studer-rich-text></p>
+      </div>
+
+      <div class="example-card">
+        <h3>Curso Único</h3>
+        <p class="example-text">El curso <studer-rich-text [text]="'&angular'" (entityClick)="handleEntityClick($event)"></studer-rich-text> es genial</p>
+      </div>
+
+      <div class="example-card">
+        <h3>Contest Único</h3>
+        <p class="example-text">Participa en <studer-rich-text [text]="'$competencia-2024'" (entityClick)="handleEntityClick($event)"></studer-rich-text></p>
+      </div>
+
+      <div class="example-card">
+        <h3>Bloque Único</h3>
+        <p class="example-text">Completa el <studer-rich-text [text]="'%modulo-basico'" (entityClick)="handleEntityClick($event)"></studer-rich-text></p>
+      </div>
+
+      <div class="example-card">
+        <h3>Múltiples Entidades</h3>
+        <p class="example-text">
+          <studer-rich-text
+            [text]="'@alice revisó &python en #data-science del $desafio-2024 y aprobó %leccion-5'"
+            (entityClick)="handleEntityClick($event)">
+          </studer-rich-text>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section">
+    <h2>ℹ️ Información</h2>
+    <div class="info-box">
+      <p><strong>Comportamientos:</strong></p>
+      <ul>
+        <li>✨ <strong>Hover:</strong> Pasa el mouse sobre cualquier entidad para ver un popover flotante</li>
+        <li>🔗 <strong>Click:</strong> Haz click para navegar a la página correspondiente</li>
+        <li>🎨 <strong>Colores:</strong> Cada tipo de entidad tiene su propio color</li>
+        <li>📱 <strong>Responsive:</strong> Los popovers se adaptan a la posición de la pantalla</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
