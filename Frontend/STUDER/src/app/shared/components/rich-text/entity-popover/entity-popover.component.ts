@@ -53,6 +53,7 @@ export class EntityPopoverComponent implements OnInit, OnChanges {
 
     switch (this.type) {
       case 'user':
+        //todo: implementar busqueda by username
         data = this.cacheService.getUser(this.value);
         if (!data) {
           data = this.generateMockUserData(this.value);

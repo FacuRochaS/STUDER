@@ -33,9 +33,6 @@ public class Notification extends BaseEntity {
     /** Notification message. */
     private String message;
 
-    /** available timestamp. */
-    private LocalDateTime availableAt;
-
     /** Notification type. */
     @Enumerated(EnumType.STRING)
     private LinkedType type;
