@@ -45,6 +45,10 @@ public final class UserMapper {
                 .username(user.getUsername())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .profilePictureOriginalUrl(user.getProfilePictureOriginalUrl())
+                .profilePictureAvatarUrl(user.getProfilePictureAvatarUrl())
+                .profilePictureWebpUrl(user.getProfilePictureWebpUrl())
+                .profilePictureThumbnailUrl(user.getProfilePictureThumbnailUrl())
                 .build();
     }
 }

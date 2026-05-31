@@ -1,0 +1,24 @@
+<span class="rich-text">
+  @for (token of tokens; track $index) {
+    @if (token.type === 'text') {
+      <span class="text-node">{{ token.value }}</span>
+    } @else {
+      <a
+        [ngClass]="'entity entity--' + token.type"
+        [href]="getEntityRoute(token.type, token.value)"
+        (click)="onEntityClick($event, token.type, token.value)"
+        (mouseenter)="showPopover($event, token.type, token.value)"
+        (mouseleave)="hidePopover()">
+        {{ getEntityPrefix(token.type) }}{{ token.value }}
+      </a>
+    }
+  }
+</span>
+
+<studer-entity-popover
+  #popover
+  [type]="popoverType"
+  [value]="popoverValue"
+  [position]="popoverPosition">
+</studer-entity-popover>
+

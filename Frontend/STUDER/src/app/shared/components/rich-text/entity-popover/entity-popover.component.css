@@ -1,0 +1,80 @@
+.entity-popover {
+  position: fixed;
+  z-index: 1000;
+  background: var(--color-bg);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 16px var(--box-shadow-color);
+  border: 1px solid var(--overlay-border);
+  min-width: 200px;
+  max-width: 300px;
+  animation: popoverFadeIn 0.2s ease-in-out;
+}
+
+@keyframes popoverFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popover-content {
+  padding: 0.75rem;
+}
+
+.popover-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.popover-prefix {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.entity-popover--user .popover-prefix {
+  color: var(--entity-user-color);
+}
+
+.entity-popover--tag .popover-prefix {
+  color: var(--entity-tag-color);
+}
+
+.entity-popover--course .popover-prefix {
+  color: var(--entity-course-color);
+}
+
+.entity-popover--contest .popover-prefix {
+  color: var(--entity-contest-color);
+}
+
+.entity-popover--block .popover-prefix {
+  color: var(--entity-block-color);
+}
+
+.popover-name {
+  font-size: 0.95rem;
+  color: var(--color-text-prim);
+  word-break: break-word;
+}
+
+.popover-description {
+  font-size: 0.85rem;
+  color: var(--color-text-secu);
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.popover-meta {
+  font-size: 0.8rem;
+  color: var(--color-text-secu);
+  border-top: 1px solid var(--overlay-border);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+

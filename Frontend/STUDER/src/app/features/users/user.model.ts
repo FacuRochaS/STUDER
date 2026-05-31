@@ -1,4 +1,3 @@
-
 export interface LoginRequestDTO {
   username: string;
   password: string;
@@ -26,14 +25,18 @@ export interface UserCreateRequestDTO {
 }
 
 export interface UserUpdateRequestDTO {
-  email: string;
-  password: string;
+  email: string | null;
+  password: string | null;
 }
 
-export interface UserResponseDTO {
+export interface User {
   id: number;
   username: string;
   email: string;
   firstName: string;
   lastName: string;
+  profilePictureOriginalUrl: string;
+  profilePictureAvatarUrl: string;
+  profilePictureWebpUrl: string;
+  profilePictureThumbnailUrl: string;
 }

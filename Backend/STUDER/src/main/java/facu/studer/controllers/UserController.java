@@ -6,8 +6,10 @@ import facu.studer.DTOs.user.UserUpdateRequestDTO;
 import facu.studer.security.SecurityUtils;
 import facu.studer.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * REST controller for managing Users.
@@ -40,9 +42,10 @@ public class UserController {
      * Updates the current authenticated user.
      * The user can only update their OWN account.
      */
-    @PutMapping
-    public ResponseEntity<UserResponseDTO> update(@Valid @RequestBody UserUpdateRequestDTO request) {
-        return ResponseEntity.ok(userService.update(securityUtils.requireCurrentUsername(), request));
+    @PutMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<UserResponseDTO> update(@Valid @RequestPart("request") UserUpdateRequestDTO request,
+                                                  @RequestPart(value = "file", required = false) MultipartFile file) {
+        return ResponseEntity.ok(userService.update(securityUtils.requireCurrentUsername(), request, file));
     }
 
     /**

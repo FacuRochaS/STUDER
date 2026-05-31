@@ -38,4 +38,12 @@ public class UserResponseDTO {
      * Last name.
      */
     private String lastName;
+
+    private String profilePictureOriginalUrl;
+
+    private String profilePictureAvatarUrl;
+
+    private String profilePictureWebpUrl;
+
+    private String profilePictureThumbnailUrl;
 }

@@ -1,6 +1,5 @@
 package facu.studer.entities.notifications;
 
-
 import facu.studer.entities.BaseEntity;
 import facu.studer.entities.LinkedType;
 import jakarta.persistence.Entity;
@@ -12,8 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDateTime;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Entity representing a notification.
@@ -33,15 +32,12 @@ public class Notification extends BaseEntity {
     /** Notification message. */
     private String message;
 
-    /** available timestamp. */
-    private LocalDateTime availableAt;
-
     /** Notification type. */
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private LinkedType type;
 
     /** Notification linked id entity. */
     private Long linkedId;
 
 }
-

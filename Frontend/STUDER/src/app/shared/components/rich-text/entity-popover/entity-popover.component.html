@@ -1,0 +1,28 @@
+@if (popoverType && popoverData) {
+  <div
+    class="entity-popover"
+    [ngClass]="'entity-popover--' + popoverType"
+    [style.top.px]="position.top"
+    [style.left.px]="position.left">
+
+    <div class="popover-content">
+      <div class="popover-header">
+        <span class="popover-prefix">{{ getPrefix() }}</span>
+        <strong class="popover-name">{{ popoverData.name }}</strong>
+      </div>
+
+      @if (popoverData.description) {
+        <div class="popover-description">
+          {{ popoverData.description }}
+        </div>
+      }
+
+      @if (popoverData.meta) {
+        <div class="popover-meta">
+          {{ popoverData.meta }}
+        </div>
+      }
+    </div>
+  </div>
+}
+

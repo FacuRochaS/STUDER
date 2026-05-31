@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthStateService } from '../../core/auth/auth-state.service';
-import { UserResponseDTO } from '../users/user.model';
+import { User } from '../users/user.model';
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
 
 @Component({
@@ -15,7 +15,7 @@ import { LoaderComponent } from '../../shared/components/loader/loader.component
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
-  user: UserResponseDTO | null = null;
+  user: User | null = null;
 
   constructor(private readonly authState: AuthStateService) {}
 
@@ -30,4 +30,3 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 }
-

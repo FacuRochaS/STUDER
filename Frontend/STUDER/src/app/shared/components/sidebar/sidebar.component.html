@@ -8,11 +8,10 @@
           [routerLink]="item.route"
           routerLinkActive="sidebar__link--active"
           [routerLinkActiveOptions]="{ exact: item.route === '/home' }">
-          <span class="sidebar__icon" [class]="'sidebar__icon ' + item.icon"></span>
+          <span class="sidebar__icon"><i [class]="item.icon"></i></span>
           <span class="sidebar__label">{{ item.label | translate }}</span>
         </a>
       </li>
     }
   </ul>
 </nav>
-
