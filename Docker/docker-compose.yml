@@ -27,9 +27,25 @@ services:
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       JWT_SECRET: ${JWT_SECRET}
+      APP_MEDIA_SERVICE_URL: http://studer-media:8000
     ports:
       - "8081:8081"
     restart: always
+    networks:
+      - backend_net
+  studer-media:
+    container_name: studer_media
+    build: ../Backend/STUDER-MEDIA/
+    ports:
+      - "8000:8000"
+    restart: always
+    depends_on:
+      - minio
+    environment:
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      BUCKET_NAME: images
     networks:
       - backend_net
   frontend:
@@ -54,8 +70,23 @@ services:
     networks:
       - frontend_net
       - backend_net
+  minio:
+    container_name: studer_minio
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    networks:
+      - backend_net
 volumes:
   db_data:
+  minio_data:
 networks:
   frontend_net:
     driver: bridge

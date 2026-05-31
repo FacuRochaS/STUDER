@@ -1,0 +1,16 @@
+<a
+  [ngClass]="'entity entity--' + type"
+  [href]="getEntityRoute()"
+  (click)="onEntityClick($event)"
+  (mouseenter)="showPopover($event)"
+  (mouseleave)="hidePopover()">
+  <ng-content></ng-content>
+</a>
+
+<studer-entity-popover
+  #popover
+  [type]="popoverType"
+  [value]="value"
+  [position]="popoverPosition">
+</studer-entity-popover>
+

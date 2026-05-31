@@ -80,9 +80,9 @@
   color: var(--nav-color-courses);
 }
 
-.sidebar__link.nav--calendar:hover .sidebar__icon,
-.sidebar__link.nav--calendar:hover .sidebar__label {
-  color: var(--nav-color-calendar);
+.sidebar__link.nav--contest:hover .sidebar__icon,
+.sidebar__link.nav--contest:hover .sidebar__label {
+  color: var(--nav-color-contest);
 }
 
 .sidebar__link.nav--discussions:hover .sidebar__icon,
@@ -116,9 +116,9 @@
   color: var(--nav-color-courses);
 }
 
-.sidebar__link--active.nav--calendar .sidebar__icon,
-.sidebar__link--active.nav--calendar .sidebar__label {
-  color: var(--nav-color-calendar);
+.sidebar__link--active.nav--contest .sidebar__icon,
+.sidebar__link--active.nav--contest .sidebar__label {
+  color: var(--nav-color-contest);
 }
 
 .sidebar__link--active.nav--discussions .sidebar__icon,

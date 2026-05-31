@@ -1,0 +1,93 @@
+<div class="test-container">
+  <header class="test-header">
+    <h1>🧪 Pruebas Generales</h1>
+    <p>Este componente sirve para probar nuevas funcionalidades.</p>
+  </header>
+
+  <!-- Sección de Carga de Imágenes -->
+  <section class="image-upload-section">
+    <h2>Cargar Imagen de Perfil</h2>
+    <div class="upload-form">
+      <input type="file" (change)="onFileSelected($event)" accept="image/*">
+      <button (click)="onSubmit()" [disabled]="!selectedFile">Subir Imagen</button>
+    </div>
+    @if (uploadSuccess) {
+      <div class="success-message">
+        ¡Imagen subida con éxito!
+      </div>
+    }
+  </section>
+
+  <!-- Sección para Mostrar Imágenes -->
+  <section class="image-display-section">
+    <h2>Visualización de Imágenes de Perfil</h2>
+    <button (click)="fetchUserImages()">Cargar Imágenes del Usuario</button>
+    @if (userImages) {
+      <div class="images-grid">
+        <div class="image-card">
+          <h3>Original</h3>
+          <img [src]="userImages.original" alt="Imagen Original">
+        </div>
+        <div class="image-card">
+          <h3>Avatar (1080p)</h3>
+          <img [src]="userImages.avatar" alt="Avatar 1080p">
+        </div>
+        <div class="image-card">
+          <h3>WebP</h3>
+          <img [src]="userImages.webp" alt="Imagen WebP">
+        </div>
+        <div class="image-card">
+          <h3>Thumbnail (150x150)</h3>
+          <img [src]="userImages.thumbnail" alt="Thumbnail 150x150">
+        </div>
+      </div>
+    } @else {
+      <p>No hay imágenes para mostrar. Sube una imagen o presiona el botón para cargar.</p>
+    }
+  </section>
+
+  <hr class="section-divider">
+
+  <header class="test-header">
+    <h1>🧪 Prueba de Texto Enriquecido con Entidades Interactivas</h1>
+    <p>Este es un componente de prueba para visualizar todas las entidades: &#64;usuario, #tag, &curso, $contest, %bloque</p>
+  </header>
+
+  <section class="legend">
+    <h2>Leyenda de Colores</h2>
+    <ul class="legend-list">
+      <li><span class="entity entity--user">&#64;usuario</span> - Usuarios (Azul)</li>
+      <li><span class="entity entity--tag">#tag</span> - Tags (Morado)</li>
+      <li><span class="entity entity--course">&curso</span> - Cursos (Verde)</li>
+      <li><span class="entity entity--contest">$contest</span> - Contests (Rojo)</li>
+      <li><span class="entity entity--block">%bloque</span> - Bloques (Naranja)</li>
+    </ul>
+  </section>
+
+  <section class="messages-section">
+    <h2>Hilo de Conversación</h2>
+    <div class="messages-container">
+      @for (message of messages; track $index) {
+        <div class="message">
+          <div class="message-header">
+            <studer-manual-entity
+              type="user"
+              [value]="message.authorUsername"
+              (entityClick)="handleAuthorClick($event)"
+              class="author">
+              {{ message.authorName }}
+            </studer-manual-entity>
+            <span class="message-time">{{ message.createdAt | date:'short' }}</span>
+          </div>
+
+          <div class="message-content">
+            <studer-rich-text
+              [text]="message.content"
+              (entityClick)="handleEntityClick($event)">
+            </studer-rich-text>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+</div>

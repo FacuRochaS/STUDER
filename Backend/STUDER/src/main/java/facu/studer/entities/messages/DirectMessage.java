@@ -44,9 +44,28 @@ public class DirectMessage extends BaseEntity {
     private String content;
 
     /**
+     * link to photo.
+     */
+    @Column(nullable = false)
+    private String link;
+
+    /**
      * Timestamp of when the message was sent.
      */
     @Column(name = "sent_at", nullable = false)
     private LocalDateTime sentAt;
+
+    /**
+     * Reference to the message being replied to.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reply_to_id")
+    private DirectMessage replyTo;
+
+    /**
+     * Whether the message has been read.
+     */
+    @Column(nullable = false)
+    private Boolean isRead;
 
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, map, of, switchMap, tap } from 'rxjs';
 import {
-  UserResponseDTO,
+  User,
   LoginRequestDTO,
   UserCreateRequestDTO
 } from '../../features/users/user.model';
@@ -10,7 +10,7 @@ import { TokenStorageService } from './token-storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
-  private readonly userSubject = new BehaviorSubject<UserResponseDTO | null>(null);
+  private readonly userSubject = new BehaviorSubject<User | null>(null);
   readonly user$ = this.userSubject.asObservable();
   readonly isAuthenticated$ = this.user$.pipe(map(u => !!u));
 
@@ -19,7 +19,7 @@ export class AuthStateService {
     private tokenStorage: TokenStorageService
   ) {}
 
-  init(): Observable<UserResponseDTO | null> {
+  init(): Observable<User | null> {
     if (!this.tokenStorage.hasValidToken()) {
       this.tokenStorage.clear();
       this.userSubject.next(null);
@@ -39,7 +39,7 @@ export class AuthStateService {
     return this.authApi.register(data);
   }
 
-  login(data: LoginRequestDTO): Observable<UserResponseDTO | null> {
+  login(data: LoginRequestDTO): Observable<User | null> {
     return this.authApi.login(data).pipe(
       tap(res => this.tokenStorage.setAccessToken(res.accessToken)),
       switchMap(() => this.authApi.me()),

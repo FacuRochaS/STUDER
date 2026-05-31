@@ -62,7 +62,7 @@ public class SecurityConfig {
      * @return the configured SecurityFilterChain
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             // Disable CSRF for stateless API (using JWT)
             .csrf(AbstractHttpConfigurer::disable)
@@ -77,9 +77,7 @@ public class SecurityConfig {
             // Configure authorization rules
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
-                .requestMatchers("/api/v1/auth/login").permitAll()
-                .requestMatchers("/api/v1/auth/refresh").permitAll()
-                .requestMatchers("/api/v1/auth/logout").permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/users/register").permitAll()
                 // Swagger/OpenAPI (if using)
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
