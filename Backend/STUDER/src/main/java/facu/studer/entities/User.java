@@ -67,5 +67,16 @@ public class User extends BaseEntity  {
     @Column()
     private LocalDateTime lastConnectionTime;
 
+    @Column
+    private String profilePictureOriginalUrl;
+
+    @Column
+    private String profilePictureAvatarUrl;
+
+    @Column
+    private String profilePictureWebpUrl;
+
+    @Column
+    private String profilePictureThumbnailUrl;
 
 }

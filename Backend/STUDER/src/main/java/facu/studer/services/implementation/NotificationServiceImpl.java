@@ -4,26 +4,28 @@ import facu.studer.DTOs.discussions.MessageResponseDTO;
 import facu.studer.DTOs.notification.NotificationPageResponseDTO;
 import facu.studer.DTOs.notification.NotificationResponseDTO;
 import facu.studer.entities.LinkedType;
+import facu.studer.entities.notifications.Notification;
 import facu.studer.entities.notifications.UserNotification;
 import facu.studer.exceptions.ResourceNotFoundException;
 import facu.studer.exceptions.UnauthorizedOperationException;
 import facu.studer.mappers.NotificationMapper;
 import facu.studer.repositories.UserNotificationRepository;
 import facu.studer.services.NotificationService;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Implementation of NotificationService.
- * Uses only UserNotificationRepository (respects 1-repo-per-service).
- */
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
@@ -35,10 +37,6 @@ public class NotificationServiceImpl implements NotificationService {
         this.userNotificationRepository = userNotificationRepository;
     }
 
-    /**
-     * Gets paginated notifications for a user with optional filters.
-     * Notifications with availableAt in the future are excluded entirely.
-     */
     @Override
     @Transactional(readOnly = true)
     public NotificationPageResponseDTO getNotifications(
@@ -48,12 +46,33 @@ public class NotificationServiceImpl implements NotificationService {
             Boolean read,
             Integer lastDays) {
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime since = lastDays != null ? now.minusDays(lastDays) : null;
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("notification.createdDatetime").descending());
 
-        Page<UserNotification> notificationPage = userNotificationRepository
-                .findFilteredNotifications(username, now, type, read, since, pageable);
+        Specification<UserNotification> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            Join<UserNotification, Notification> notificationJoin = root.join("notification");
+
+            // Basic conditions
+            predicates.add(cb.equal(root.get("user").get("username"), username));
+            predicates.add(cb.isTrue(root.get("isActive")));
+            predicates.add(cb.isTrue(notificationJoin.get("isActive")));
+
+            // Optional filters
+            if (type != null) {
+                predicates.add(cb.equal(notificationJoin.get("type"), type));
+            }
+            if (read != null) {
+                predicates.add(cb.equal(root.get("read"), read));
+            }
+            if (lastDays != null) {
+                LocalDateTime since = LocalDateTime.now().minusDays(lastDays);
+                predicates.add(cb.greaterThanOrEqualTo(notificationJoin.get("createdDatetime"), since));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<UserNotification> notificationPage = userNotificationRepository.findAll(spec, pageable);
 
         List<NotificationResponseDTO> dtos = notificationPage.getContent().stream()
                 .map(NotificationMapper::toResponseDTO)
@@ -67,9 +86,6 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
     }
 
-    /**
-     * Marks a notification as read. Validates that the notification belongs to the user.
-     */
     @Override
     @Transactional
     public MessageResponseDTO markAsRead(String username, Long userNotificationId) {
@@ -77,7 +93,6 @@ public class NotificationServiceImpl implements NotificationService {
                 .findByIdWithNotification(userNotificationId)
                 .orElseThrow(() -> new ResourceNotFoundException("notification.not_found"));
 
-        // Validate ownership
         if (!userNotification.getUser().getUsername().equals(username)) {
             throw new UnauthorizedOperationException("notification.unauthorized");
         }
@@ -93,4 +108,3 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
     }
 }
-

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../config/api.config';
 import {
-  UserResponseDTO,
+  User,
   LoginRequestDTO,
   LoginResponseDTO,
   RefreshResponseDTO,
@@ -14,12 +14,12 @@ import {
 export class AuthApiService {
   constructor(private http: HttpClient) {}
 
-  me(): Observable<UserResponseDTO> {
-    return this.http.get<UserResponseDTO>(`${API_CONFIG.baseUrl}${API_CONFIG.users}/me`);
+  me(): Observable<User> {
+    return this.http.get<User>(`${API_CONFIG.baseUrl}${API_CONFIG.users}/me`);
   }
 
-  register(data: UserCreateRequestDTO): Observable<UserResponseDTO> {
-    return this.http.post<UserResponseDTO>(`${API_CONFIG.baseUrl}${API_CONFIG.users}/register`, data);
+  register(data: UserCreateRequestDTO): Observable<User> {
+    return this.http.post<User>(`${API_CONFIG.baseUrl}${API_CONFIG.users}/register`, data);
   }
 
   login(data: LoginRequestDTO): Observable<LoginResponseDTO> {

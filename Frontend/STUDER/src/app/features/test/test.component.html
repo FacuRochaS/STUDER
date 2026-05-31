@@ -1,5 +1,54 @@
 <div class="test-container">
   <header class="test-header">
+    <h1>🧪 Pruebas Generales</h1>
+    <p>Este componente sirve para probar nuevas funcionalidades.</p>
+  </header>
+
+  <!-- Sección de Carga de Imágenes -->
+  <section class="image-upload-section">
+    <h2>Cargar Imagen de Perfil</h2>
+    <div class="upload-form">
+      <input type="file" (change)="onFileSelected($event)" accept="image/*">
+      <button (click)="onSubmit()" [disabled]="!selectedFile">Subir Imagen</button>
+    </div>
+    @if (uploadSuccess) {
+      <div class="success-message">
+        ¡Imagen subida con éxito!
+      </div>
+    }
+  </section>
+
+  <!-- Sección para Mostrar Imágenes -->
+  <section class="image-display-section">
+    <h2>Visualización de Imágenes de Perfil</h2>
+    <button (click)="fetchUserImages()">Cargar Imágenes del Usuario</button>
+    @if (userImages) {
+      <div class="images-grid">
+        <div class="image-card">
+          <h3>Original</h3>
+          <img [src]="userImages.original" alt="Imagen Original">
+        </div>
+        <div class="image-card">
+          <h3>Avatar (1080p)</h3>
+          <img [src]="userImages.avatar" alt="Avatar 1080p">
+        </div>
+        <div class="image-card">
+          <h3>WebP</h3>
+          <img [src]="userImages.webp" alt="Imagen WebP">
+        </div>
+        <div class="image-card">
+          <h3>Thumbnail (150x150)</h3>
+          <img [src]="userImages.thumbnail" alt="Thumbnail 150x150">
+        </div>
+      </div>
+    } @else {
+      <p>No hay imágenes para mostrar. Sube una imagen o presiona el botón para cargar.</p>
+    }
+  </section>
+
+  <hr class="section-divider">
+
+  <header class="test-header">
     <h1>🧪 Prueba de Texto Enriquecido con Entidades Interactivas</h1>
     <p>Este es un componente de prueba para visualizar todas las entidades: &#64;usuario, #tag, &curso, $contest, %bloque</p>
   </header>
@@ -41,58 +90,4 @@
       }
     </div>
   </section>
-
-  <section class="examples-section">
-    <h2>Ejemplos de Uso</h2>
-    <div class="examples-grid">
-      <div class="example-card">
-        <h3>Usuario Único</h3>
-        <p class="example-text">Hola <studer-rich-text [text]="'@john'" (entityClick)="handleEntityClick($event)"></studer-rich-text></p>
-      </div>
-
-      <div class="example-card">
-        <h3>Tag Único</h3>
-        <p class="example-text">Aprendí sobre <studer-rich-text [text]="'#programacion'" (entityClick)="handleEntityClick($event)"></studer-rich-text></p>
-      </div>
-
-      <div class="example-card">
-        <h3>Curso Único</h3>
-        <p class="example-text">El curso <studer-rich-text [text]="'&angular'" (entityClick)="handleEntityClick($event)"></studer-rich-text> es genial</p>
-      </div>
-
-      <div class="example-card">
-        <h3>Contest Único</h3>
-        <p class="example-text">Participa en <studer-rich-text [text]="'$competencia-2024'" (entityClick)="handleEntityClick($event)"></studer-rich-text></p>
-      </div>
-
-      <div class="example-card">
-        <h3>Bloque Único</h3>
-        <p class="example-text">Completa el <studer-rich-text [text]="'%modulo-basico'" (entityClick)="handleEntityClick($event)"></studer-rich-text></p>
-      </div>
-
-      <div class="example-card">
-        <h3>Múltiples Entidades</h3>
-        <p class="example-text">
-          <studer-rich-text
-            [text]="'@alice revisó &python en #data-science del $desafio-2024 y aprobó %leccion-5'"
-            (entityClick)="handleEntityClick($event)">
-          </studer-rich-text>
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="info-section">
-    <h2>ℹ️ Información</h2>
-    <div class="info-box">
-      <p><strong>Comportamientos:</strong></p>
-      <ul>
-        <li>✨ <strong>Hover:</strong> Pasa el mouse sobre cualquier entidad para ver un popover flotante</li>
-        <li>🔗 <strong>Click:</strong> Haz click para navegar a la página correspondiente</li>
-        <li>🎨 <strong>Colores:</strong> Cada tipo de entidad tiene su propio color</li>
-        <li>📱 <strong>Responsive:</strong> Los popovers se adaptan a la posición de la pantalla</li>
-      </ul>
-    </div>
-  </section>
 </div>
-

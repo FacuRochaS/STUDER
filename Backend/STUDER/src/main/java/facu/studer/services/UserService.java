@@ -2,6 +2,7 @@ package facu.studer.services;
 
 import facu.studer.DTOs.user.*;
 import facu.studer.entities.User;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service interface for User operations.
@@ -23,9 +24,10 @@ public interface UserService {
      *
      * @param currentUsername the authenticated username
      * @param request update data
+     * @param file the new profile picture
      * @return updated user response
      */
-    UserResponseDTO update(String currentUsername, UserUpdateRequestDTO request);
+    UserResponseDTO update(String currentUsername, UserUpdateRequestDTO request, MultipartFile file);
 
     /**
      * Soft deletes a user. Only allows deleting the user's OWN account.
