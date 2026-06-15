@@ -1,6 +1,8 @@
 import { Component, Input, ChangeDetectionStrategy, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { EntityCacheService } from '../../../services/entity-cache.service';
+import { UserService } from '../../../../features/users/user.service';
+import { UserPublic } from '../../../../features/users/user.model';
 
 interface EntityPopoverData {
   name: string;
@@ -26,7 +28,11 @@ export class EntityPopoverComponent implements OnInit, OnChanges {
   popoverType: string | null = null;
   popoverData: EntityPopoverData | null = null;
 
-  constructor(private cacheService: EntityCacheService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cacheService: EntityCacheService,
+    private cdr: ChangeDetectorRef,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
     this.loadPopoverData();
@@ -53,11 +59,32 @@ export class EntityPopoverComponent implements OnInit, OnChanges {
 
     switch (this.type) {
       case 'user':
-        //todo: implementar busqueda by username
         data = this.cacheService.getUser(this.value);
         if (!data) {
-          data = this.generateMockUserData(this.value);
-          this.cacheService.setUser(this.value, data);
+          this.popoverData = null;
+          this.userService.getByUsername(this.value).subscribe({
+            next: (user: UserPublic) => {
+              const payload: EntityPopoverData = {
+                name: user.username,
+                description: `${user.firstName} ${user.lastName}`.trim(),
+                meta: `ID: ${user.id}`
+              };
+              this.cacheService.setUser(this.value, payload);
+              this.popoverData = payload;
+              this.cdr.markForCheck();
+            },
+            error: () => {
+              const fallback: EntityPopoverData = {
+                name: this.value,
+                description: 'Usuario',
+                meta: ''
+              };
+              this.cacheService.setUser(this.value, fallback);
+              this.popoverData = fallback;
+              this.cdr.markForCheck();
+            }
+          });
+          return;
         }
         break;
       case 'tag':

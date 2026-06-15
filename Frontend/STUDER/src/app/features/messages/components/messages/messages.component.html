@@ -1,0 +1,153 @@
+<section class="messages">
+  <aside class="messages__sidebar">
+    <div class="messages__search">
+      <span class="pi pi-search"></span>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        [placeholder]="'messages.search_placeholder' | translate" />
+    </div>
+
+    <div class="messages__tabs">
+      <button
+        type="button"
+        [class.is-active]="activeTab === 'chats'"
+        (click)="setTab('chats')">
+        {{ 'messages.chats' | translate }}
+      </button>
+      <button
+        type="button"
+        [class.is-active]="activeTab === 'requests'"
+        (click)="setTab('requests')">
+        {{ 'messages.requests' | translate }}
+      </button>
+    </div>
+
+    @if (searchQuery && filteredFriends.length > 0) {
+      <div class="messages__section">
+        <div class="messages__section-title">{{ 'messages.start_chat' | translate }}</div>
+        <div class="messages__list">
+          @for (friend of filteredFriends; track friend.userId) {
+            <button class="chat-card" type="button" (click)="openChat(friend.userId)">
+              <div class="chat-card__avatar">{{ getFriendInitials(friend) }}</div>
+              <div class="chat-card__content">
+                <div class="chat-card__title">
+                  <studer-rich-text [text]="'@' + friend.username"></studer-rich-text>
+                </div>
+                <div class="chat-card__subtitle">{{ friend.firstName }} {{ friend.lastName }}</div>
+              </div>
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    @if (activeTab === 'requests') {
+      <div class="messages__list">
+        @if (loadingRequests) {
+          <div class="messages__empty">{{ 'system.loading' | translate }}</div>
+        } @else {
+          @if (filteredRequests.length === 0) {
+            <div class="messages__empty">{{ 'messages.empty_requests' | translate }}</div>
+          } @else {
+            @for (request of filteredRequests; track trackByRequest($index, request)) {
+              <button class="chat-card" type="button" (click)="openChat(request.senderId)">
+                <div class="chat-card__avatar">{{ getUsernameInitials(request.senderUsername) }}</div>
+                <div class="chat-card__content">
+                  <div class="chat-card__title">
+                    <studer-rich-text [text]="'@' + request.senderUsername"></studer-rich-text>
+                  </div>
+                  <div class="chat-card__subtitle">{{ request.content }}</div>
+                </div>
+              </button>
+            }
+          }
+        }
+      </div>
+    } @else {
+      <div class="messages__list">
+        @if (loadingChats) {
+          <div class="messages__empty">{{ 'system.loading' | translate }}</div>
+        } @else {
+          @if (filteredChats.length === 0) {
+            <div class="messages__empty">{{ 'messages.empty_chats' | translate }}</div>
+          } @else {
+            @for (chat of filteredChats; track trackByChat($index, chat)) {
+              <button class="chat-card" type="button" (click)="openChat(chat.userId)">
+                <div class="chat-card__avatar">
+                  @if (chat.profilePictureThumbnailUrl || chat.profilePictureAvatarUrl) {
+                    <img [src]="chat.profilePictureThumbnailUrl || chat.profilePictureAvatarUrl" [alt]="chat.username" />
+                  } @else {
+                    <span>{{ getUsernameInitials(chat.username) }}</span>
+                  }
+                </div>
+                <div class="chat-card__content">
+                  <div class="chat-card__title">
+                    <studer-rich-text [text]="'@' + chat.username"></studer-rich-text>
+                    @if (chat.unreadCount > 0) {
+                      <span class="chat-card__badge">{{ chat.unreadCount }}</span>
+                    }
+                  </div>
+                  <div class="chat-card__subtitle">{{ chat.lastMessageContent || '-' }}</div>
+                </div>
+                <div class="chat-card__meta">
+                  @if (chat.lastMessageTime) {
+                    {{ chat.lastMessageTime | date: 'shortTime' }}
+                  }
+                </div>
+              </button>
+            }
+          }
+        }
+      </div>
+    }
+  </aside>
+
+  <div class="messages__content">
+    @if (!selectedChatUserId) {
+      <div class="messages__empty-state">{{ 'messages.empty_state' | translate }}</div>
+    } @else {
+      <header class="messages__header">
+        <div class="messages__header-avatar">
+          @if (selectedChatAvatar) {
+            <img [src]="selectedChatAvatar" [alt]="selectedChatUsername" />
+          } @else {
+            <span>{{ getUsernameInitials(selectedChatUsername) }}</span>
+          }
+        </div>
+        <div class="messages__header-info">
+          <div class="messages__header-username">
+            <studer-rich-text [text]="'@' + selectedChatUsername"></studer-rich-text>
+          </div>
+        </div>
+      </header>
+
+      <div class="messages__thread">
+        @if (loadingMessages) {
+          <div class="messages__empty">{{ 'system.loading' | translate }}</div>
+        } @else {
+          @if (chatMode === 'request') {
+            <div class="messages__empty">{{ 'messages.request_notice' | translate }}</div>
+          }
+          @for (message of messages; track message.id) {
+            <div
+              class="message"
+              [class.message--me]="message.senderId === currentUserId">
+              <div class="message__bubble">{{ message.content }}</div>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="messages__composer">
+        <input
+          type="text"
+          [(ngModel)]="newMessage"
+          [placeholder]="'messages.send_placeholder' | translate"
+          (keydown.enter)="sendMessage()" />
+        <button type="button" (click)="sendMessage()">{{ 'messages.send' | translate }}</button>
+      </div>
+    }
+  </div>
+</section>
+

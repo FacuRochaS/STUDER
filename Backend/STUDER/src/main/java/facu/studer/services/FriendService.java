@@ -1,6 +1,7 @@
 package facu.studer.services;
 
 import facu.studer.DTOs.user.FriendResponseDTO;
+import facu.studer.DTOs.user.FriendStatusResponseDTO;
 import facu.studer.DTOs.user.FriendsListResponseDTO;
 
 /**
@@ -42,5 +43,14 @@ public interface FriendService {
      * @return paginated friends list
      */
     FriendsListResponseDTO getFriends(String currentUsername, int page);
+
+    /**
+     * Gets relationship status between current user and a target user.
+     *
+     * @param currentUsername the authenticated username
+     * @param targetUserId the target user ID
+     * @return relationship status
+     */
+    FriendStatusResponseDTO getFriendStatus(String currentUsername, Long targetUserId);
 }
 

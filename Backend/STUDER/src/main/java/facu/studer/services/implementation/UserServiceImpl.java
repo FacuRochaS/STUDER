@@ -9,6 +9,9 @@ import facu.studer.repositories.UserRepository;
 import facu.studer.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +25,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -153,6 +158,35 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("user.not_found");
         }
         return UserMapper.toResponseDTO(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserPublicResponseDTO getPublicByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new IllegalArgumentException("user.not_found");
+        }
+        return UserMapper.toPublicResponseDTO(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserSearchPageResponseDTO searchByUsername(String query, int page, int size) {
+        String normalized = query == null ? "" : query.trim();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findByUsernameContainingIgnoreCase(normalized, pageable);
+
+        List<UserPublicResponseDTO> users = userPage.getContent().stream()
+                .map(UserMapper::toPublicResponseDTO)
+                .collect(Collectors.toList());
+
+        return UserSearchPageResponseDTO.builder()
+                .users(users)
+                .totalElements(userPage.getTotalElements())
+                .hasMore(userPage.hasNext())
+                .currentPage(userPage.getNumber())
+                .build();
     }
 
     @Override

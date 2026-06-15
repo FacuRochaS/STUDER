@@ -7,12 +7,12 @@ import facu.studer.DTOs.messages.DirectMessagePageResponseDTO;
 import facu.studer.DTOs.messages.DirectMessageRequestDTO;
 import facu.studer.DTOs.messages.DirectMessageResponseDTO;
 import facu.studer.entities.Friend;
-import facu.studer.entities.LinkedType;
 import facu.studer.entities.User;
 import facu.studer.entities.messages.DirectMessage;
 import facu.studer.entities.notifications.Notification;
 import facu.studer.entities.notifications.UserNotification;
 import facu.studer.exceptions.ResourceNotFoundException;
+import facu.studer.factories.NotificationFactory;
 import facu.studer.mappers.DirectMessageMapper;
 import facu.studer.repositories.DirectMessageRepository;
 import facu.studer.repositories.FriendRepository;
@@ -138,6 +138,8 @@ public class DirectMessageServiceImpl implements DirectMessageService {
                             .username(friendUser.getUsername())
                             .firstName(friendUser.getFirstName())
                             .lastName(friendUser.getLastName())
+                            .profilePictureAvatarUrl(friendUser.getProfilePictureAvatarUrl())
+                            .profilePictureThumbnailUrl(friendUser.getProfilePictureThumbnailUrl())
                             .lastMessageContent(lastMessage.map(DirectMessage::getContent).orElse(null))
                             .lastMessageTime(lastMessage.map(DirectMessage::getSentAt).orElse(null))
                             .unreadCount(unreadCount)
@@ -291,21 +293,9 @@ public class DirectMessageServiceImpl implements DirectMessageService {
      * Type varies based on friendship status.
      */
     private void createMessageNotification(User receiver, User sender, boolean areFriends) {
-        String messageKey = areFriends 
-            ? "message.new_message" 
-            : "message.new_request";
-
-        Notification notification = Notification.builder()
-                .title(messageKey + "_title")
-                .message(messageKey + "_message")
-                .type(LinkedType.USER)
-                .linkedId(sender.getId())
-                .createdDatetime(LocalDateTime.now())
-                .lastUpdatedDatetime(LocalDateTime.now())
-                .isActive(true)
-                .build();
-
-        notification = notificationRepository.save(notification);
+        Notification notification = notificationRepository.save(
+                NotificationFactory.buildMessageNotification(sender, areFriends)
+        );
 
         UserNotification userNotification = UserNotification.builder()
                 .user(receiver)

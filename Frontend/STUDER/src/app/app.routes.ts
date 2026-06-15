@@ -6,6 +6,9 @@ import { HomeComponent } from './features/home/home.component';
 import { DiscussionListComponent } from './features/discussions/components/discussion-list/discussion-list.component';
 import { DiscussionDetailComponent } from './features/discussions/components/discussion-detail/discussion-detail.component';
 import { TestComponent } from './features/test/test.component';
+import { SearchComponent } from './features/search/search.component';
+import { MessagesComponent } from './features/messages/components/messages/messages.component';
+import { UserProfileComponent } from './features/users/components/user-profile/user-profile.component';
 import { authGuard } from './core/auth/auth.guard';
 import { publicGuard } from './core/auth/public.guard';
 
@@ -16,16 +19,18 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    //canActivate: [authGuard],
+    canActivate: [authGuard],
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'discussions', component: DiscussionListComponent },
       { path: 'discussions/:id', component: DiscussionDetailComponent },
       { path: 'courses', component: HomeComponent },
       { path: 'calendar', component: HomeComponent },
-      { path: 'messages', component: HomeComponent },
-      { path: 'account', component: HomeComponent },
-      { path: 'user/:username', component: HomeComponent },
+      { path: 'messages', component: MessagesComponent },
+      { path: 'search', component: SearchComponent },
+      { path: 'account', redirectTo: 'user/me', pathMatch: 'full' },
+      { path: 'user/me', component: UserProfileComponent },
+      { path: 'user/:username', component: UserProfileComponent },
     ]
   },
   { path: '**', redirectTo: '' }
