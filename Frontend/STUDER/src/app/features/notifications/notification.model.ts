@@ -4,7 +4,8 @@ export type LinkedType =
   | 'ACTIVITY'
   | 'MESSAGE'
   | 'USER'
-  | 'SYSTEM';
+  | 'SYSTEM'
+  | 'EVENT'; // Added EVENT based on backend LinkedType
 
 export interface NotificationResponseDTO {
   id: number;
@@ -12,6 +13,7 @@ export interface NotificationResponseDTO {
   message: string;
   createdAt: string;
   type: LinkedType;
+  linkedId?: number;
   read: boolean;
 }
 
@@ -26,14 +28,3 @@ export interface MessageResponseDTO {
   success: boolean;
   message: string;
 }
-
-/** Maps notification LinkedType to a route prefix */
-export const NOTIFICATION_ROUTE_MAP: Record<LinkedType, string> = {
-  COURSE: '/courses',
-  DISCUSSION: '/discussions',
-  ACTIVITY: '/courses',
-  MESSAGE: '/messages',
-  USER: '/account',
-  SYSTEM: '/home'
-};
-

@@ -5,13 +5,15 @@
   </div>
 
   <!-- Search -->
-  <div class="header__search">
+  <div class="header__search" #searchContainer>
     <span class="pi pi-search header__search-icon"></span>
     <input
       type="text"
       class="header__search-input"
       [placeholder]="'header.search_placeholder' | translate"
       [(ngModel)]="searchQuery"
+      (input)="onSearchInput()"
+      (focus)="openSearchPanel()"
       (keydown.enter)="onSearch()" />
     <button
       type="button"
@@ -19,6 +21,42 @@
       [title]="'header.search_filters' | translate">
       <span class="pi pi-sliders-h"></span>
     </button>
+
+    @if (isSearchOpen) {
+      <div class="header__search-panel">
+        @if (searchLoading) {
+          <div class="header__search-empty">{{ 'system.loading' | translate }}</div>
+        } @else {
+          @if (searchResults.length === 0) {
+            <div class="header__search-empty">{{ 'search.empty_preview' | translate }}</div>
+          } @else {
+            @for (user of searchResults; track trackByUserId($index, user)) {
+              <a class="header__search-item" [routerLink]="['/user', '@' + user.username]" (click)="closeSearchPanel()">
+                <div class="header__search-avatar">
+                  @if (user.profilePictureThumbnailUrl) {
+                    <img [src]="user.profilePictureThumbnailUrl" [alt]="user.username" />
+                  } @else {
+                    <span>{{ getUserInitials(user) }}</span>
+                  }
+                </div>
+                <div class="header__search-info">
+                  <div class="header__search-name">{{ user.firstName }} {{ user.lastName }}</div>
+                  <div class="header__search-username">
+                    <studer-rich-text [text]="'@' + user.username"></studer-rich-text>
+                  </div>
+                </div>
+              </a>
+            }
+          }
+
+          @if (searchResults.length > 0) {
+            <button class="header__search-all" type="button" (click)="onSearch()">
+              {{ 'search.view_all' | translate }}
+            </button>
+          }
+        }
+      </div>
+    }
   </div>
 
   <!-- Controls -->

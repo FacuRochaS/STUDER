@@ -1,0 +1,82 @@
+<section class="profile">
+  @if (loading) {
+    <div class="profile__loading">{{ 'profile.loading' | translate }}</div>
+  } @else {
+    @if (user) {
+      <div class="profile__layout">
+        <aside class="profile__sidebar">
+          <div class="profile__avatar">
+            @if (avatarUrl) {
+              <img [src]="avatarUrl" [alt]="user.username" />
+            } @else {
+              <span>{{ initials }}</span>
+            }
+          </div>
+
+          <div class="profile__identity">
+            <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+            <studer-rich-text [text]="'@' + user.username"></studer-rich-text>
+          </div>
+
+          @if (canShowSocialActions) {
+            <div class="profile__actions">
+              <button type="button" class="profile__btn" (click)="onMessage()">
+                {{ 'profile.message' | translate }}
+              </button>
+              <button
+                type="button"
+                class="profile__btn profile__btn--secondary"
+                [disabled]="followLoading"
+                (click)="onFollowToggle()">
+                @if (friendStatus?.isFollowing) {
+                  {{ 'profile.unfollow' | translate }}
+                } @else {
+                  {{ 'profile.follow' | translate }}
+                }
+              </button>
+            </div>
+          } @else {
+            <div class="profile__actions">
+              <label class="profile__upload">
+                <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+                {{ 'profile.change_photo' | translate }}
+              </label>
+            </div>
+          }
+        </aside>
+
+        <div class="profile__content">
+          @if (isOwnProfile) {
+            <form class="profile__form" (ngSubmit)="saveProfile()">
+              <div class="profile__field">
+                <label>{{ 'profile.email' | translate }}</label>
+                <input type="email" [(ngModel)]="editEmail" name="email" />
+              </div>
+              <div class="profile__field">
+                <label>{{ 'profile.password' | translate }}</label>
+                <input type="password" [(ngModel)]="editPassword" name="password" />
+              </div>
+              <div class="profile__field">
+                <label>{{ 'profile.password_confirm' | translate }}</label>
+                <input type="password" [(ngModel)]="editPasswordConfirm" name="passwordConfirm" />
+              </div>
+
+              @if (saveError) {
+                <div class="profile__error">{{ saveError | translate }}</div>
+              }
+
+              <button type="submit" class="profile__btn" [disabled]="saving">
+                {{ 'profile.save' | translate }}
+              </button>
+            </form>
+          } @else {
+            <div class="profile__placeholder"></div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="profile__empty">{{ 'profile.not_found' | translate }}</div>
+    }
+  }
+</section>
+

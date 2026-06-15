@@ -8,17 +8,18 @@ import {
   NotificationPageResponseDTO,
   NotificationResponseDTO
 } from './notification.model';
+import { NotificationStrategyFactory } from './strategy/notification-strategy.factory';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
   private readonly unreadCountSubject = new BehaviorSubject<number>(0);
   readonly unreadCount$ = this.unreadCountSubject.asObservable();
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly strategyFactory: NotificationStrategyFactory
+  ) {}
 
-  /**
-   * Obtiene las notificaciones paginadas del usuario autenticado
-   */
   getNotifications(
     page = 0,
     type?: LinkedType,
@@ -43,9 +44,6 @@ export class NotificationService {
     );
   }
 
-  /**
-   * Marca una notificación como leída
-   */
   markAsRead(id: number): Observable<MessageResponseDTO> {
     return this.http.patch<MessageResponseDTO>(
       `${API_CONFIG.baseUrl}${API_CONFIG.notifications}/${id}/read`,
@@ -53,9 +51,6 @@ export class NotificationService {
     );
   }
 
-  /**
-   * Carga el conteo de notificaciones no leídas
-   */
   loadUnreadCount(): void {
     this.getNotifications(0, undefined, false).subscribe({
       next: (page) => this.unreadCountSubject.next(page.totalElements),
@@ -63,14 +58,25 @@ export class NotificationService {
     });
   }
 
-  /**
-   * Actualiza manualmente el conteo
-   */
   decrementUnread(): void {
     const current = this.unreadCountSubject.value;
     if (current > 0) {
       this.unreadCountSubject.next(current - 1);
     }
   }
-}
 
+  getNotificationRoute(notification: NotificationResponseDTO): string {
+    const strategy = this.strategyFactory.getStrategy(notification.type);
+    return strategy.getRoute(notification);
+  }
+
+  getNotificationIcon(notification: NotificationResponseDTO): string {
+    const strategy = this.strategyFactory.getStrategy(notification.type);
+    return strategy.getIcon(notification);
+  }
+
+  getNotificationQueryParams(notification: NotificationResponseDTO): Record<string, any> {
+    const strategy = this.strategyFactory.getStrategy(notification.type);
+    return strategy.getQueryParams(notification);
+  }
+}

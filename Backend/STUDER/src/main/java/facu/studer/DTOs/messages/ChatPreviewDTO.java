@@ -40,6 +40,16 @@ public class ChatPreviewDTO {
     private String lastName;
 
     /**
+     * Other user's avatar URL.
+     */
+    private String profilePictureAvatarUrl;
+
+    /**
+     * Other user's thumbnail URL.
+     */
+    private String profilePictureThumbnailUrl;
+
+    /**
      * Last message content.
      */
     private String lastMessageContent;

@@ -6,8 +6,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { NotificationService } from '../../../features/notifications/notification.service';
 import {
   LinkedType,
-  NotificationResponseDTO,
-  NOTIFICATION_ROUTE_MAP
+  NotificationResponseDTO
 } from '../../../features/notifications/notification.model';
 import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
 
@@ -30,7 +29,7 @@ export class NotificationPanelComponent implements OnInit, OnDestroy {
   activeFilter: NotificationFilter = 'ALL';
 
   constructor(
-    private readonly notificationService: NotificationService,
+    public readonly notificationService: NotificationService,
     private readonly router: Router
   ) {}
 
@@ -99,20 +98,12 @@ export class NotificationPanelComponent implements OnInit, OnDestroy {
           this.notificationService.decrementUnread();
         });
     }
-    const routePrefix = NOTIFICATION_ROUTE_MAP[notification.type] || '/home';
-    this.router.navigate([routePrefix, notification.id]);
+    const route = this.notificationService.getNotificationRoute(notification);
+    const queryParams = this.notificationService.getNotificationQueryParams(notification);
+    this.router.navigate([route], { queryParams });
   }
 
-  getIconForType(type: LinkedType): string {
-    const icons: Record<LinkedType, string> = {
-      COURSE: 'pi pi-book',
-      DISCUSSION: 'pi pi-megaphone',
-      ACTIVITY: 'pi pi-check-square',
-      MESSAGE: 'pi pi-envelope',
-      USER: 'pi pi-user',
-      SYSTEM: 'pi pi-cog'
-    };
-    return icons[type] || 'pi pi-bell';
+  getIconForType(notification: NotificationResponseDTO): string {
+    return this.notificationService.getNotificationIcon(notification);
   }
 }
-

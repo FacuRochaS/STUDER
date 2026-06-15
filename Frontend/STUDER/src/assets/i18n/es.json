@@ -98,6 +98,41 @@
     "toggle_language": "Cambiar idioma",
     "logout": "Cerrar sesión"
   },
+  "search": {
+    "title": "Búsqueda",
+    "placeholder": "Buscar usuarios...",
+    "action": "Buscar",
+    "empty": "No se encontraron usuarios.",
+    "empty_preview": "Sin resultados.",
+    "view_all": "Ver todos",
+    "load_more": "Cargar más"
+  },
+  "messages": {
+    "search_placeholder": "Buscar chats o amigos...",
+    "requests": "Solicitudes",
+    "chats": "Chats",
+    "empty_requests": "No tienes solicitudes.",
+    "empty_chats": "No tienes chats aún.",
+    "empty_state": "Selecciona un chat para comenzar.",
+    "start_chat": "Iniciar chat",
+    "request_notice": "Estás viendo una solicitud. Responder enviará una solicitud de mensaje.",
+    "send_placeholder": "Escribe un mensaje...",
+    "send": "Enviar"
+  },
+  "profile": {
+    "loading": "Cargando perfil...",
+    "not_found": "Usuario no encontrado.",
+    "message": "Mensaje",
+    "follow": "Seguir",
+    "unfollow": "Dejar de seguir",
+    "change_photo": "Cambiar foto",
+    "email": "Correo",
+    "password": "Contraseña",
+    "password_confirm": "Confirmar contraseña",
+    "save": "Guardar cambios",
+    "password_mismatch": "Las contraseñas no coinciden.",
+    "save_error": "No se pudieron guardar los cambios."
+  },
   "footer": {
     "version": "Versión",
     "support": "Soporte"

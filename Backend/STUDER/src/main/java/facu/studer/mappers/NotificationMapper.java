@@ -28,8 +28,8 @@ public final class NotificationMapper {
                 .message(notification.getMessage())
                 .createdAt(notification.getCreatedDatetime())
                 .type(notification.getType())
+                .linkedId(notification.getLinkedId())
                 .read(userNotification.isRead())
                 .build();
     }
 }
-

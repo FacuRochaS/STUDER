@@ -40,3 +40,22 @@ export interface User {
   profilePictureWebpUrl: string;
   profilePictureThumbnailUrl: string;
 }
+
+export interface UserPublic {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  profilePictureOriginalUrl: string;
+  profilePictureAvatarUrl: string;
+  profilePictureWebpUrl: string;
+  profilePictureThumbnailUrl: string;
+}
+
+export interface UserSearchPageResponse {
+  users: UserPublic[];
+  totalElements: number;
+  hasMore: boolean;
+  currentPage: number;
+}
+

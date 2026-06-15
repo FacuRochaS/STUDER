@@ -1,0 +1,51 @@
+<section class="search-page">
+  <header class="search-page__header">
+    <h1 class="search-page__title">{{ 'search.title' | translate }}</h1>
+    <div class="search-page__input">
+      <span class="pi pi-search"></span>
+      <input
+        type="text"
+        [(ngModel)]="query"
+        (keydown.enter)="submitSearch()"
+        [placeholder]="'search.placeholder' | translate" />
+      <button type="button" (click)="submitSearch()">{{ 'search.action' | translate }}</button>
+    </div>
+  </header>
+
+  <div class="search-page__results">
+    @if (loading) {
+      <div class="search-page__loading">{{ 'system.loading' | translate }}</div>
+    } @else {
+      @if (results.length === 0) {
+        <div class="search-page__empty">{{ 'search.empty' | translate }}</div>
+      } @else {
+        <div class="search-page__grid">
+          @for (user of results; track trackByUserId($index, user)) {
+            <a class="search-card" [routerLink]="['/user', '@' + user.username]">
+              <div class="search-card__avatar">
+                @if (user.profilePictureThumbnailUrl) {
+                  <img [src]="user.profilePictureThumbnailUrl" [alt]="user.username" />
+                } @else {
+                  <span>{{ getUserInitials(user) }}</span>
+                }
+              </div>
+              <div class="search-card__info">
+                <div class="search-card__name">{{ user.firstName }} {{ user.lastName }}</div>
+                <div class="search-card__username">
+                  <studer-rich-text [text]="'@' + user.username"></studer-rich-text>
+                </div>
+              </div>
+            </a>
+          }
+        </div>
+
+        @if (hasMore) {
+          <button class="search-page__load" type="button" (click)="loadMore()">
+            {{ 'search.load_more' | translate }}
+          </button>
+        }
+      }
+    }
+  </div>
+</section>
+

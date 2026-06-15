@@ -61,4 +61,22 @@ public interface UserService {
      * @return UserResponseDTO
      */
     UserResponseDTO getByUsername(String username);
+
+    /**
+     * Gets a public user profile by username.
+     *
+     * @param username the username
+     * @return UserPublicResponseDTO
+     */
+    UserPublicResponseDTO getPublicByUsername(String username);
+
+    /**
+     * Searches users by username.
+     *
+     * @param query the search query
+     * @param page page number (0-based)
+     * @param size page size
+     * @return paginated search response
+     */
+    UserSearchPageResponseDTO searchByUsername(String query, int page, int size);
 }

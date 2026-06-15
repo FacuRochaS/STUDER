@@ -1,13 +1,14 @@
 package facu.studer.services.implementation;
 
 import facu.studer.DTOs.user.FriendResponseDTO;
+import facu.studer.DTOs.user.FriendStatusResponseDTO;
 import facu.studer.DTOs.user.FriendsListResponseDTO;
 import facu.studer.entities.Friend;
-import facu.studer.entities.LinkedType;
 import facu.studer.entities.User;
 import facu.studer.entities.notifications.Notification;
 import facu.studer.entities.notifications.UserNotification;
 import facu.studer.exceptions.ResourceNotFoundException;
+import facu.studer.factories.NotificationFactory;
 import facu.studer.mappers.FriendMapper;
 import facu.studer.repositories.FriendRepository;
 import facu.studer.repositories.NotificationRepository;
@@ -183,17 +184,9 @@ public class FriendServiceImpl implements FriendService {
      * Creates a USER type notification for when a user is followed.
      */
     private void createFollowNotification(User receiver, User follower) {
-        Notification notification = Notification.builder()
-                .title("friend.follow_title")
-                .message("friend.follow_message")
-                .type(LinkedType.USER)
-                .linkedId(follower.getId())
-                .createdDatetime(LocalDateTime.now())
-                .lastUpdatedDatetime(LocalDateTime.now())
-                .isActive(true)
-                .build();
-
-        notification = notificationRepository.save(notification);
+        Notification notification = notificationRepository.save(
+                NotificationFactory.buildFollowNotification(follower)
+        );
 
         UserNotification userNotification = UserNotification.builder()
                 .user(receiver)
@@ -205,6 +198,39 @@ public class FriendServiceImpl implements FriendService {
                 .build();
 
         userNotificationRepository.save(userNotification);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FriendStatusResponseDTO getFriendStatus(String currentUsername, Long targetUserId) {
+        User currentUser = userRepository.findByUsername(currentUsername);
+        if (currentUser == null) {
+            throw new ResourceNotFoundException("user.not_found");
+        }
+
+        User targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("user.not_found"));
+
+        Optional<Friend> friendship = friendRepository.findFriendship(currentUser, targetUser);
+        if (friendship.isEmpty()) {
+            return FriendStatusResponseDTO.builder()
+                    .isFollowing(false)
+                    .isFriend(false)
+                    .build();
+        }
+
+        Friend friend = friendship.get();
+        boolean currentIsSender = friend.getSender().getId().equals(currentUser.getId());
+        boolean isFollowing = currentIsSender
+                ? Boolean.TRUE.equals(friend.getSenderAccept())
+                : Boolean.TRUE.equals(friend.getReceiverAccept());
+        boolean isFriend = Boolean.TRUE.equals(friend.getSenderAccept())
+                && Boolean.TRUE.equals(friend.getReceiverAccept());
+
+        return FriendStatusResponseDTO.builder()
+                .isFollowing(isFollowing)
+                .isFriend(isFriend)
+                .build();
     }
 }
 
