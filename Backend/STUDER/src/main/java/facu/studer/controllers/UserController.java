@@ -1,7 +1,9 @@
 package facu.studer.controllers;
 
 import facu.studer.DTOs.user.UserCreateRequestDTO;
+import facu.studer.DTOs.user.UserPublicResponseDTO;
 import facu.studer.DTOs.user.UserResponseDTO;
+import facu.studer.DTOs.user.UserSearchPageResponseDTO;
 import facu.studer.DTOs.user.UserUpdateRequestDTO;
 import facu.studer.security.SecurityUtils;
 import facu.studer.services.UserService;
@@ -63,6 +65,25 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getCurrentUser() {
         return ResponseEntity.ok(userService.getByUsername(securityUtils.requireCurrentUsername()));
+    }
+
+    /**
+     * Gets a public user profile by username.
+     */
+    @GetMapping("/username/{username}")
+    public ResponseEntity<UserPublicResponseDTO> getPublicByUsername(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getPublicByUsername(username));
+    }
+
+    /**
+     * Searches users by username.
+     */
+    @GetMapping("/search")
+    public ResponseEntity<UserSearchPageResponseDTO> searchUsers(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(userService.searchByUsername(query, page, size));
     }
 
     /**

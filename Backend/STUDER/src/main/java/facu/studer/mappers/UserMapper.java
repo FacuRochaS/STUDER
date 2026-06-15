@@ -1,6 +1,7 @@
 package facu.studer.mappers;
 
 import facu.studer.DTOs.user.UserCreateRequestDTO;
+import facu.studer.DTOs.user.UserPublicResponseDTO;
 import facu.studer.DTOs.user.UserResponseDTO;
 import facu.studer.entities.User;
 
@@ -42,6 +43,27 @@ public final class UserMapper {
         return UserResponseDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .profilePictureOriginalUrl(user.getProfilePictureOriginalUrl())
+                .profilePictureAvatarUrl(user.getProfilePictureAvatarUrl())
+                .profilePictureWebpUrl(user.getProfilePictureWebpUrl())
+                .profilePictureThumbnailUrl(user.getProfilePictureThumbnailUrl())
+                .build();
+    }
+
+    /**
+     * Maps a User entity to a public response DTO.
+     * @param user the User entity
+     * @return the public response DTO
+     */
+    public static UserPublicResponseDTO toPublicResponseDTO(User user) {
+        if (user == null) {
+            return null;
+        }
+        return UserPublicResponseDTO.builder()
+                .id(user.getId())
                 .username(user.getUsername())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())

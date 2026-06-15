@@ -4,4 +4,6 @@ export const API_CONFIG = {
   users: '/users',
   notifications: '/notifications',
   discussions: '/discussions',
+  friends: '/friends',
+  messages: '/messages',
 };

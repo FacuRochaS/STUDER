@@ -78,7 +78,7 @@ body.theme-light {
 
   --content-bg: transparent;
   --content-max-width: 1200px;
-  --layout-body-bg: #f5f5f7;
+  --layout-body-bg: transparent;
 
   /* Sidebar nav colors (matching logo: S=primary, t=correct, u=error, d=warning, e=info, r=restriction) */
   --nav-color-home: var(--color-primary);

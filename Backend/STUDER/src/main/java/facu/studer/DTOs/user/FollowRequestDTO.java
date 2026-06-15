@@ -1,5 +1,6 @@
 package facu.studer.DTOs.user;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public class FollowRequestDTO {
      * ID of the user to follow.
      */
     @NotNull(message = "user.id.required")
+    @JsonAlias({"userId"})
     private Long userId;
 }
 

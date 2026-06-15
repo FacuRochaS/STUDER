@@ -28,5 +28,7 @@ public class UserNotificationResponseDTO {
 
     private LinkedType type;
 
+    private Long linkedId;
+
     private Boolean read;
 }

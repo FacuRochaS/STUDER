@@ -1,6 +1,8 @@
 package facu.studer.repositories;
 
 import facu.studer.entities.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -37,4 +39,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return the User entity, or null if not found
      */
     User findByEmail(String email);
+
+    /**
+     * Searches users by username (case-insensitive).
+     * @param username the username fragment
+     * @param pageable pagination info
+     * @return a page of users
+     */
+    Page<User> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
 }
