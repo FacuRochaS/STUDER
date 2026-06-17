@@ -1,22 +1,17 @@
 package facu.studer.services.implementation;
 
-import facu.studer.DTOs.user.FriendResponseDTO;
-import facu.studer.DTOs.user.FriendStatusResponseDTO;
-import facu.studer.DTOs.user.FriendsListResponseDTO;
+import facu.studer.DTOs.friends.FriendResponseDTO;
+import facu.studer.DTOs.friends.FriendStatusResponseDTO;
+import facu.studer.DTOs.friends.FriendsListResponseDTO;
 import facu.studer.entities.Friend;
+import facu.studer.entities.LinkedType;
 import facu.studer.entities.User;
-import facu.studer.entities.notifications.Notification;
-import facu.studer.entities.notifications.UserNotification;
 import facu.studer.exceptions.ResourceNotFoundException;
-import facu.studer.factories.NotificationFactory;
 import facu.studer.mappers.FriendMapper;
 import facu.studer.repositories.FriendRepository;
-import facu.studer.repositories.NotificationRepository;
-import facu.studer.repositories.UserNotificationRepository;
 import facu.studer.repositories.UserRepository;
 import facu.studer.services.FriendService;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import facu.studer.services.support.NewNotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,18 +31,18 @@ public class FriendServiceImpl implements FriendService {
 
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
-    private final NotificationRepository notificationRepository;
-    private final UserNotificationRepository userNotificationRepository;
+
+    private final NewNotificationService newNotificationService;
+
 
     public FriendServiceImpl(
             FriendRepository friendRepository,
             UserRepository userRepository,
-            NotificationRepository notificationRepository,
-            UserNotificationRepository userNotificationRepository) {
+            NewNotificationService newNotificationService) {
         this.friendRepository = friendRepository;
         this.userRepository = userRepository;
-        this.notificationRepository = notificationRepository;
-        this.userNotificationRepository = userNotificationRepository;
+
+        this.newNotificationService = newNotificationService;
     }
 
     /**
@@ -56,7 +51,7 @@ public class FriendServiceImpl implements FriendService {
      * 2. If yes, accept it (set both flags to true)
      * 3. If no, check for existing (sender=current, receiver=target)
      * 4. If exists, do nothing (already following)
-     * 5. Otherwise create new relationship as sender
+     * 5. Otherwise, create new relationship as sender
      */
     @Override
     @Transactional
@@ -184,20 +179,14 @@ public class FriendServiceImpl implements FriendService {
      * Creates a USER type notification for when a user is followed.
      */
     private void createFollowNotification(User receiver, User follower) {
-        Notification notification = notificationRepository.save(
-                NotificationFactory.buildFollowNotification(follower)
+
+        newNotificationService.createNotification(
+                receiver.getId(),
+                "friend.follow_title",
+                "friend.follow_message",
+                LinkedType.USER,
+                follower.getId()
         );
-
-        UserNotification userNotification = UserNotification.builder()
-                .user(receiver)
-                .notification(notification)
-                .read(false)
-                .createdDatetime(LocalDateTime.now())
-                .lastUpdatedDatetime(LocalDateTime.now())
-                .isActive(true)
-                .build();
-
-        userNotificationRepository.save(userNotification);
     }
 
     @Override

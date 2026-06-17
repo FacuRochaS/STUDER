@@ -1,4 +1,4 @@
-package facu.studer.services.implementation;
+package facu.studer.services.implementation.support;
 
 import facu.studer.DTOs.auth.LoginRequestDTO;
 import facu.studer.DTOs.auth.LoginResponseDTO;
@@ -10,8 +10,8 @@ import facu.studer.exceptions.TokenReuseDetectedException;
 import facu.studer.repositories.UserRepository;
 import facu.studer.security.JwtUtil;
 import facu.studer.security.LoginRateLimiter;
-import facu.studer.services.AuthService;
-import facu.studer.services.RefreshTokenService;
+import facu.studer.services.support.AuthService;
+import facu.studer.services.support.RefreshTokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -2,10 +2,12 @@ package facu.studer.services.implementation;
 
 import facu.studer.DTOs.media.ImageUploadResponseDTO;
 import facu.studer.DTOs.user.*;
+import facu.studer.entities.LinkedType;
 import facu.studer.entities.User;
 import facu.studer.exceptions.UnauthorizedOperationException;
 import facu.studer.mappers.UserMapper;
 import facu.studer.repositories.UserRepository;
+import facu.studer.services.support.NewNotificationService;
 import facu.studer.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +40,17 @@ public class UserServiceImpl implements UserService {
     private final RestTemplate restTemplate;
     private final String mediaServiceUrl;
 
+    private final NewNotificationService newNotificationService;
+
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            RestTemplate restTemplate,
-                           @Value("${app.media.service.url}") String mediaServiceUrl) {
+                           @Value("${app.media.service.url}") String mediaServiceUrl, NewNotificationService newNotificationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.restTemplate = restTemplate;
         this.mediaServiceUrl = mediaServiceUrl;
+        this.newNotificationService = newNotificationService;
     }
 
     @Override
@@ -65,6 +70,12 @@ public class UserServiceImpl implements UserService {
         user.setIsActive(true);
 
         User saved = userRepository.save(user);
+        newNotificationService.createNotification(
+                saved.getId(),
+                "user.create.message",
+                "user.create.welcome",
+                LinkedType.USER,
+                saved.getId());
         return UserMapper.toResponseDTO(saved);
     }
 

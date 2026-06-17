@@ -1,12 +1,12 @@
-package facu.studer.services.implementation;
+package facu.studer.services.implementation.beta;
 
-import facu.studer.DTOs.discussions.MessageResponseDTO;
+import facu.studer.DTOs.MessageResponseDTO;
 import facu.studer.entities.User;
 import facu.studer.entities.discussions.Discussion;
 import facu.studer.entities.discussions.UserDiscussionFav;
 import facu.studer.exceptions.ResourceNotFoundException;
 import facu.studer.repositories.UserDiscussionFavRepository;
-import facu.studer.services.UserDiscussionFavService;
+import facu.studer.services.beta.UserDiscussionFavService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;

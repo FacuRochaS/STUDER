@@ -1,6 +1,6 @@
-package facu.studer.services.implementation;
+package facu.studer.services.implementation.beta;
 
-import facu.studer.DTOs.discussions.MessageResponseDTO;
+import facu.studer.DTOs.MessageResponseDTO;
 import facu.studer.DTOs.messages.ChatListPageResponseDTO;
 import facu.studer.DTOs.messages.ChatPreviewDTO;
 import facu.studer.DTOs.messages.DirectMessagePageResponseDTO;

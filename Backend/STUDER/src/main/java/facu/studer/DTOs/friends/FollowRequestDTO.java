@@ -1,4 +1,4 @@
-package facu.studer.DTOs.user;
+package facu.studer.DTOs.friends;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -23,7 +23,7 @@ public class FollowRequestDTO {
      * ID of the user to follow.
      */
     @NotNull(message = "user.id.required")
-    @JsonAlias({"userId"})
+    @JsonAlias({"user_id"})
     private Long userId;
 }
 

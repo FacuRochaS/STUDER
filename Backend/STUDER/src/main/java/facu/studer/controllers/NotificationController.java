@@ -1,6 +1,6 @@
 package facu.studer.controllers;
 
-import facu.studer.DTOs.discussions.MessageResponseDTO;
+import facu.studer.DTOs.MessageResponseDTO;
 import facu.studer.DTOs.notification.NotificationPageResponseDTO;
 import facu.studer.entities.LinkedType;
 import facu.studer.security.SecurityUtils;

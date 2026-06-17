@@ -1,11 +1,11 @@
-package facu.studer.services.implementation;
+package facu.studer.services.implementation.support;
 
 import facu.studer.entities.RefreshToken;
 import facu.studer.entities.User;
 import facu.studer.exceptions.InvalidRefreshTokenException;
 import facu.studer.exceptions.TokenReuseDetectedException;
 import facu.studer.repositories.RefreshTokenRepository;
-import facu.studer.services.RefreshTokenService;
+import facu.studer.services.support.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,11 +1,12 @@
 package facu.studer.controllers;
 
+import facu.studer.DTOs.MessageResponseDTO;
 import facu.studer.DTOs.discussions.*;
 import facu.studer.security.SecurityUtils;
-import facu.studer.services.DiscussionMessageService;
-import facu.studer.services.DiscussionService;
-import facu.studer.services.MessageLikeService;
-import facu.studer.services.UserDiscussionFavService;
+import facu.studer.services.beta.DiscussionMessageService;
+import facu.studer.services.beta.DiscussionService;
+import facu.studer.services.beta.MessageLikeService;
+import facu.studer.services.beta.UserDiscussionFavService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

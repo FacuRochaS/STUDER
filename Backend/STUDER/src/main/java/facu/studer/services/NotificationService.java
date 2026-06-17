@@ -1,6 +1,6 @@
 package facu.studer.services;
 
-import facu.studer.DTOs.discussions.MessageResponseDTO;
+import facu.studer.DTOs.MessageResponseDTO;
 import facu.studer.DTOs.notification.NotificationPageResponseDTO;
 import facu.studer.entities.LinkedType;
 
@@ -36,5 +36,6 @@ public interface NotificationService {
      * @return success/error message
      */
     MessageResponseDTO markAsRead(String username, Long userNotificationId);
+
 }
 

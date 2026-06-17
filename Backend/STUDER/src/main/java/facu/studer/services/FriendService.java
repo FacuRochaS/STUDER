@@ -1,8 +1,8 @@
 package facu.studer.services;
 
-import facu.studer.DTOs.user.FriendResponseDTO;
-import facu.studer.DTOs.user.FriendStatusResponseDTO;
-import facu.studer.DTOs.user.FriendsListResponseDTO;
+import facu.studer.DTOs.friends.FriendResponseDTO;
+import facu.studer.DTOs.friends.FriendStatusResponseDTO;
+import facu.studer.DTOs.friends.FriendsListResponseDTO;
 
 /**
  * Service interface for Friend operations.

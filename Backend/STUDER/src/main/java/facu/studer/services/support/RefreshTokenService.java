@@ -1,4 +1,4 @@
-package facu.studer.services;
+package facu.studer.services.support;
 
 import facu.studer.entities.RefreshToken;
 import facu.studer.entities.User;

@@ -1,6 +1,6 @@
 package facu.studer.controllers;
 
-import facu.studer.DTOs.discussions.MessageResponseDTO;
+import facu.studer.DTOs.MessageResponseDTO;
 import facu.studer.DTOs.messages.ChatListPageResponseDTO;
 import facu.studer.DTOs.messages.DirectMessagePageResponseDTO;
 import facu.studer.DTOs.messages.DirectMessageRequestDTO;

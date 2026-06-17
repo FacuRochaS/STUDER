@@ -1,4 +1,4 @@
-package facu.studer.DTOs.discussions;
+package facu.studer.DTOs;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

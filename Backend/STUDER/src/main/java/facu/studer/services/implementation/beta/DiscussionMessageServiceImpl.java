@@ -1,4 +1,4 @@
-package facu.studer.services.implementation;
+package facu.studer.services.implementation.beta;
 
 import facu.studer.DTOs.discussions.DiscussionMessageCreateRequestDTO;
 import facu.studer.DTOs.discussions.DiscussionMessagePageResponseDTO;
@@ -10,7 +10,7 @@ import facu.studer.exceptions.DiscussionClosedException;
 import facu.studer.exceptions.ResourceNotFoundException;
 import facu.studer.mappers.DiscussionMessageMapper;
 import facu.studer.repositories.DiscussionMessageRepository;
-import facu.studer.services.DiscussionMessageService;
+import facu.studer.services.beta.DiscussionMessageService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;

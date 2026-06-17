@@ -1,8 +1,8 @@
-package facu.studer.services.implementation;
+package facu.studer.services.implementation.support;
 
 import facu.studer.entities.Tag;
 import facu.studer.repositories.TagRepository;
-import facu.studer.services.TagService;
+import facu.studer.services.support.TagService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

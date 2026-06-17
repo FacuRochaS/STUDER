@@ -1,4 +1,4 @@
-package facu.studer.services;
+package facu.studer.services.support;
 
 /**
  * Generic interface for CRUD services.

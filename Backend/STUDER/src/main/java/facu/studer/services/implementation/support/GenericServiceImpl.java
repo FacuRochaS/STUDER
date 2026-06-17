@@ -1,8 +1,8 @@
-package facu.studer.services.implementation;
+package facu.studer.services.implementation.support;
 
 
 import facu.studer.entities.BaseEntity;
-import facu.studer.services.GenericService;
+import facu.studer.services.support.GenericService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;

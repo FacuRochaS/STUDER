@@ -4,7 +4,7 @@ import facu.studer.DTOs.auth.LoginRequestDTO;
 import facu.studer.DTOs.auth.LoginResponseDTO;
 import facu.studer.DTOs.auth.RefreshResponseDTO;
 import facu.studer.security.SecurityUtils;
-import facu.studer.services.AuthService;
+import facu.studer.services.support.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

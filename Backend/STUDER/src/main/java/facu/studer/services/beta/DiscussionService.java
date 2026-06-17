@@ -1,9 +1,9 @@
-package facu.studer.services;
+package facu.studer.services.beta;
 
 import facu.studer.DTOs.discussions.DiscussionCreateRequestDTO;
 import facu.studer.DTOs.discussions.DiscussionPageResponseDTO;
 import facu.studer.DTOs.discussions.DiscussionResponseDTO;
-import facu.studer.DTOs.discussions.MessageResponseDTO;
+import facu.studer.DTOs.MessageResponseDTO;
 
 import java.util.List;
 

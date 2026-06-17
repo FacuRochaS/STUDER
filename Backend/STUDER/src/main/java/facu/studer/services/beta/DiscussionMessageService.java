@@ -1,4 +1,4 @@
-package facu.studer.services;
+package facu.studer.services.beta;
 
 import facu.studer.DTOs.discussions.DiscussionMessageCreateRequestDTO;
 import facu.studer.DTOs.discussions.DiscussionMessagePageResponseDTO;

@@ -1,6 +1,6 @@
 package facu.studer.mappers;
 
-import facu.studer.DTOs.user.FriendResponseDTO;
+import facu.studer.DTOs.friends.FriendResponseDTO;
 import facu.studer.entities.Friend;
 import facu.studer.entities.User;
 

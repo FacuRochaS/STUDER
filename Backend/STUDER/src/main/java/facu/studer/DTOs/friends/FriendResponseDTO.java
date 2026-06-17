@@ -1,4 +1,4 @@
-package facu.studer.DTOs.user;
+package facu.studer.DTOs.friends;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

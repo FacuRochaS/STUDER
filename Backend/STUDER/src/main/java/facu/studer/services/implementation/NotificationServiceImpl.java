@@ -1,6 +1,6 @@
 package facu.studer.services.implementation;
 
-import facu.studer.DTOs.discussions.MessageResponseDTO;
+import facu.studer.DTOs.MessageResponseDTO;
 import facu.studer.DTOs.notification.NotificationPageResponseDTO;
 import facu.studer.DTOs.notification.NotificationResponseDTO;
 import facu.studer.entities.LinkedType;
