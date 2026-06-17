@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
-import { User, UserPublic } from '../../user.model';
-import { UserService } from '../../user.service';
-import { FriendService } from '../../friend.service';
-import { FriendStatusResponseDTO } from '../../friend.model';
+import { User, UserPublic } from '../../../../models/user.model';
+import { UserService } from '../../../../services/user.service';
+import { FriendService } from '../../../../services/friend.service';
+import { FriendStatusResponseDTO } from '../../../../models/friend.model';
 import { AuthStateService } from '../../../../core/auth/auth-state.service';
 import { RichTextComponent } from '../../../../shared/components/rich-text/rich-text.component';
 
@@ -62,15 +62,14 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.route.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
-        const raw = params.get('username') ?? '';
-        const username = raw.startsWith('@') ? raw.slice(1) : raw;
-        if (!username || username.toLowerCase() === 'me') {
+        const identifier = params.get('identifier') ?? '';
+        if (!identifier || identifier.toLowerCase() === 'me') {
           this.useCurrentUserRoute = true;
           this.setCurrentUserProfile();
           return;
         }
         this.useCurrentUserRoute = false;
-        this.loadUser(username);
+        this.loadUser(identifier);
       });
   }
 
@@ -170,23 +169,38 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadUser(username: string): void {
+  private loadUser(identifier: string): void {
     this.loading = true;
-    this.userService.getByUsername(username).subscribe({
-      next: user => {
-        this.user = user;
-        if (this.isOwnProfile && this.currentUser) {
-          this.editEmail = this.currentUser.email ?? '';
-        }
-        this.loading = false;
-        this.loadFriendStatus(user.id);
-      },
-      error: () => {
-        this.user = null;
-        this.friendStatus = null;
-        this.loading = false;
-      }
-    });
+
+    const isNumericId = /^\d+$/.test(identifier);
+
+    if (isNumericId) {
+      this.userService.getById(Number(identifier)).subscribe({
+        next: user => this.handleUserSuccess(user),
+        error: () => this.handleUserError()
+      });
+    } else {
+      const username = identifier.startsWith('@') ? identifier.slice(1) : identifier;
+      this.userService.getByUsername(username).subscribe({
+        next: user => this.handleUserSuccess(user),
+        error: () => this.handleUserError()
+      });
+    }
+  }
+
+  private handleUserSuccess(user: UserPublic): void {
+    this.user = user;
+    if (this.isOwnProfile && this.currentUser) {
+      this.editEmail = this.currentUser.email ?? '';
+    }
+    this.loading = false;
+    this.loadFriendStatus(user.id);
+  }
+
+  private handleUserError(): void {
+    this.user = null;
+    this.friendStatus = null;
+    this.loading = false;
   }
 
   private mapCurrentUser(user: User): UserPublic {

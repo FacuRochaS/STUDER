@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { API_CONFIG } from '../../config/api.config';
+import { API_CONFIG } from '../config/api.config';
 import {
   LinkedType,
   MessageResponseDTO,
   NotificationPageResponseDTO,
   NotificationResponseDTO
-} from './notification.model';
-import { NotificationStrategyFactory } from './strategy/notification-strategy.factory';
+} from '../models/notification.model';
+import {NotificationStrategyFactory} from '../factories/notification/notification-strategy.factory';
+
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {

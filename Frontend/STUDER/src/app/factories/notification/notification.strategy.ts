@@ -1,4 +1,4 @@
-import { NotificationResponseDTO } from '../notification.model';
+import {NotificationResponseDTO} from '../../models/notification.model';
 
 export interface NotificationStrategy {
   getRoute(notification: NotificationResponseDTO): string;

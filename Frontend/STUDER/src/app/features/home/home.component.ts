@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthStateService } from '../../core/auth/auth-state.service';
-import { User } from '../users/user.model';
+import { User } from '../../models/user.model';
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
 
 @Component({

@@ -12,11 +12,14 @@ import facu.studer.repositories.FriendRepository;
 import facu.studer.repositories.UserRepository;
 import facu.studer.services.FriendService;
 import facu.studer.services.support.NewNotificationService;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,16 +36,18 @@ public class FriendServiceImpl implements FriendService {
     private final UserRepository userRepository;
 
     private final NewNotificationService newNotificationService;
+    private final MessageSource messageSource;
 
 
     public FriendServiceImpl(
             FriendRepository friendRepository,
             UserRepository userRepository,
-            NewNotificationService newNotificationService) {
+            NewNotificationService newNotificationService, MessageSource messageSource) {
         this.friendRepository = friendRepository;
         this.userRepository = userRepository;
 
         this.newNotificationService = newNotificationService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -182,8 +187,8 @@ public class FriendServiceImpl implements FriendService {
 
         newNotificationService.createNotification(
                 receiver.getId(),
-                "friend.follow_title",
-                "friend.follow_message",
+                resolveMessage("friend.follow_title", follower.getUsername()  ),
+                resolveMessage("friend.follow_message", follower.getUsername()),
                 LinkedType.USER,
                 follower.getId()
         );
@@ -220,6 +225,20 @@ public class FriendServiceImpl implements FriendService {
                 .isFollowing(isFollowing)
                 .isFriend(isFriend)
                 .build();
+    }
+
+    private String resolveMessage(String messageKey, String username) {
+        Object[] args = new Object[]{ username };
+        if (messageKey == null) {
+            return "An unknown error occurred.";
+        }
+        Locale locale = LocaleContextHolder.getLocale();
+        try {
+            return messageSource.getMessage(messageKey, args, locale);
+        } catch (Exception e) {
+            // Si la clave no se encuentra, devolver la clave misma.
+            return messageKey;
+        }
     }
 }
 

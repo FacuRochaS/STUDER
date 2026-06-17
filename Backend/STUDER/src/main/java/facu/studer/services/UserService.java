@@ -41,10 +41,9 @@ public interface UserService {
      * Gets a user by ID. Validates the current user has access.
      *
      * @param id the user ID to retrieve
-     * @param currentUsername the authenticated username
      * @return user response
      */
-    UserResponseDTO getById(Long id, String currentUsername);
+    UserPublicResponseDTO getById(Long id);
 
     /**
      * Finds a user entity by username.

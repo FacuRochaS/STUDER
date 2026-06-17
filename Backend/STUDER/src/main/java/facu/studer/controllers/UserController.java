@@ -91,7 +91,7 @@ public class UserController {
      * Users can only view their own data.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getById(id, securityUtils.requireCurrentUsername()));
+    public ResponseEntity<UserPublicResponseDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getById(id));
     }
 }

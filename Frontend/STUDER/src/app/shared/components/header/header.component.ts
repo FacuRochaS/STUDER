@@ -9,10 +9,10 @@ import { OverlayComponent } from '../overlay/overlay.component';
 import { NotificationPanelComponent } from '../notification-panel/notification-panel.component';
 import { ThemeService, Theme } from '../../../core/theme/theme.service';
 import { LanguageService, Language } from '../../../core/i18n/language.service';
-import { NotificationService } from '../../../features/notifications/notification.service';
+import { NotificationService } from '../../../services/notification.service';
 import { AuthStateService } from '../../../core/auth/auth-state.service';
-import { UserPublic } from '../../../features/users/user.model';
-import { UserService } from '../../../features/users/user.service';
+import { UserPublic } from '../../../models/user.model';
+import { UserService } from '../../../services/user.service';
 import { RichTextComponent } from '../rich-text/rich-text.component';
 
 @Component({

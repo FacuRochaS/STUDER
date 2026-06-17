@@ -11,6 +11,7 @@ import facu.studer.services.support.NewNotificationService;
 import facu.studer.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final RestTemplate restTemplate;
     private final String mediaServiceUrl;
 
+
     private final NewNotificationService newNotificationService;
 
     public UserServiceImpl(UserRepository userRepository,
@@ -50,6 +52,8 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
         this.restTemplate = restTemplate;
         this.mediaServiceUrl = mediaServiceUrl;
+
+
         this.newNotificationService = newNotificationService;
     }
 
@@ -148,17 +152,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponseDTO getById(Long id, String currentUsername) {
-        User currentUser = userRepository.findByUsername(currentUsername);
-        if (currentUser == null) {
+    public UserPublicResponseDTO getById(Long id) {
+        var user = userRepository.findById(id);
+        if (user.isEmpty()) {
             throw new IllegalArgumentException("user.not_found");
         }
-
-        if (!currentUser.getId().equals(id)) {
-            throw new UnauthorizedOperationException("auth.unauthorized_operation");
-        }
-
-        return UserMapper.toResponseDTO(currentUser);
+        return UserMapper.toPublicResponseDTO(user.get());
     }
 
     @Override

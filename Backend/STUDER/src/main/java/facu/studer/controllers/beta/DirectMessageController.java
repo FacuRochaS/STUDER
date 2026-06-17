@@ -1,4 +1,4 @@
-package facu.studer.controllers;
+package facu.studer.controllers.beta;
 
 import facu.studer.DTOs.MessageResponseDTO;
 import facu.studer.DTOs.messages.ChatListPageResponseDTO;

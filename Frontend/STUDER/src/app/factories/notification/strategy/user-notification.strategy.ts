@@ -1,5 +1,5 @@
-import { NotificationStrategy } from './notification.strategy';
-import { NotificationResponseDTO } from '../notification.model';
+import { NotificationStrategy } from '../notification.strategy';
+import {NotificationResponseDTO} from '../../../models/notification.model';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 })
 export class UserNotificationStrategy implements NotificationStrategy {
   getRoute(notification: NotificationResponseDTO): string {
-    return notification.linkedId ? `/profile/${notification.linkedId}` : '/profile';
+    return notification.linkedId ? `/user/${notification.linkedId}` : '/user';
   }
 
   getIcon(notification: NotificationResponseDTO): string {

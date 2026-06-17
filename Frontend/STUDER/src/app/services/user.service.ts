@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { API_CONFIG } from '../../config/api.config';
-import { User, UserPublic, UserSearchPageResponse, UserUpdateRequestDTO } from './user.model';
+import { API_CONFIG } from '../config/api.config';
+import { User, UserPublic, UserSearchPageResponse, UserUpdateRequestDTO } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +15,10 @@ export class UserService {
 
   getMe(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/me`);
+  }
+
+  getById(id: number): Observable<UserPublic> {
+    return this.http.get<UserPublic>(`${this.apiUrl}/${id}`);
   }
 
   getByUsername(username: string): Observable<UserPublic> {

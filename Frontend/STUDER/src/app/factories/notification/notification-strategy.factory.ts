@@ -1,11 +1,11 @@
 import { Injectable, Injector } from '@angular/core';
-import { LinkedType } from '../notification.model';
+import {LinkedType} from '../../models/notification.model';
 import { NotificationStrategy } from './notification.strategy';
-import { DiscussionNotificationStrategy } from './discussion-notification.strategy';
-import { MessageNotificationStrategy } from './message-notification.strategy';
-import { UserNotificationStrategy } from './user-notification.strategy';
-import { SystemNotificationStrategy } from './system-notification.strategy';
-import { DefaultNotificationStrategy } from './default-notification.strategy';
+import { DiscussionNotificationStrategy } from './strategy/discussion-notification.strategy';
+import { MessageNotificationStrategy } from './strategy/message-notification.strategy';
+import { UserNotificationStrategy } from './strategy/user-notification.strategy';
+import { SystemNotificationStrategy } from './strategy/system-notification.strategy';
+import { DefaultNotificationStrategy } from './strategy/default-notification.strategy';
 
 @Injectable({
   providedIn: 'root'

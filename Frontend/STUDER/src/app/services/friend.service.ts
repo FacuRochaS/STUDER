@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { API_CONFIG } from '../../config/api.config';
-import { FriendResponseDTO, FriendStatusResponseDTO, FriendsListResponseDTO } from './friend.model';
+import { API_CONFIG } from '../config/api.config';
+import { FriendResponseDTO, FriendStatusResponseDTO, FriendsListResponseDTO } from '../models/friend.model';
 
 interface MessageResponseDTO {
   success: boolean;

@@ -10,11 +10,11 @@ import {
   DirectMessagePageResponseDTO,
   DirectMessageResponseDTO
 } from '../../messages.model';
-import { FriendService } from '../../../users/friend.service';
-import { FriendResponseDTO } from '../../../users/friend.model';
+import { FriendService } from '../../../../services/friend.service';
+import { FriendResponseDTO } from '../../../../models/friend.model';
 import { AuthStateService } from '../../../../core/auth/auth-state.service';
 import { RichTextComponent } from '../../../../shared/components/rich-text/rich-text.component';
-import { UserService } from '../../../users/user.service';
+import { UserService } from '../../../../services/user.service';
 
 @Component({
   selector: 'studer-messages',

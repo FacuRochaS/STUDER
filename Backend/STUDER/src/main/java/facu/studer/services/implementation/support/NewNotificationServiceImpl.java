@@ -8,10 +8,13 @@ import facu.studer.repositories.NotificationRepository;
 import facu.studer.repositories.UserNotificationRepository;
 import facu.studer.repositories.UserRepository;
 import facu.studer.services.support.NewNotificationService;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class NewNotificationServiceImpl implements NewNotificationService {
@@ -19,10 +22,14 @@ public class NewNotificationServiceImpl implements NewNotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
 
-    public NewNotificationServiceImpl(UserNotificationRepository userNotificationRepository, NotificationRepository notificationRepository, UserRepository userRepository) {
+    private final MessageSource messageSource;
+
+    public NewNotificationServiceImpl(UserNotificationRepository userNotificationRepository, NotificationRepository notificationRepository, UserRepository userRepository, MessageSource messageSource) {
         this.userNotificationRepository = userNotificationRepository;
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+
+        this.messageSource = messageSource;
     }
 
     /**
@@ -39,8 +46,8 @@ public class NewNotificationServiceImpl implements NewNotificationService {
     public MessageResponseDTO createNotificationList(List<Long> userIds, String title, String message, LinkedType type, Long linkedId) {
         // Create the notification entity
         var notification = Notification.builder()
-                .title(title)
-                .message(message)
+                .title(resolveMessage(title))
+                .message(resolveMessage(message))
                 .type(type)
                 .linkedId(linkedId)
                 .build();
@@ -85,8 +92,8 @@ public class NewNotificationServiceImpl implements NewNotificationService {
     public MessageResponseDTO createNotification(Long userId, String title, String message, LinkedType type, Long linkedId) {
         // Create the notification entity
         var notification = Notification.builder()
-                .title(title)
-                .message(message)
+                .title(resolveMessage(title))
+                .message(resolveMessage(message))
                 .type(type)
                 .linkedId(linkedId)
                 .createdDatetime(LocalDateTime.now())
@@ -118,6 +125,20 @@ public class NewNotificationServiceImpl implements NewNotificationService {
                 .success(true)
                 .message("Notification created and sent to users successfully.")
                 .build();
+    }
+
+
+    private String resolveMessage(String messageKey) {
+        if (messageKey == null) {
+            return "An unknown error occurred.";
+        }
+        Locale locale = LocaleContextHolder.getLocale();
+        try {
+            return messageSource.getMessage(messageKey, null, locale);
+        } catch (Exception e) {
+            // Si la clave no se encuentra, devolver la clave misma.
+            return messageKey;
+        }
     }
 
 
