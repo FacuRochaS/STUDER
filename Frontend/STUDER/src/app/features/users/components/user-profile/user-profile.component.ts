@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
-import { User, UserPublic } from '../../../../models/user.model';
-import { UserService } from '../../../../services/user.service';
-import { FriendService } from '../../../../services/friend.service';
-import { FriendStatusResponseDTO } from '../../../../models/friend.model';
+import { User, UserPublic } from '../../user.model';
+import { UserService } from '../../user.service';
+import { FriendService } from '../../../friends/friend.service';
+import { FriendStatusResponseDTO } from '../../../friends/friend.model';
 import { AuthStateService } from '../../../../core/auth/auth-state.service';
 import { RichTextComponent } from '../../../../shared/components/rich-text/rich-text.component';
 

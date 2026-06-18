@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { API_CONFIG } from '../config/api.config';
-import { User, UserPublic, UserSearchPageResponse, UserUpdateRequestDTO } from '../models/user.model';
+import { API_CONFIG } from '../../config/api.config';
+import { User, UserPublic, UserSearchPageResponse, UserUpdateRequestDTO } from './user.model';
 
 @Injectable({
   providedIn: 'root'

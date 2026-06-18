@@ -8,7 +8,7 @@ import {
   LoginResponseDTO,
   RefreshResponseDTO,
   UserCreateRequestDTO
-} from '../../models/user.model';
+} from '../../features/users/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {

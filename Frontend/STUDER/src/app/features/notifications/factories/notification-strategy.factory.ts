@@ -1,5 +1,5 @@
 import { Injectable, Injector } from '@angular/core';
-import {LinkedType} from '../../models/notification.model';
+import {LinkedType} from '../notification.model';
 import { NotificationStrategy } from './notification.strategy';
 import { DiscussionNotificationStrategy } from './strategy/discussion-notification.strategy';
 import { MessageNotificationStrategy } from './strategy/message-notification.strategy';

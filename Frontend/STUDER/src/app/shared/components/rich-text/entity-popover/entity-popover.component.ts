@@ -1,8 +1,8 @@
 import { Component, Input, ChangeDetectionStrategy, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { EntityCacheService } from '../../../services/entity-cache.service';
-import { UserService } from '../../../../services/user.service';
-import { UserPublic } from '../../../../models/user.model';
+import { UserService } from '../../../../features/users/user.service';
+import { UserPublic } from '../../../../features/users/user.model';
 
 interface EntityPopoverData {
   name: string;

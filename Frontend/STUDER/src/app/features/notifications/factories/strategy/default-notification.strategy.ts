@@ -1,5 +1,5 @@
 import { NotificationStrategy } from '../notification.strategy';
-import {NotificationResponseDTO} from '../../../models/notification.model';
+import {NotificationResponseDTO} from '../../notification.model';
 import { Injectable } from '@angular/core';
 
 

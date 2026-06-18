@@ -4,7 +4,7 @@ import {
   User,
   LoginRequestDTO,
   UserCreateRequestDTO
-} from '../../models/user.model';
+} from '../../features/users/user.model';
 import { AuthApiService } from './auth-api.service';
 import { TokenStorageService } from './token-storage.service';
 

@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
-import { UserPublic } from '../../models/user.model';
-import { UserService } from '../../services/user.service';
+import { UserPublic } from '../users/user.model';
+import { UserService } from '../users/user.service';
 import { RichTextComponent } from '../../shared/components/rich-text/rich-text.component';
 
 @Component({

@@ -3,6 +3,7 @@ package facu.studer.services.implementation;
 import facu.studer.DTOs.chats.ChatSummaryDTO;
 import facu.studer.DTOs.chats.LastMessageDTO;
 import facu.studer.DTOs.chats.MessageRequestDTO;
+import facu.studer.DTOs.friends.FriendStatusResponseDTO;
 import facu.studer.DTOs.user.UserPublicResponseDTO;
 import facu.studer.entities.User;
 import facu.studer.entities.messages.Chat;
@@ -11,6 +12,7 @@ import facu.studer.repositories.ChatRepository;
 import facu.studer.repositories.DirectMessageRepository;
 import facu.studer.repositories.UserRepository;
 import facu.studer.services.ChatService;
+import facu.studer.services.FriendService;
 import facu.studer.services.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +31,9 @@ public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
     private final DirectMessageRepository messageRepository;
-    private final UserService userService; // Tu servicio de usuarios inyectado
-    private final UserRepository userRepository; // Asumo que tienes este repo para validar entidades
+    private final UserService userService;
+    private final UserRepository userRepository;
+    private final FriendService friendService;
 
     @Override
     @Transactional(readOnly = true)
@@ -55,11 +58,14 @@ public class ChatServiceImpl implements ChatService {
                     .build()
             ).orElse(null);
 
-            // 4. Armar la respuesta
+            // 4. Buscar la relacion
+            FriendStatusResponseDTO friendStatus = friendService.getFriendStatus(currentUserId, otherUserId);
+            // 5. Armar la respuesta
             return ChatSummaryDTO.builder()
                     .chatId(chat.getId())
                     .otherUser(otherUser)
                     .lastMessage(lastMessageDTO)
+                    .friendStatus(friendStatus)
                     .build();
         }).collect(Collectors.toList());
     }

@@ -227,6 +227,39 @@ public class FriendServiceImpl implements FriendService {
                 .build();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public FriendStatusResponseDTO getFriendStatus(Long currentUserId, Long targetUserId) {
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("user.not_found"));
+
+        User targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("user.not_found"));
+
+        Optional<Friend> friendship = friendRepository.findFriendship(currentUser, targetUser);
+        if (friendship.isEmpty()) {
+            return FriendStatusResponseDTO.builder()
+                    .isFollowing(false)
+                    .isFriend(false)
+                    .build();
+        }
+
+        Friend friend = friendship.get();
+        boolean currentIsSender = friend.getSender().getId().equals(currentUser.getId());
+        boolean isFollowing = currentIsSender
+                ? Boolean.TRUE.equals(friend.getSenderAccept())
+                : Boolean.TRUE.equals(friend.getReceiverAccept());
+        boolean isFriend = Boolean.TRUE.equals(friend.getSenderAccept())
+                && Boolean.TRUE.equals(friend.getReceiverAccept());
+
+        return FriendStatusResponseDTO.builder()
+                .isFollowing(isFollowing)
+                .isFriend(isFriend)
+                .build();
+    }
+
+
+
     private String resolveMessage(String messageKey, String username) {
         Object[] args = new Object[]{ username };
         if (messageKey == null) {

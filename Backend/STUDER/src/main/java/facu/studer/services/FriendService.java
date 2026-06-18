@@ -52,5 +52,14 @@ public interface FriendService {
      * @return relationship status
      */
     FriendStatusResponseDTO getFriendStatus(String currentUsername, Long targetUserId);
+
+    /**
+     * Gets relationship status between current user and a target user.
+     *
+     * @param currentUserId the authenticated user id
+     * @param targetUserId the target user ID
+     * @return relationship status
+     */
+    FriendStatusResponseDTO getFriendStatus(Long currentUserId, Long targetUserId);
 }
 

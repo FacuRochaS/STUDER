@@ -4,8 +4,8 @@ import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RichTextComponent, EntityClickEvent } from '../../shared/components/rich-text/rich-text.component';
 import { ManualEntityComponent, ManualEntityClickEvent } from '../../shared/components/rich-text/manual-entity/manual-entity.component';
-import { UserService } from '../../services/user.service';
-import { User, UserUpdateRequestDTO } from '../../models/user.model';
+import { UserService } from '../users/user.service';
+import { User, UserUpdateRequestDTO } from '../users/user.model';
 import { API_CONFIG } from '../../config/api.config';
 
 interface TestMessage {

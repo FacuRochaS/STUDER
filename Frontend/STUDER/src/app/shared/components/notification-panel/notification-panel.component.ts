@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
-import { NotificationService } from '../../../services/notification.service';
+import { NotificationService } from '../../../features/notifications/notification.service';
 import {
   LinkedType,
   NotificationResponseDTO
-} from '../../../models/notification.model';
+} from '../../../features/notifications/notification.model';
 import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
 
 type NotificationFilter = 'ALL' | 'UNREAD';
