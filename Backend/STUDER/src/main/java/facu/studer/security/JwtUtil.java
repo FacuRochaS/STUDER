@@ -41,25 +41,35 @@ public class JwtUtil {
      * @param username username
      * @return generated JWT token
      */
-    public String generateToken(String username) {
-        return generateToken(username, List.of());
+    public String generateToken(String username, Long userId) {
+        return generateToken(username, userId, List.of());
     }
 
     /**
-     * Generates a JWT access token with roles.
-     * @param username username
-     * @param roles user roles
-     * @return generated JWT token
+     * Generates a JWT access token with roles and userId.
+     * CAMBIO: Se agregó el parámetro userId y el claim correspondiente.
      */
-    public String generateToken(String username, List<String> roles) {
+    public String generateToken(String username, Long userId, List<String> roles) {
         return Jwts.builder()
                 .setId(UUID.randomUUID().toString()) // jti - unique token id
                 .setSubject(username)
+                .claim("userId", userId)
                 .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationMs))
                 .signWith(key)
                 .compact();
+    }
+
+    /**
+     * Extracts the user ID from the JWT token.
+     *
+     */
+    public Long extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        // Se extrae como Number porque Jackson a veces parsea números enteros como Integer
+        Number userId = claims.get("userId", Number.class);
+        return userId != null ? userId.longValue() : null;
     }
 
     /**

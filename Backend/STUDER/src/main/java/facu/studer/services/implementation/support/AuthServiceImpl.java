@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
         loginRateLimiter.loginSucceeded(rateLimitKey);
 
         // Generate tokens
-        String accessToken = jwtUtil.generateToken(user.getUsername(), List.of());
+        String accessToken = jwtUtil.generateToken(user.getUsername(),user.getId(), List.of());
         String refreshToken = refreshTokenService.generateRefreshToken(user, userAgent, ipAddress);
 
         // Store refresh token for controller to set cookie
@@ -99,7 +99,7 @@ public class AuthServiceImpl implements AuthService {
 
         // Generate new access token
         User user = refreshToken.getUser();
-        String accessToken = jwtUtil.generateToken(user.getUsername(), List.of());
+        String accessToken = jwtUtil.generateToken(user.getUsername(), user.getId(), List.of());
 
         return RefreshResponseDTO.of(accessToken, jwtUtil.getAccessTokenExpirationSeconds());
     }
