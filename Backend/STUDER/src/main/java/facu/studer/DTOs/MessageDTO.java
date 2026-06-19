@@ -14,7 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class MessageResponseDTO {
+public class MessageDTO {
 
     /** Whether the operation was successful. */
     private boolean success;

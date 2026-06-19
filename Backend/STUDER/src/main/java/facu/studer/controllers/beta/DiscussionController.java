@@ -1,6 +1,6 @@
 package facu.studer.controllers.beta;
 
-import facu.studer.DTOs.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.DTOs.discussions.*;
 import facu.studer.security.SecurityUtils;
 import facu.studer.services.beta.DiscussionMessageService;
@@ -155,9 +155,9 @@ public class DiscussionController {
      * @return success/error response
      */
     @PostMapping("/{id}/favourite")
-    public ResponseEntity<MessageResponseDTO> addFavourite(@PathVariable Long id) {
+    public ResponseEntity<MessageDTO> addFavourite(@PathVariable Long id) {
         String username = securityUtils.requireCurrentUsername();
-        MessageResponseDTO response = userDiscussionFavService.addFavourite(username, id);
+        MessageDTO response = userDiscussionFavService.addFavourite(username, id);
         return ResponseEntity.ok(response);
     }
 
@@ -168,9 +168,9 @@ public class DiscussionController {
      * @return success/error response
      */
     @DeleteMapping("/{id}/favourite")
-    public ResponseEntity<MessageResponseDTO> removeFavourite(@PathVariable Long id) {
+    public ResponseEntity<MessageDTO> removeFavourite(@PathVariable Long id) {
         String username = securityUtils.requireCurrentUsername();
-        MessageResponseDTO response = userDiscussionFavService.removeFavourite(username, id);
+        MessageDTO response = userDiscussionFavService.removeFavourite(username, id);
         return ResponseEntity.ok(response);
     }
 
@@ -182,9 +182,9 @@ public class DiscussionController {
      * @return success/error response
      */
     @PostMapping("/messages/{messageId}/like")
-    public ResponseEntity<MessageResponseDTO> likeMessage(@PathVariable Long messageId) {
+    public ResponseEntity<MessageDTO> likeMessage(@PathVariable Long messageId) {
         String username = securityUtils.requireCurrentUsername();
-        MessageResponseDTO response = messageLikeService.like(username, messageId);
+        MessageDTO response = messageLikeService.like(username, messageId);
         return ResponseEntity.ok(response);
     }
 
@@ -195,9 +195,9 @@ public class DiscussionController {
      * @return success/error response
      */
     @DeleteMapping("/messages/{messageId}/like")
-    public ResponseEntity<MessageResponseDTO> unlikeMessage(@PathVariable Long messageId) {
+    public ResponseEntity<MessageDTO> unlikeMessage(@PathVariable Long messageId) {
         String username = securityUtils.requireCurrentUsername();
-        MessageResponseDTO response = messageLikeService.unlike(username, messageId);
+        MessageDTO response = messageLikeService.unlike(username, messageId);
         return ResponseEntity.ok(response);
     }
 
@@ -209,9 +209,9 @@ public class DiscussionController {
      * @return success/error response
      */
     @PatchMapping("/{id}/close")
-    public ResponseEntity<MessageResponseDTO> closeDiscussion(@PathVariable Long id) {
+    public ResponseEntity<MessageDTO> closeDiscussion(@PathVariable Long id) {
         String username = securityUtils.requireCurrentUsername();
-        MessageResponseDTO response = discussionService.close(username, id);
+        MessageDTO response = discussionService.close(username, id);
         return ResponseEntity.ok(response);
     }
 }

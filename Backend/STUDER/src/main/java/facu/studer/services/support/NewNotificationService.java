@@ -1,6 +1,6 @@
 package facu.studer.services.support;
 
-import facu.studer.DTOs.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.entities.LinkedType;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public interface NewNotificationService {
      * @param linkedId   linked id
      * @return success/error message
      */
-    MessageResponseDTO createNotificationList(
+    MessageDTO createNotificationList(
             List<Long> userIds,
             String title,
             String message,
@@ -33,7 +33,7 @@ public interface NewNotificationService {
      * @param linkedId   linked id
      * @return success/error message
      */
-    MessageResponseDTO createNotification(
+    MessageDTO createNotification(
             Long userId,
             String title,
             String message,

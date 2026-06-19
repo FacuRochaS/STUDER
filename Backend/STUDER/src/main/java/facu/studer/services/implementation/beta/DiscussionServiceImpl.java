@@ -3,7 +3,7 @@ package facu.studer.services.implementation.beta;
 import facu.studer.DTOs.discussions.DiscussionCreateRequestDTO;
 import facu.studer.DTOs.discussions.DiscussionPageResponseDTO;
 import facu.studer.DTOs.discussions.DiscussionResponseDTO;
-import facu.studer.DTOs.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.entities.Tag;
 import facu.studer.entities.User;
 import facu.studer.entities.discussions.Discussion;
@@ -153,7 +153,7 @@ public class DiscussionServiceImpl implements DiscussionService {
      */
     @Override
     @Transactional
-    public MessageResponseDTO close(String username, Long discussionId) {
+    public MessageDTO close(String username, Long discussionId) {
         Discussion discussion = discussionRepository.findByIdAndIsActiveTrue(discussionId)
                 .orElseThrow(() -> new ResourceNotFoundException("discussion.not_found"));
 
@@ -170,7 +170,7 @@ public class DiscussionServiceImpl implements DiscussionService {
         discussion.setLastUpdatedDatetime(LocalDateTime.now());
         discussionRepository.save(discussion);
 
-        return MessageResponseDTO.builder()
+        return MessageDTO.builder()
                 .success(true)
                 .message("discussion.closed_success")
                 .build();

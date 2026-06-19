@@ -1,6 +1,6 @@
 package facu.studer.services.implementation.beta;
 
-import facu.studer.DTOs.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.entities.User;
 import facu.studer.entities.discussions.DiscussionMessage;
 import facu.studer.entities.discussions.MessageLike;
@@ -37,7 +37,7 @@ public class MessageLikeServiceImpl implements MessageLikeService {
      */
     @Override
     @Transactional
-    public MessageResponseDTO like(String username, Long messageId) {
+    public MessageDTO like(String username, Long messageId) {
         if (messageLikeRepository.existsByUserUsernameAndMessageIdAndIsActiveTrue(username, messageId)) {
             throw new IllegalArgumentException("discussion.message.already_liked");
         }
@@ -58,7 +58,7 @@ public class MessageLikeServiceImpl implements MessageLikeService {
 
         messageLikeRepository.save(like);
 
-        return MessageResponseDTO.builder()
+        return MessageDTO.builder()
                 .success(true)
                 .message("discussion.message.like_added")
                 .build();
@@ -69,7 +69,7 @@ public class MessageLikeServiceImpl implements MessageLikeService {
      */
     @Override
     @Transactional
-    public MessageResponseDTO unlike(String username, Long messageId) {
+    public MessageDTO unlike(String username, Long messageId) {
         Optional<MessageLike> likeOpt = messageLikeRepository
                 .findByUserUsernameAndMessageIdAndIsActiveTrue(username, messageId);
 
@@ -82,7 +82,7 @@ public class MessageLikeServiceImpl implements MessageLikeService {
         like.setLastUpdatedDatetime(LocalDateTime.now());
         messageLikeRepository.save(like);
 
-        return MessageResponseDTO.builder()
+        return MessageDTO.builder()
                 .success(true)
                 .message("discussion.message.like_removed")
                 .build();

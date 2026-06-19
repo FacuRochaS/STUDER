@@ -104,7 +104,14 @@ public class SecurityUtils {
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             return null;
         }
-        return (String) auth.getPrincipal();
+
+        // Extraemos el username correctamente desde nuestro nuevo objeto
+        if (auth.getPrincipal() instanceof UserDetailsImpl userDetails) {
+            return userDetails.getUsername();
+        }
+
+        // Fallback por si acaso
+        return auth.getPrincipal().toString();
     }
 
 

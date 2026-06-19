@@ -3,7 +3,7 @@ package facu.studer.services.beta;
 import facu.studer.DTOs.discussions.DiscussionCreateRequestDTO;
 import facu.studer.DTOs.discussions.DiscussionPageResponseDTO;
 import facu.studer.DTOs.discussions.DiscussionResponseDTO;
-import facu.studer.DTOs.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 
 import java.util.List;
 
@@ -66,5 +66,5 @@ public interface DiscussionService {
      * @param discussionId the discussion ID
      * @return success/error response
      */
-    MessageResponseDTO close(String username, Long discussionId);
+    MessageDTO close(String username, Long discussionId);
 }

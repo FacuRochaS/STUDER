@@ -1,6 +1,6 @@
 package facu.studer.services.beta;
 
-import facu.studer.DTOs.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 
 /**
  * Service interface for user discussion favourite operations.
@@ -15,7 +15,7 @@ public interface UserDiscussionFavService {
      * @param discussionId the discussion ID
      * @return success/error response
      */
-    MessageResponseDTO addFavourite(String username, Long discussionId);
+    MessageDTO addFavourite(String username, Long discussionId);
 
     /**
      * Removes a discussion from the user's favourites.
@@ -24,7 +24,7 @@ public interface UserDiscussionFavService {
      * @param discussionId the discussion ID
      * @return success/error response
      */
-    MessageResponseDTO removeFavourite(String username, Long discussionId);
+    MessageDTO removeFavourite(String username, Long discussionId);
 
     /**
      * Checks if a user has favourited a discussion.

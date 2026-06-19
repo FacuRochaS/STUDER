@@ -17,7 +17,7 @@ export interface FriendStatusResponseDTO {
 
 export interface LastMessageDTO {
   content: string;
-  timestamp: string; // En Angular las fechas de Java suelen llegar como strings ISO
+  timestamp: string;
   isRead: boolean;
 }
 
@@ -28,25 +28,22 @@ export interface ChatSummaryDTO {
   lastMessage: LastMessageDTO;
 }
 
-export interface MessageRequestDTO {
-  content: string;
-  link?: string; // Opcional, ya que puede que el usuario no envíe un link/foto
-  replyToId?: number; // Opcional
-}
-
-export interface DirectMessage {
+export interface MessageResponseDTO {
   id: number;
-  chat: any; // Puedes definir una interfaz más estricta si necesitas los datos del chat aquí
-  sender: UserPublicResponseDTO; // Asumiendo que el backend devuelve esto o una estructura similar
+  chatId: number;
+  senderId: number;
   content: string;
   link: string;
-  replyTo?: DirectMessage; // Autoreferencia
+  replyToId: number;
   isRead: boolean;
   createdDatetime: string;
-  lastUpdatedDatetime: string;
 }
 
-// Interfaz genérica para manejar la paginación de Spring Data
+export interface MessageRequestDTO {
+  content: string;
+  replyToId?: number;
+}
+
 export interface Page<T> {
   content: T[];
   pageable: any;

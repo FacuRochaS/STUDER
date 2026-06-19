@@ -170,5 +170,20 @@
     "cancel": "Cancelar",
     "submit": "Crear",
     "create_error": "Error al crear la discusión"
+  },
+  "chat": {
+    "title": "Chats",
+    "search_placeholder": "Buscar...",
+    "no_chats": "No tienes conversaciones activas.",
+    "select_conversation": "Selecciona una conversación para empezar a chatear",
+    "type_message": "Escribe un mensaje...",
+    "tabs": {
+      "chat": "Chat",
+      "friends": "Amigos"
+    },
+    "status": {
+      "online": "En línea",
+      "offline": "Desconectado"
+    }
   }
 }

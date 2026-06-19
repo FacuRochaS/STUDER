@@ -1,6 +1,6 @@
 package facu.studer.controllers;
 
-import facu.studer.DTOs.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.DTOs.notification.NotificationPageResponseDTO;
 import facu.studer.entities.LinkedType;
 import facu.studer.security.SecurityUtils;
@@ -57,9 +57,9 @@ public class NotificationController {
      * @return success/error message
      */
     @PatchMapping("/{id}/read")
-    public ResponseEntity<MessageResponseDTO> markAsRead(@PathVariable Long id) {
+    public ResponseEntity<MessageDTO> markAsRead(@PathVariable Long id) {
         String username = securityUtils.requireCurrentUsername();
-        MessageResponseDTO response = notificationService.markAsRead(username, id);
+        MessageDTO response = notificationService.markAsRead(username, id);
         return ResponseEntity.ok(response);
     }
 }

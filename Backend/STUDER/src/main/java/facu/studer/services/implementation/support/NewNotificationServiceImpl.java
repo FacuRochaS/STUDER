@@ -1,6 +1,6 @@
 package facu.studer.services.implementation.support;
 
-import facu.studer.DTOs.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.entities.LinkedType;
 import facu.studer.entities.notifications.Notification;
 import facu.studer.entities.notifications.UserNotification;
@@ -43,7 +43,7 @@ public class NewNotificationServiceImpl implements NewNotificationService {
      * @return success/error message
      */
     @Override
-    public MessageResponseDTO createNotificationList(List<Long> userIds, String title, String message, LinkedType type, Long linkedId) {
+    public MessageDTO createNotificationList(List<Long> userIds, String title, String message, LinkedType type, Long linkedId) {
         // Create the notification entity
         var notification = Notification.builder()
                 .title(resolveMessage(title))
@@ -71,7 +71,7 @@ public class NewNotificationServiceImpl implements NewNotificationService {
 
         });
 
-        return MessageResponseDTO.builder()
+        return MessageDTO.builder()
                 .success(true)
                 .message("Notification created and sent to users successfully.")
                 .build();
@@ -89,7 +89,7 @@ public class NewNotificationServiceImpl implements NewNotificationService {
      * @return success/error message
      */
     @Override
-    public MessageResponseDTO createNotification(Long userId, String title, String message, LinkedType type, Long linkedId) {
+    public MessageDTO createNotification(Long userId, String title, String message, LinkedType type, Long linkedId) {
         // Create the notification entity
         var notification = Notification.builder()
                 .title(resolveMessage(title))
@@ -121,7 +121,7 @@ public class NewNotificationServiceImpl implements NewNotificationService {
 
 
 
-        return MessageResponseDTO.builder()
+        return MessageDTO.builder()
                 .success(true)
                 .message("Notification created and sent to users successfully.")
                 .build();

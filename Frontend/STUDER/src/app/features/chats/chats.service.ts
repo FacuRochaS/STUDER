@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import {
   ChatSummaryDTO,
-  DirectMessage,
+  MessageResponseDTO,
   MessageRequestDTO,
   Page
 } from './chats.model';
@@ -33,12 +33,12 @@ export class ChatService {
    * @param page Número de página (0 por defecto).
    * @param size Tamaño de la página (20 por defecto).
    */
-  getMessagesByChatId(chatId: number, page: number = 0, size: number = 20): Observable<Page<DirectMessage>> {
+  getMessagesByChatId(chatId: number, page: number = 0, size: number = 20): Observable<Page<MessageResponseDTO>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<Page<DirectMessage>>(`${this.apiUrl}/${chatId}/messages`, { params });
+    return this.http.get<Page<MessageResponseDTO>>(`${this.apiUrl}/${chatId}/messages`, { params });
   }
 
   /**
@@ -46,8 +46,8 @@ export class ChatService {
    * @param targetUserId ID del usuario destinatario.
    * @param request Datos del mensaje.
    */
-  sendMessageToUser(targetUserId: number, request: MessageRequestDTO): Observable<DirectMessage> {
-    return this.http.post<DirectMessage>(`${this.apiUrl}/user/${targetUserId}`, request);
+  sendMessageToUser(targetUserId: number, request: MessageRequestDTO): Observable<MessageResponseDTO> {
+    return this.http.post<MessageResponseDTO>(`${this.apiUrl}/user/${targetUserId}`, request);
   }
 
   /**
@@ -55,8 +55,8 @@ export class ChatService {
    * @param chatId ID del chat.
    * @param request Datos del mensaje.
    */
-  sendMessageToChat(chatId: number, request: MessageRequestDTO): Observable<DirectMessage> {
-    return this.http.post<DirectMessage>(`${this.apiUrl}/${chatId}/messages`, request);
+  sendMessageToChat(chatId: number, request: MessageRequestDTO): Observable<MessageResponseDTO> {
+    return this.http.post<MessageResponseDTO>(`${this.apiUrl}/${chatId}/messages`, request);
   }
 
   /**

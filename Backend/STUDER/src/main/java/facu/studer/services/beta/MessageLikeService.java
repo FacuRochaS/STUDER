@@ -1,6 +1,6 @@
 package facu.studer.services.beta;
 
-import facu.studer.DTOs.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 
 /**
  * Service interface for message like operations.
@@ -15,7 +15,7 @@ public interface MessageLikeService {
      * @param messageId the message ID
      * @return success/error response
      */
-    MessageResponseDTO like(String username, Long messageId);
+    MessageDTO like(String username, Long messageId);
 
     /**
      * Removes a like from a message for the authenticated user.
@@ -24,6 +24,6 @@ public interface MessageLikeService {
      * @param messageId the message ID
      * @return success/error response
      */
-    MessageResponseDTO unlike(String username, Long messageId);
+    MessageDTO unlike(String username, Long messageId);
 }
 

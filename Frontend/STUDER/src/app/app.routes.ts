@@ -10,6 +10,7 @@ import { SearchComponent } from './features/search/search.component';
 import { MessagesComponent } from './features/messages/components/messages/messages.component';
 import { UserProfileComponent } from './features/users/components/user-profile/user-profile.component';
 import { authGuard } from './core/auth/auth.guard';
+import {ChatComponent} from './features/chats/components/chat.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -18,14 +19,14 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-   // canActivate: [authGuard],
+    canActivate: [authGuard],
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'discussions', component: DiscussionListComponent },
       { path: 'discussions/:id', component: DiscussionDetailComponent },
       { path: 'courses', component: HomeComponent },
       { path: 'calendar', component: HomeComponent },
-      { path: 'messages', component: MessagesComponent },
+      { path: 'messages', component: ChatComponent },
       { path: 'search', component: SearchComponent },
       { path: 'account', redirectTo: 'user/me', pathMatch: 'full' },
       { path: 'user/me', component: UserProfileComponent },

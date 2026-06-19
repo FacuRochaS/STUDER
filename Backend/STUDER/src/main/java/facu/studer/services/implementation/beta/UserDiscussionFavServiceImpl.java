@@ -1,6 +1,6 @@
 package facu.studer.services.implementation.beta;
 
-import facu.studer.DTOs.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.entities.User;
 import facu.studer.entities.discussions.Discussion;
 import facu.studer.entities.discussions.UserDiscussionFav;
@@ -37,7 +37,7 @@ public class UserDiscussionFavServiceImpl implements UserDiscussionFavService {
      */
     @Override
     @Transactional
-    public MessageResponseDTO addFavourite(String username, Long discussionId) {
+    public MessageDTO addFavourite(String username, Long discussionId) {
         if (userDiscussionFavRepository.existsByUserUsernameAndDiscussionIdAndIsActiveTrue(username, discussionId)) {
             throw new IllegalArgumentException("discussion.already_favourite");
         }
@@ -58,7 +58,7 @@ public class UserDiscussionFavServiceImpl implements UserDiscussionFavService {
 
         userDiscussionFavRepository.save(fav);
 
-        return MessageResponseDTO.builder()
+        return MessageDTO.builder()
                 .success(true)
                 .message("discussion.favourite_added")
                 .build();
@@ -69,7 +69,7 @@ public class UserDiscussionFavServiceImpl implements UserDiscussionFavService {
      */
     @Override
     @Transactional
-    public MessageResponseDTO removeFavourite(String username, Long discussionId) {
+    public MessageDTO removeFavourite(String username, Long discussionId) {
         Optional<UserDiscussionFav> favOpt = userDiscussionFavRepository
                 .findByUserUsernameAndDiscussionIdAndIsActiveTrue(username, discussionId);
 
@@ -82,7 +82,7 @@ public class UserDiscussionFavServiceImpl implements UserDiscussionFavService {
         fav.setLastUpdatedDatetime(LocalDateTime.now());
         userDiscussionFavRepository.save(fav);
 
-        return MessageResponseDTO.builder()
+        return MessageDTO.builder()
                 .success(true)
                 .message("discussion.favourite_removed")
                 .build();
