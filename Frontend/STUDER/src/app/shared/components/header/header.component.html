@@ -65,7 +65,7 @@
     <button
       type="button"
       class="header__control-btn"
-      (click)="toggleTheme()"
+      (click)="toggleTheme($event)"
       [title]="'header.toggle_theme' | translate">
       <span [class]="currentThemeIcon"></span>
     </button>
