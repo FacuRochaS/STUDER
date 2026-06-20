@@ -1,4 +1,4 @@
-package facu.studer.entities.events;
+package facu.studer.entities.beta.curses.events;
 
 import facu.studer.entities.BaseEntity;
 import facu.studer.entities.User;

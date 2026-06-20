@@ -7,16 +7,18 @@ import facu.studer.DTOs.chats.MessageResponseDTO;
 import facu.studer.DTOs.friends.FriendStatusResponseDTO;
 import facu.studer.DTOs.media.ImageUploadResponseDTO;
 import facu.studer.DTOs.user.UserPublicResponseDTO;
+import facu.studer.entities.LinkedType;
 import facu.studer.entities.User;
 import facu.studer.entities.messages.Chat;
 import facu.studer.entities.messages.DirectMessage;
-import facu.studer.repositories.ChatRepository;
-import facu.studer.repositories.DirectMessageRepository;
+import facu.studer.repositories.chat.ChatRepository;
+import facu.studer.repositories.chat.DirectMessageRepository;
 import facu.studer.repositories.UserRepository;
 import facu.studer.services.ChatService;
 import facu.studer.services.FriendService;
 import facu.studer.services.UserService;
 
+import facu.studer.services.support.NewNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +33,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -45,9 +46,13 @@ public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
     private final DirectMessageRepository messageRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
+
     private final FriendService friendService;
+    private final UserService userService;
+    private final NewNotificationService newNotificationService;
+
+
     private final RestTemplate restTemplate;
     private final String mediaServiceUrl;
 
@@ -55,7 +60,7 @@ public class ChatServiceImpl implements ChatService {
 
     public ChatServiceImpl(ChatRepository chatRepository,
                            DirectMessageRepository messageRepository,
-                           UserService userService,
+                           UserService userService, NewNotificationService newNotificationService,
                            UserRepository userRepository,
                            FriendService friendService,
                            RestTemplate restTemplate,
@@ -63,6 +68,7 @@ public class ChatServiceImpl implements ChatService {
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
         this.userService = userService;
+        this.newNotificationService = newNotificationService;
         this.userRepository = userRepository;
         this.friendService = friendService;
         this.restTemplate = restTemplate;
@@ -181,7 +187,18 @@ public class ChatServiceImpl implements ChatService {
 
         // Actualizamos la fecha del chat para que suba en las listas de "recientes"
         chat.setLastUpdatedDatetime(LocalDateTime.now(ZoneOffset.UTC));
-        chatRepository.save(chat);
+        var saved = chatRepository.save(chat);
+
+        User reciber = chat.getUser1().getId().equals(senderId) ? chat.getUser2() : chat.getUser1();
+
+        newNotificationService.createParameterNotification(
+                reciber.getId(),
+                "user.message.title",
+                new String[] {sender.getUsername()},
+                "user.message.message",
+                new String[] {newMessage.getContent()},
+                LinkedType.MESSAGE,
+                saved.getId());
 
         return messageRepository.save(newMessage);
     }

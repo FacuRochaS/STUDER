@@ -4,8 +4,8 @@ import facu.studer.DTOs.MessageDTO;
 import facu.studer.entities.LinkedType;
 import facu.studer.entities.notifications.Notification;
 import facu.studer.entities.notifications.UserNotification;
-import facu.studer.repositories.NotificationRepository;
-import facu.studer.repositories.UserNotificationRepository;
+import facu.studer.repositories.notification.NotificationRepository;
+import facu.studer.repositories.notification.UserNotificationRepository;
 import facu.studer.repositories.UserRepository;
 import facu.studer.services.support.NewNotificationService;
 import org.springframework.context.MessageSource;
@@ -141,5 +141,63 @@ public class NewNotificationServiceImpl implements NewNotificationService {
         }
     }
 
+
+    /**
+     * Creates a new notification for a list of users.
+     *
+     * @param userId  the list of user IDs
+     * @param title    the notification title
+     * @param message  the message
+     * @param type     type of notification
+     * @param linkedId linked id
+     * @return success/error message
+     */
+    @Override
+    public MessageDTO createParameterNotification(Long userId, String title,String[] tParams, String message,String[] mParams, LinkedType type, Long linkedId) {
+        // Create the notification entity
+        var notification = Notification.builder()
+                .title(resolveParameterMessage(title, tParams))
+                .message(resolveParameterMessage(message, mParams))
+                .type(type)
+                .linkedId(linkedId)
+                .createdDatetime(LocalDateTime.now())
+                .lastUpdatedDatetime(LocalDateTime.now())
+                .isActive(true)
+                .build();
+
+        // Save the notification
+        var savedNotification = notificationRepository.save(notification);
+
+
+        var actualUser = userRepository.findById(userId);
+        if(actualUser.isPresent()){
+            var userNotification = UserNotification.builder()
+                    .user(actualUser.get())
+                    .notification(savedNotification)
+                    .read(false)
+                    .isActive(true)
+                    .createdDatetime(LocalDateTime.now())
+                    .lastUpdatedDatetime(LocalDateTime.now())
+                    .build();
+            userNotificationRepository.save(userNotification);
+        }
+
+        return MessageDTO.builder()
+                .success(true)
+                .message("Notification created and sent to users successfully.")
+                .build();
+    }
+
+    private String resolveParameterMessage(String messageKey, String[] params) {
+        if (messageKey == null) {
+            return "An unknown error occurred.";
+        }
+        Locale locale = LocaleContextHolder.getLocale();
+        try {
+            return messageSource.getMessage(messageKey, params, locale);
+        } catch (Exception e) {
+            return messageKey;
+        }
+    }
 
 }

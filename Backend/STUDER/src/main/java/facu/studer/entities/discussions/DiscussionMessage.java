@@ -38,12 +38,6 @@ public class DiscussionMessage extends BaseEntity {
     private User sender;
 
     /**
-     * Content of the message.
-     */
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
-
-    /**
      * Parent message (for replies/threads). Nullable.
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,8 +45,15 @@ public class DiscussionMessage extends BaseEntity {
     private DiscussionMessage parentDiscussionMessage;
 
     /**
-     * Reference to an image stored in external microservice. Nullable.
+     * Content of the message.
      */
-    private String imageRef;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
+
+    /**
+     * link to photo.
+     */
+    @Column(nullable = false)
+    private String link;
 
 }

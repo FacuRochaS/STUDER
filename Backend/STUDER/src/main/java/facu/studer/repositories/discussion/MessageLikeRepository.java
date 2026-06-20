@@ -1,4 +1,4 @@
-package facu.studer.repositories;
+package facu.studer.repositories.discussion;
 
 import facu.studer.entities.discussions.MessageLike;
 import org.springframework.data.jpa.repository.JpaRepository;

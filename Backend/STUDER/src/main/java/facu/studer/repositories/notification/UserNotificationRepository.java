@@ -1,4 +1,4 @@
-package facu.studer.repositories;
+package facu.studer.repositories.notification;
 
 import facu.studer.entities.User;
 import facu.studer.entities.notifications.UserNotification;

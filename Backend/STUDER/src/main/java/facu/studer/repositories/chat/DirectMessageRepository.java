@@ -1,6 +1,5 @@
-package facu.studer.repositories;
+package facu.studer.repositories.chat;
 
-import facu.studer.entities.User;
 import facu.studer.entities.messages.DirectMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
 
-
-import java.util.Optional;
 /**
  * Repository interface for DirectMessage entity.
  * Provides CRUD operations and query methods for direct messages.

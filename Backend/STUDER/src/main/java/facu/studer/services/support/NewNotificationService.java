@@ -40,4 +40,12 @@ public interface NewNotificationService {
             LinkedType type,
             Long linkedId );
 
-}
+    MessageDTO createParameterNotification(
+            Long userId,
+            String title,String[] tParams,
+            String message,String[] mParams,
+            LinkedType type,
+            Long linkedId );
+
+
+    }

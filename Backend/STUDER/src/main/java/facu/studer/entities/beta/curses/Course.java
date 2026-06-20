@@ -1,4 +1,4 @@
-package facu.studer.entities.curses;
+package facu.studer.entities.beta.curses;
 
 import facu.studer.entities.BaseEntity;
 import jakarta.persistence.Entity;

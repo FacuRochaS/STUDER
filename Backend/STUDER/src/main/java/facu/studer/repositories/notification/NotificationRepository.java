@@ -1,4 +1,4 @@
-package facu.studer.repositories;
+package facu.studer.repositories.notification;
 
 import facu.studer.entities.notifications.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
