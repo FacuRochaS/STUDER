@@ -1,7 +1,7 @@
 package facu.studer.repositories;
 
-import facu.studer.entities.RefreshToken;
-import facu.studer.entities.User;
+import facu.studer.entities.users.RefreshToken;
+import facu.studer.entities.users.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

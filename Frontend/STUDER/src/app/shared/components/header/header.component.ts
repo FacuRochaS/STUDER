@@ -95,9 +95,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/home']);
   }
 
-  toggleTheme(): void {
-    const next: Theme = this.themeService.current === 'light' ? 'dark' : 'light';
-    this.themeService.setTheme(next);
+  toggleTheme(event: MouseEvent) {
+    const nextTheme = this.themeService.current === 'light' ? 'dark' : 'light';
+    this.themeService.setTheme(nextTheme, { animate: true, event: event });
   }
 
   get currentThemeIcon(): string {

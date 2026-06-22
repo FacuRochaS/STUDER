@@ -1,6 +1,6 @@
 package facu.studer.services.implementation;
 
-import facu.studer.DTOs.discussions.MessageResponseDTO;
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.DTOs.notification.NotificationPageResponseDTO;
 import facu.studer.DTOs.notification.NotificationResponseDTO;
 import facu.studer.entities.LinkedType;
@@ -9,7 +9,7 @@ import facu.studer.entities.notifications.UserNotification;
 import facu.studer.exceptions.ResourceNotFoundException;
 import facu.studer.exceptions.UnauthorizedOperationException;
 import facu.studer.mappers.NotificationMapper;
-import facu.studer.repositories.UserNotificationRepository;
+import facu.studer.repositories.notification.UserNotificationRepository;
 import facu.studer.services.NotificationService;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
@@ -88,7 +88,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public MessageResponseDTO markAsRead(String username, Long userNotificationId) {
+    public MessageDTO markAsRead(String username, Long userNotificationId) {
         UserNotification userNotification = userNotificationRepository
                 .findByIdWithNotification(userNotificationId)
                 .orElseThrow(() -> new ResourceNotFoundException("notification.not_found"));
@@ -102,7 +102,7 @@ public class NotificationServiceImpl implements NotificationService {
         userNotification.setLastUpdatedDatetime(LocalDateTime.now());
         userNotificationRepository.save(userNotification);
 
-        return MessageResponseDTO.builder()
+        return MessageDTO.builder()
                 .success(true)
                 .message("notification.marked_read")
                 .build();

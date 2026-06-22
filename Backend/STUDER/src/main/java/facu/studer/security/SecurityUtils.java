@@ -1,5 +1,6 @@
 package facu.studer.security;
 
+import facu.studer.services.implementation.support.UserDetailsImpl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -103,8 +104,17 @@ public class SecurityUtils {
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             return null;
         }
-        return (String) auth.getPrincipal();
+
+        // Extraemos el username correctamente desde nuestro nuevo objeto
+        if (auth.getPrincipal() instanceof UserDetailsImpl userDetails) {
+            return userDetails.getUsername();
+        }
+
+        // Fallback por si acaso
+        return auth.getPrincipal().toString();
     }
+
+
 
     /**
      * Gets the current authenticated username, throwing exception if not authenticated.
@@ -119,5 +129,36 @@ public class SecurityUtils {
         }
         return username;
     }
+
+    /**
+     * Gets the current authenticated user id directly from SecurityContext.
+     *
+     * @return the user id, or null if not authenticated
+     */
+    public Long getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return null;
+        }
+
+        // Casteamos al objeto personalizado que guardaste en la autenticación
+        UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
+        return userDetails.getId();
+    }
+
+    /**
+     * Gets the current authenticated user id, throwing exception if not authenticated.
+     *
+     * @return the user id
+     * @throws IllegalStateException if not authenticated
+     */
+    public Long requireCurrentUserId() {
+        Long userId = getCurrentUserId();
+        if (userId == null) {
+            throw new IllegalStateException("No authenticated user found");
+        }
+        return userId;
+    }
+
 }
 

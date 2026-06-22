@@ -1,7 +1,7 @@
 package facu.studer.entities.discussions;
 
 import facu.studer.entities.BaseEntity;
-import facu.studer.entities.User;
+import facu.studer.entities.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,17 +1,22 @@
 package facu.studer.services.implementation;
 
-import facu.studer.DTOs.discussions.DiscussionCreateRequestDTO;
-import facu.studer.DTOs.discussions.DiscussionPageResponseDTO;
-import facu.studer.DTOs.discussions.DiscussionResponseDTO;
-import facu.studer.DTOs.discussions.MessageResponseDTO;
+import facu.studer.DTOs.discussions.*;
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.entities.Tag;
-import facu.studer.entities.User;
+import facu.studer.entities.users.User;
 import facu.studer.entities.discussions.Discussion;
+import facu.studer.entities.discussions.DiscussionMessage;
+import facu.studer.entities.discussions.MessageLike;
+import facu.studer.entities.discussions.UserDiscussionFav;
 import facu.studer.exceptions.DiscussionClosedException;
 import facu.studer.exceptions.ResourceNotFoundException;
 import facu.studer.exceptions.UnauthorizedOperationException;
 import facu.studer.mappers.DiscussionMapper;
-import facu.studer.repositories.DiscussionRepository;
+import facu.studer.mappers.DiscussionMessageMapper;
+import facu.studer.repositories.discussion.DiscussionMessageRepository;
+import facu.studer.repositories.discussion.DiscussionRepository;
+import facu.studer.repositories.discussion.MessageLikeRepository;
+import facu.studer.repositories.discussion.UserDiscussionFavRepository;
 import facu.studer.services.DiscussionService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -24,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,13 +44,20 @@ public class DiscussionServiceImpl implements DiscussionService {
     private static final int PAGE_SIZE = 10;
     private static final int DEFAULT_ACTIVITY_HOURS = 24;
 
+
     private final DiscussionRepository discussionRepository;
+    private final MessageLikeRepository messageLikeRepository;
+    private final DiscussionMessageRepository discussionMessageRepository;
+    private final UserDiscussionFavRepository userDiscussionFavRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    public DiscussionServiceImpl(DiscussionRepository discussionRepository) {
+    public DiscussionServiceImpl(DiscussionRepository discussionRepository, MessageLikeRepository messageLikeRepository, DiscussionMessageRepository discussionMessageRepository, UserDiscussionFavRepository userDiscussionFavRepository) {
         this.discussionRepository = discussionRepository;
+        this.messageLikeRepository = messageLikeRepository;
+        this.discussionMessageRepository = discussionMessageRepository;
+        this.userDiscussionFavRepository = userDiscussionFavRepository;
     }
 
     /**
@@ -153,7 +166,7 @@ public class DiscussionServiceImpl implements DiscussionService {
      */
     @Override
     @Transactional
-    public MessageResponseDTO close(String username, Long discussionId) {
+    public MessageDTO close(String username, Long discussionId) {
         Discussion discussion = discussionRepository.findByIdAndIsActiveTrue(discussionId)
                 .orElseThrow(() -> new ResourceNotFoundException("discussion.not_found"));
 
@@ -170,7 +183,7 @@ public class DiscussionServiceImpl implements DiscussionService {
         discussion.setLastUpdatedDatetime(LocalDateTime.now());
         discussionRepository.save(discussion);
 
-        return MessageResponseDTO.builder()
+        return MessageDTO.builder()
                 .success(true)
                 .message("discussion.closed_success")
                 .build();
@@ -208,29 +221,6 @@ public class DiscussionServiceImpl implements DiscussionService {
         return "NONE";
     }
 
-    /**
-     * Checks if user has favourited a discussion via EntityManager.
-     */
-    private boolean isFavourite(String username, Long discussionId) {
-        Long count = (Long) entityManager.createQuery(
-                        "SELECT COUNT(f) FROM UserDiscussionFav f " +
-                                "WHERE f.user.username = :username AND f.discussion.id = :discussionId AND f.isActive = true")
-                .setParameter("username", username)
-                .setParameter("discussionId", discussionId)
-                .getSingleResult();
-        return count > 0;
-    }
-
-    private User findUserByUsername(String username) {
-        var query = entityManager.createQuery(
-                "SELECT u FROM User u WHERE u.username = :username AND u.isActive = true", User.class);
-        query.setParameter("username", username);
-        var results = query.getResultList();
-        if (results.isEmpty()) {
-            throw new ResourceNotFoundException("user.not_found");
-        }
-        return results.get(0);
-    }
 
     /**
      * Resolves tag names to managed Tag entities within the current persistence context.
@@ -278,6 +268,244 @@ public class DiscussionServiceImpl implements DiscussionService {
         }
 
         return result;
+    }
+
+
+    /**
+     * Gets paginated root-level messages for a discussion, with nested children.
+     * Root messages are ordered by like count (most liked first).
+     * Children are loaded recursively (1 level deep) and also ordered by likes.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public DiscussionMessagePageResponseDTO getMessages(Long discussionId, String username, int page) {
+        // Verify discussion exists
+        Discussion discussion = entityManager.find(Discussion.class, discussionId);
+        if (discussion == null || !discussion.getIsActive()) {
+            throw new ResourceNotFoundException("discussion.not_found");
+        }
+
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<DiscussionMessage> rootMessages = discussionMessageRepository
+                .findRootMessagesByDiscussion(discussionId, pageable);
+
+        List<DiscussionMessageResponseDTO> dtos = rootMessages.getContent().stream()
+                .map(msg -> mapMessageToDTO(msg, username))
+                .collect(Collectors.toList());
+
+        return DiscussionMessagePageResponseDTO.builder()
+                .messages(dtos)
+                .totalElements(rootMessages.getTotalElements())
+                .hasMore(rootMessages.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
+    /**
+     * Creates a new message in a discussion.
+     * Validates that the discussion is not closed.
+     * Increments the discussion's message count.
+     */
+    @Override
+    @Transactional
+    public DiscussionMessageResponseDTO createMessage(
+            Long discussionId,
+            String username,
+            DiscussionMessageCreateRequestDTO request) {
+
+        Discussion discussion = entityManager.find(Discussion.class, discussionId);
+        if (discussion == null || !discussion.getIsActive()) {
+            throw new ResourceNotFoundException("discussion.not_found");
+        }
+
+        if (discussion.isClosed()) {
+            throw new DiscussionClosedException("discussion.closed");
+        }
+
+        User sender = findUserByUsername(username);
+
+        DiscussionMessage parentMessage = null;
+        if (request.getParentMessageId() != null) {
+            parentMessage = entityManager.find(DiscussionMessage.class, request.getParentMessageId());
+            if (parentMessage == null || !parentMessage.getIsActive()) {
+                throw new ResourceNotFoundException("discussion.message.not_found");
+            }
+            // Validate parent belongs to same discussion
+            if (!parentMessage.getDiscussion().getId().equals(discussionId)) {
+                throw new IllegalArgumentException("discussion.message.parent_mismatch");
+            }
+        }
+
+        DiscussionMessage message = DiscussionMessage.builder()
+                .discussion(discussion)
+                .sender(sender)
+                .content(request.getContent())
+                .link(request.getImageRef())
+                .parentDiscussionMessage(parentMessage)
+                .isActive(true)
+                .createdDatetime(LocalDateTime.now())
+                .lastUpdatedDatetime(LocalDateTime.now())
+                .build();
+
+        DiscussionMessage saved = discussionMessageRepository.save(message);
+
+        // Increment message count on discussion
+        discussion.setMessageCount(discussion.getMessageCount() + 1);
+        discussion.setLastUpdatedDatetime(LocalDateTime.now());
+        entityManager.merge(discussion);
+
+        return DiscussionMessageMapper.toResponseDTO(saved, 0, false, List.of());
+    }
+
+    /**
+     * Maps a DiscussionMessage to DTO, recursively loading children (1 level).
+     */
+    private DiscussionMessageResponseDTO mapMessageToDTO(DiscussionMessage message, String username) {
+        long likeCount = discussionMessageRepository.countLikesByMessageId(message.getId());
+        boolean likedByUser = discussionMessageRepository.isLikedByUser(message.getId(), username);
+
+        // Load children (replies) recursively
+        List<DiscussionMessage> children = discussionMessageRepository.findChildMessages(message.getId());
+        List<DiscussionMessageResponseDTO> childDTOs = children.stream()
+                .map(child -> mapMessageToDTO(child, username))
+                .collect(Collectors.toList());
+
+        return DiscussionMessageMapper.toResponseDTO(message, likeCount, likedByUser, childDTOs);
+    }
+
+    /**
+     * Adds a like to a message. Checks that user hasn't already liked it.
+     */
+    @Override
+    @Transactional
+    public MessageDTO like(String username, Long messageId) {
+        if (messageLikeRepository.existsByUserUsernameAndMessageIdAndIsActiveTrue(username, messageId)) {
+            throw new IllegalArgumentException("discussion.message.already_liked");
+        }
+
+        User user = findUserByUsername(username);
+        DiscussionMessage message = entityManager.find(DiscussionMessage.class, messageId);
+        if (message == null || !message.getIsActive()) {
+            throw new ResourceNotFoundException("discussion.message.not_found");
+        }
+
+        MessageLike like = MessageLike.builder()
+                .user(user)
+                .message(message)
+                .isActive(true)
+                .createdDatetime(LocalDateTime.now())
+                .lastUpdatedDatetime(LocalDateTime.now())
+                .build();
+
+        messageLikeRepository.save(like);
+
+        return MessageDTO.builder()
+                .success(true)
+                .message("discussion.message.like_added")
+                .build();
+    }
+
+    /**
+     * Removes a like from a message. Performs soft-delete.
+     */
+    @Override
+    @Transactional
+    public MessageDTO unlike(String username, Long messageId) {
+        Optional<MessageLike> likeOpt = messageLikeRepository
+                .findByUserUsernameAndMessageIdAndIsActiveTrue(username, messageId);
+
+        if (likeOpt.isEmpty()) {
+            throw new IllegalArgumentException("discussion.message.not_liked");
+        }
+
+        MessageLike like = likeOpt.get();
+        like.setIsActive(false);
+        like.setLastUpdatedDatetime(LocalDateTime.now());
+        messageLikeRepository.save(like);
+
+        return MessageDTO.builder()
+                .success(true)
+                .message("discussion.message.like_removed")
+                .build();
+    }
+
+    /**
+     * Adds a discussion to the user's favourites.
+     */
+    @Override
+    @Transactional
+    public MessageDTO addFavourite(String username, Long discussionId) {
+        if (userDiscussionFavRepository.existsByUserUsernameAndDiscussionIdAndIsActiveTrue(username, discussionId)) {
+            throw new IllegalArgumentException("discussion.already_favourite");
+        }
+
+        User user = findUserByUsername(username);
+        Discussion discussion = entityManager.find(Discussion.class, discussionId);
+        if (discussion == null || !discussion.getIsActive()) {
+            throw new ResourceNotFoundException("discussion.not_found");
+        }
+
+        UserDiscussionFav fav = UserDiscussionFav.builder()
+                .user(user)
+                .discussion(discussion)
+                .isActive(true)
+                .createdDatetime(LocalDateTime.now())
+                .lastUpdatedDatetime(LocalDateTime.now())
+                .build();
+
+        userDiscussionFavRepository.save(fav);
+
+        return MessageDTO.builder()
+                .success(true)
+                .message("discussion.favourite_added")
+                .build();
+    }
+
+    /**
+     * Removes a discussion from the user's favourites (soft-delete).
+     */
+    @Override
+    @Transactional
+    public MessageDTO removeFavourite(String username, Long discussionId) {
+        Optional<UserDiscussionFav> favOpt = userDiscussionFavRepository
+                .findByUserUsernameAndDiscussionIdAndIsActiveTrue(username, discussionId);
+
+        if (favOpt.isEmpty()) {
+            throw new IllegalArgumentException("discussion.not_favourite");
+        }
+
+        UserDiscussionFav fav = favOpt.get();
+        fav.setIsActive(false);
+        fav.setLastUpdatedDatetime(LocalDateTime.now());
+        userDiscussionFavRepository.save(fav);
+
+        return MessageDTO.builder()
+                .success(true)
+                .message("discussion.favourite_removed")
+                .build();
+    }
+
+    /**
+     * Checks if a user has favourited a discussion.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isFavourite(String username, Long discussionId) {
+        return userDiscussionFavRepository
+                .existsByUserUsernameAndDiscussionIdAndIsActiveTrue(username, discussionId);
+    }
+
+
+
+    private User findUserByUsername(String username) {
+        var query = entityManager.createQuery(
+                "SELECT u FROM User u WHERE u.username = :username AND u.isActive = true", User.class);
+        query.setParameter("username", username);
+        var results = query.getResultList();
+        if (results.isEmpty()) {
+            throw new ResourceNotFoundException("user.not_found");
+        }
+        return results.get(0);
     }
 }
 

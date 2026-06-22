@@ -5,7 +5,7 @@ export type LinkedType =
   | 'MESSAGE'
   | 'USER'
   | 'SYSTEM'
-  | 'EVENT'; // Added EVENT based on backend LinkedType
+  | 'EVENT';
 
 export interface NotificationResponseDTO {
   id: number;
