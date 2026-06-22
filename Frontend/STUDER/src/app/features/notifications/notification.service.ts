@@ -8,7 +8,8 @@ import {
   NotificationPageResponseDTO,
   NotificationResponseDTO
 } from './notification.model';
-import { NotificationStrategyFactory } from './strategy/notification-strategy.factory';
+import {NotificationStrategyFactory} from './factories/notification-strategy.factory';
+
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {

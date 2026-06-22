@@ -2,8 +2,7 @@ package facu.studer.entities.discussions;
 
 import facu.studer.entities.BaseEntity;
 import facu.studer.entities.Tag;
-import facu.studer.entities.User;
-import facu.studer.entities.curses.Course;
+import facu.studer.entities.users.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -71,14 +70,5 @@ public class Discussion extends BaseEntity {
     @Column(nullable = false)
     @Builder.Default
     private int messageCount = 0;
-
-    /**
-     *  The course this discussionbelongs to. If null, the discussion is public.
-     * If not null, the discussion is private to the group/course.
-     */
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id")
-    private Course course;
-
 
 }

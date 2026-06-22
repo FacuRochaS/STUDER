@@ -1,10 +1,10 @@
 package facu.studer.controllers;
 
-import facu.studer.DTOs.discussions.MessageResponseDTO;
-import facu.studer.DTOs.user.FollowRequestDTO;
-import facu.studer.DTOs.user.FriendResponseDTO;
-import facu.studer.DTOs.user.FriendStatusResponseDTO;
-import facu.studer.DTOs.user.FriendsListResponseDTO;
+import facu.studer.DTOs.MessageDTO;
+import facu.studer.DTOs.friends.FollowRequestDTO;
+import facu.studer.DTOs.friends.FriendResponseDTO;
+import facu.studer.DTOs.friends.FriendStatusResponseDTO;
+import facu.studer.DTOs.friends.FriendsListResponseDTO;
 import facu.studer.security.SecurityUtils;
 import facu.studer.services.FriendService;
 import jakarta.validation.Valid;
@@ -64,11 +64,11 @@ public class FriendController {
      * @return success message
      */
     @DeleteMapping("/follow/{userId}")
-    public ResponseEntity<MessageResponseDTO> unfollowUser(@PathVariable Long userId) {
+    public ResponseEntity<MessageDTO> unfollowUser(@PathVariable Long userId) {
         String username = securityUtils.requireCurrentUsername();
         boolean success = friendService.unfollowUser(username, userId);
         
-        return ResponseEntity.ok(MessageResponseDTO.builder()
+        return ResponseEntity.ok(MessageDTO.builder()
                 .success(success)
                 .message(success ? "friend.unfollow_success" : "friend.not_found")
                 .build());

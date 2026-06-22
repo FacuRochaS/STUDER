@@ -1,5 +1,6 @@
 package facu.studer.security;
 
+import facu.studer.services.implementation.support.UserDetailsImpl;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -57,12 +58,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             ? roles.stream().map(SimpleGrantedAuthority::new).toList()
                             : List.of();
 
-                    // Create authentication token
+                    // --- CAMBIO PRINCIPAL AQUÍ ---
+                    // 1. Extraemos el ID del token (necesitarás tener este método en tu jwtUtil)
+                    Long userId = jwtUtil.extractUserId(jwt);
+
+                    // 2. Creamos nuestro UserDetails personalizado
+                    UserDetailsImpl userDetails = new UserDetailsImpl(userId, username, null, authorities);
+
+                    // 3. Pasamos userDetails en lugar del string username
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            username,
+                            userDetails,
                             null,
                             authorities
                     );
+                    // -----------------------------
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

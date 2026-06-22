@@ -23,13 +23,7 @@ body {
   background-position: center center;
 }
 
-body.theme-dark {
-  background-image: url('assets/images/back-dark.png');
-}
 
-body.theme-light {
-  background-image: url('assets/images/back-light.png');
-}
 
 
 
@@ -63,7 +57,7 @@ body.theme-light {
   --border: #3a3a3a;
 
   /* Layout */
-  --sidebar-bg: #f4f4f5;
+  --sidebar-bg: var(--color-bg);
   --sidebar-width: 5rem;
   --sidebar-hover-bg: rgba(0, 0, 0, 0.04);
   --sidebar-active-indicator: 3px;
@@ -115,34 +109,56 @@ body.theme-light {
 }
 
 body.theme-dark {
+  background-image: url('assets/images/back-dark.png');
+
+
   --color-primary: #4285f4;
   --color-correct: #00bf63;
   --color-error: #ff3131;
   --color-warning: #ff751f;
   --color-info: #7E57C2;
   --color-restriction: #cecedd;
+  --nav-color-inactive: #959494;
 
   --color-bg: #181818;
   --color-text-prim: #f5f5f5;
   --color-text-secu: #c1c1c1;
+  --color-text-btn: #f8f8f8;
+
   --box-shadow-color: rgba(0,0,0,0.40);
   --logo-shadow-color: rgba(255,255,255,0.22);
   --logo-shadow-def-color: rgba(255,255,255,0.22);
 
   --sidebar-bg: #1e1e22;
   --sidebar-hover-bg: rgba(255, 255, 255, 0.06);
-  --nav-color-inactive: #6b6b6b;
+
 
   --notification-unread-bg: rgba(66, 133, 244, 0.12);
   --notification-hover-bg: rgba(255, 255, 255, 0.04);
   --overlay-border: 1px solid rgba(255, 255, 255, 0.08);
 
+  --nav-color-account: var(--color-restriction);
+
+
   --input-background: rgba(50, 50, 50, 0.6);
   --border: #555;
-  --layout-body-bg: #121214;
+
+  --search-bg: var(--input-background);
+  --search-border: var(--border);
+
+  --header-bg: var(--color-bg);
+
+
+  --footer-bg: var(--color-bg);
+
+  --content-bg: transparent;
+
+  --layout-body-bg: transparent;
+
 }
 
 body.theme-light {
+  background-image: url('assets/images/back-light.png');
   --color-primary: #4285f4;
   --color-correct: #00bf63;
   --color-error: #ff3131;
@@ -209,4 +225,9 @@ body.theme-light {
   color: var(--entity-block-color);
 }
 
-
+/* Deshabilitamos la transición por defecto si el navegador lo soporta */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}

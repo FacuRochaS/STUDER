@@ -1,9 +1,7 @@
 package facu.studer.services;
 
-import facu.studer.DTOs.discussions.DiscussionCreateRequestDTO;
-import facu.studer.DTOs.discussions.DiscussionPageResponseDTO;
-import facu.studer.DTOs.discussions.DiscussionResponseDTO;
-import facu.studer.DTOs.discussions.MessageResponseDTO;
+import facu.studer.DTOs.discussions.*;
+import facu.studer.DTOs.MessageDTO;
 
 import java.util.List;
 
@@ -66,5 +64,84 @@ public interface DiscussionService {
      * @param discussionId the discussion ID
      * @return success/error response
      */
-    MessageResponseDTO close(String username, Long discussionId);
+    MessageDTO close(String username, Long discussionId);
+
+
+
+    /**
+     * Gets paginated root-level messages for a discussion with hierarchy.
+     * Messages are ordered by like count (most liked first).
+     * Child messages are nested under their parent.
+     *
+     * @param discussionId the discussion ID
+     * @param username     the authenticated username (for liked-by-user flag)
+     * @param page         page number (0-based)
+     * @return paginated message response with nested children
+     */
+    DiscussionMessagePageResponseDTO getMessages(Long discussionId, String username, int page);
+
+    /**
+     * Creates a new message in a discussion.
+     * Fails if the discussion is closed.
+     *
+     * @param discussionId the discussion ID
+     * @param username     the authenticated username (sender)
+     * @param request      the message creation request
+     * @return the created message response
+     */
+    DiscussionMessageResponseDTO createMessage(
+            Long discussionId,
+            String username,
+            DiscussionMessageCreateRequestDTO request);
+
+
+    /**
+     * Adds a like to a message for the authenticated user.
+     *
+     * @param username  the authenticated username
+     * @param messageId the message ID
+     * @return success/error response
+     */
+    MessageDTO like(String username, Long messageId);
+
+    /**
+     * Removes a like from a message for the authenticated user.
+     *
+     * @param username  the authenticated username
+     * @param messageId the message ID
+     * @return success/error response
+     */
+    MessageDTO unlike(String username, Long messageId);
+
+
+    /**
+     * Adds a discussion to the user's favourites.
+     *
+     * @param username     the authenticated username
+     * @param discussionId the discussion ID
+     * @return success/error response
+     */
+    MessageDTO addFavourite(String username, Long discussionId);
+
+    /**
+     * Removes a discussion from the user's favourites.
+     *
+     * @param username     the authenticated username
+     * @param discussionId the discussion ID
+     * @return success/error response
+     */
+    MessageDTO removeFavourite(String username, Long discussionId);
+
+    /**
+     * Checks if a user has favourited a discussion.
+     *
+     * @param username     the username
+     * @param discussionId the discussion ID
+     * @return true if favourited
+     */
+    boolean isFavourite(String username, Long discussionId);
+
+
+
+
 }

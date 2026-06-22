@@ -1,27 +1,25 @@
 package facu.studer.services.implementation;
 
-import facu.studer.DTOs.user.FriendResponseDTO;
-import facu.studer.DTOs.user.FriendStatusResponseDTO;
-import facu.studer.DTOs.user.FriendsListResponseDTO;
-import facu.studer.entities.Friend;
-import facu.studer.entities.User;
-import facu.studer.entities.notifications.Notification;
-import facu.studer.entities.notifications.UserNotification;
+import facu.studer.DTOs.friends.FriendResponseDTO;
+import facu.studer.DTOs.friends.FriendStatusResponseDTO;
+import facu.studer.DTOs.friends.FriendsListResponseDTO;
+import facu.studer.entities.users.Friend;
+import facu.studer.entities.LinkedType;
+import facu.studer.entities.users.User;
 import facu.studer.exceptions.ResourceNotFoundException;
-import facu.studer.factories.NotificationFactory;
 import facu.studer.mappers.FriendMapper;
 import facu.studer.repositories.FriendRepository;
-import facu.studer.repositories.NotificationRepository;
-import facu.studer.repositories.UserNotificationRepository;
 import facu.studer.repositories.UserRepository;
 import facu.studer.services.FriendService;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import facu.studer.services.support.NewNotificationService;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,18 +34,20 @@ public class FriendServiceImpl implements FriendService {
 
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
-    private final NotificationRepository notificationRepository;
-    private final UserNotificationRepository userNotificationRepository;
+
+    private final NewNotificationService newNotificationService;
+    private final MessageSource messageSource;
+
 
     public FriendServiceImpl(
             FriendRepository friendRepository,
             UserRepository userRepository,
-            NotificationRepository notificationRepository,
-            UserNotificationRepository userNotificationRepository) {
+            NewNotificationService newNotificationService, MessageSource messageSource) {
         this.friendRepository = friendRepository;
         this.userRepository = userRepository;
-        this.notificationRepository = notificationRepository;
-        this.userNotificationRepository = userNotificationRepository;
+
+        this.newNotificationService = newNotificationService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -56,7 +56,7 @@ public class FriendServiceImpl implements FriendService {
      * 2. If yes, accept it (set both flags to true)
      * 3. If no, check for existing (sender=current, receiver=target)
      * 4. If exists, do nothing (already following)
-     * 5. Otherwise create new relationship as sender
+     * 5. Otherwise, create new relationship as sender
      */
     @Override
     @Transactional
@@ -184,20 +184,14 @@ public class FriendServiceImpl implements FriendService {
      * Creates a USER type notification for when a user is followed.
      */
     private void createFollowNotification(User receiver, User follower) {
-        Notification notification = notificationRepository.save(
-                NotificationFactory.buildFollowNotification(follower)
+
+        newNotificationService.createNotification(
+                receiver.getId(),
+                resolveMessage("friend.follow_title", follower.getUsername()  ),
+                resolveMessage("friend.follow_message", follower.getUsername()),
+                LinkedType.USER,
+                follower.getId()
         );
-
-        UserNotification userNotification = UserNotification.builder()
-                .user(receiver)
-                .notification(notification)
-                .read(false)
-                .createdDatetime(LocalDateTime.now())
-                .lastUpdatedDatetime(LocalDateTime.now())
-                .isActive(true)
-                .build();
-
-        userNotificationRepository.save(userNotification);
     }
 
     @Override
@@ -231,6 +225,53 @@ public class FriendServiceImpl implements FriendService {
                 .isFollowing(isFollowing)
                 .isFriend(isFriend)
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FriendStatusResponseDTO getFriendStatus(Long currentUserId, Long targetUserId) {
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("user.not_found"));
+
+        User targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("user.not_found"));
+
+        Optional<Friend> friendship = friendRepository.findFriendship(currentUser, targetUser);
+        if (friendship.isEmpty()) {
+            return FriendStatusResponseDTO.builder()
+                    .isFollowing(false)
+                    .isFriend(false)
+                    .build();
+        }
+
+        Friend friend = friendship.get();
+        boolean currentIsSender = friend.getSender().getId().equals(currentUser.getId());
+        boolean isFollowing = currentIsSender
+                ? Boolean.TRUE.equals(friend.getSenderAccept())
+                : Boolean.TRUE.equals(friend.getReceiverAccept());
+        boolean isFriend = Boolean.TRUE.equals(friend.getSenderAccept())
+                && Boolean.TRUE.equals(friend.getReceiverAccept());
+
+        return FriendStatusResponseDTO.builder()
+                .isFollowing(isFollowing)
+                .isFriend(isFriend)
+                .build();
+    }
+
+
+
+    private String resolveMessage(String messageKey, String username) {
+        Object[] args = new Object[]{ username };
+        if (messageKey == null) {
+            return "An unknown error occurred.";
+        }
+        Locale locale = LocaleContextHolder.getLocale();
+        try {
+            return messageSource.getMessage(messageKey, args, locale);
+        } catch (Exception e) {
+            // Si la clave no se encuentra, devolver la clave misma.
+            return messageKey;
+        }
     }
 }
 

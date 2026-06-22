@@ -1,15 +1,13 @@
 package facu.studer.entities.messages;
 
 import facu.studer.entities.BaseEntity;
-import facu.studer.entities.User;
+import facu.studer.entities.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -23,19 +21,21 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DirectMessage extends BaseEntity {
+
+    /**
+     * Reference to the chat.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
+
+    
     /**
      * User who sends the message.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
-
-    /**
-     * User who receives the message.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id", nullable = false)
-    private User receiver;
 
     /**
      * Content of the message.
@@ -49,11 +49,6 @@ public class DirectMessage extends BaseEntity {
     @Column(nullable = false)
     private String link;
 
-    /**
-     * Timestamp of when the message was sent.
-     */
-    @Column(name = "sent_at", nullable = false)
-    private LocalDateTime sentAt;
 
     /**
      * Reference to the message being replied to.

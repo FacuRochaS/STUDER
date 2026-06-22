@@ -17,6 +17,10 @@ export class UserService {
     return this.http.get<User>(`${this.apiUrl}/me`);
   }
 
+  getById(id: number): Observable<UserPublic> {
+    return this.http.get<UserPublic>(`${this.apiUrl}/${id}`);
+  }
+
   getByUsername(username: string): Observable<UserPublic> {
     return this.http.get<UserPublic>(`${this.apiUrl}/username/${encodeURIComponent(username)}`);
   }
