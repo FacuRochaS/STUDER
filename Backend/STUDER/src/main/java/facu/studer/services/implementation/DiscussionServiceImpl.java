@@ -3,7 +3,7 @@ package facu.studer.services.implementation;
 import facu.studer.DTOs.discussions.*;
 import facu.studer.DTOs.MessageDTO;
 import facu.studer.entities.Tag;
-import facu.studer.entities.User;
+import facu.studer.entities.users.User;
 import facu.studer.entities.discussions.Discussion;
 import facu.studer.entities.discussions.DiscussionMessage;
 import facu.studer.entities.discussions.MessageLike;

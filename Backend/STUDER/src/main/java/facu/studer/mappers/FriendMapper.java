@@ -1,8 +1,8 @@
 package facu.studer.mappers;
 
 import facu.studer.DTOs.friends.FriendResponseDTO;
-import facu.studer.entities.Friend;
-import facu.studer.entities.User;
+import facu.studer.entities.users.Friend;
+import facu.studer.entities.users.User;
 
 /**
  * Mapper for Friend entity and related DTOs.

@@ -1,5 +1,6 @@
-package facu.studer.entities;
+package facu.studer.entities.users;
 
+import facu.studer.entities.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -23,7 +24,7 @@ import java.time.LocalDateTime;
 @ToString
 @SuperBuilder
 @NoArgsConstructor
-public class User extends BaseEntity  {
+public class User extends BaseEntity {
 
     /**
      * Unique username.

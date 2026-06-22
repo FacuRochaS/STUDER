@@ -1,6 +1,6 @@
 package facu.studer.services.implementation.support;
 
-import facu.studer.entities.User;
+import facu.studer.entities.users.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

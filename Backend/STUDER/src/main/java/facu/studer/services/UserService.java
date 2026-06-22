@@ -1,7 +1,7 @@
 package facu.studer.services;
 
 import facu.studer.DTOs.user.*;
-import facu.studer.entities.User;
+import facu.studer.entities.users.User;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

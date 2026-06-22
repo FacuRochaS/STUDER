@@ -1,6 +1,6 @@
 package facu.studer.repositories.notification;
 
-import facu.studer.entities.User;
+import facu.studer.entities.users.User;
 import facu.studer.entities.notifications.UserNotification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

@@ -1,7 +1,7 @@
 package facu.studer.services.implementation.support;
 
-import facu.studer.entities.RefreshToken;
-import facu.studer.entities.User;
+import facu.studer.entities.users.RefreshToken;
+import facu.studer.entities.users.User;
 import facu.studer.exceptions.InvalidRefreshTokenException;
 import facu.studer.exceptions.TokenReuseDetectedException;
 import facu.studer.repositories.RefreshTokenRepository;

@@ -1,7 +1,7 @@
 package facu.studer.repositories;
 
-import facu.studer.entities.Friend;
-import facu.studer.entities.User;
+import facu.studer.entities.users.Friend;
+import facu.studer.entities.users.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

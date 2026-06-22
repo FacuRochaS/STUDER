@@ -1,4 +1,4 @@
-package facu.studer.entities;
+package facu.studer.entities.users;
 
 import jakarta.persistence.*;
 import lombok.Getter;

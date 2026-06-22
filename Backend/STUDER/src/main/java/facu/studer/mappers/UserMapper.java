@@ -3,7 +3,7 @@ package facu.studer.mappers;
 import facu.studer.DTOs.user.UserCreateRequestDTO;
 import facu.studer.DTOs.user.UserPublicResponseDTO;
 import facu.studer.DTOs.user.UserResponseDTO;
-import facu.studer.entities.User;
+import facu.studer.entities.users.User;
 
 /**
  * Mapper for User entity and related DTOs.

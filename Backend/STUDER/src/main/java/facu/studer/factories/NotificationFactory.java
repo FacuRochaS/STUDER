@@ -1,7 +1,7 @@
 package facu.studer.factories;
 
 import facu.studer.entities.LinkedType;
-import facu.studer.entities.User;
+import facu.studer.entities.users.User;
 import facu.studer.entities.notifications.Notification;
 
 import java.time.LocalDateTime;

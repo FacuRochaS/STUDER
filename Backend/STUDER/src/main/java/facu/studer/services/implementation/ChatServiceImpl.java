@@ -8,7 +8,7 @@ import facu.studer.DTOs.friends.FriendStatusResponseDTO;
 import facu.studer.DTOs.media.ImageUploadResponseDTO;
 import facu.studer.DTOs.user.UserPublicResponseDTO;
 import facu.studer.entities.LinkedType;
-import facu.studer.entities.User;
+import facu.studer.entities.users.User;
 import facu.studer.entities.messages.Chat;
 import facu.studer.entities.messages.DirectMessage;
 import facu.studer.repositories.chat.ChatRepository;

@@ -1,4 +1,4 @@
-package facu.studer.entities.discussions;
+package facu.studer.entities.feed;
 
 import facu.studer.entities.BaseEntity;
 import facu.studer.entities.users.User;
@@ -10,29 +10,30 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 /**
- * Entity representing a like on a discussion message.
- * Each user can like a message only once (unique constraint on user + message).
+ * Entity representing a message in a discussion or as a reply.
  */
+@Entity
+@Table(name = "comments")
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "message_likes", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "message_id"})
-})
-public class MessageLike extends BaseEntity {
+public class Comment extends BaseEntity {
 
-    /** The user who liked the message. */
+    /** The user who comment the post. */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     private User user;
 
-    /** The message that was liked. */
+    /** The post that was commented. */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "message_id")
-    private DiscussionMessage message;
+    @JoinColumn(name = "post_id")
+    private Post post;
 
+    /**
+     * Content of the message.
+     */
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
 }
-

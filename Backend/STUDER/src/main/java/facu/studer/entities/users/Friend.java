@@ -1,5 +1,6 @@
-package facu.studer.entities;
+package facu.studer.entities.users;
 
+import facu.studer.entities.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

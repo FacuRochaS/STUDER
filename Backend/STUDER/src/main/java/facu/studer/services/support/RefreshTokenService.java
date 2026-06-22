@@ -1,7 +1,7 @@
 package facu.studer.services.support;
 
-import facu.studer.entities.RefreshToken;
-import facu.studer.entities.User;
+import facu.studer.entities.users.RefreshToken;
+import facu.studer.entities.users.User;
 
 /**
  * Service interface for managing refresh tokens.
