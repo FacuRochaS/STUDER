@@ -63,10 +63,10 @@ public class Block extends BaseEntity {
 
     /**
      * Difficulty type.
-     */
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private Difficulty difficulty;
+    private Difficulty difficulty;*/
 
     /**
      * Current active version.

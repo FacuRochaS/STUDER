@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/chats")
+@RequestMapping("/api/v1/chats")
 public class ChatController {
 
     private final ChatService chatService;

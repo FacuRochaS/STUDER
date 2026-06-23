@@ -50,6 +50,30 @@ public class NotificationController {
     }
 
     /**
+     * Gets paginated notifications for the authenticated user.
+     * Supports optional filters: type, read status, and date range.
+     * Notifications with availableAt in the future are excluded.
+     *
+     * @param page     page number (0-based, default 0)
+     * @param type     optional LinkedType filter
+     * @param lastDays optional filter for notifications within last N days
+     * @return paginated notification response
+     */
+    @GetMapping("/pending")
+    public ResponseEntity<NotificationPageResponseDTO> getPendingNotifications(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) LinkedType type,
+            @RequestParam(required = false) Integer lastDays) {
+
+        String username = securityUtils.requireCurrentUsername();
+        NotificationPageResponseDTO response = notificationService
+                .getPendingNotifications(username, page, type, lastDays);
+        return ResponseEntity.ok(response);
+    }
+
+
+
+    /**
      * Marks a notification as read for the authenticated user.
      * Only the notification owner can mark it as read.
      *

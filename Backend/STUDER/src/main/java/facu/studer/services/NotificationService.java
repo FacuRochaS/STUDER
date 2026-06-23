@@ -29,6 +29,22 @@ public interface NotificationService {
             Integer lastDays);
 
     /**
+     * Gets paginated notifications for the authenticated user with optional filters.
+     * Only returns notifications where availableAt <= now.
+     *
+     * @param username the authenticated username
+     * @param page     page number (0-based)
+     * @param type     optional LinkedType filter
+     * @param lastDays optional filter for notifications within last N days
+     * @return paginated notification response
+     */
+    NotificationPageResponseDTO getPendingNotifications(
+            String username,
+            int page,
+            LinkedType type,
+            Integer lastDays);
+
+    /**
      * Marks a notification as read for the authenticated user.
      *
      * @param username           the authenticated username

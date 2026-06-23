@@ -1,38 +1,40 @@
-<div class="discussions">
+<div class="page-container">
   <!-- Header -->
-  <div class="discussions__header">
-    <h1 class="discussions__title">{{ 'discussions.title' | translate }}</h1>
+  <div class="page-header">
+    <h1 class="page-title">{{ 'discussions.title' | translate }}</h1>
     <button
       type="button"
-      class="discussions__create-btn"
+      class="create-btn"
       (click)="openCreateModal()">
-      <span class="pi pi-plus"></span>
-      {{ 'discussions.create' | translate }}
+      <i class="pi pi-plus"></i>
+      <span>{{ 'discussions.create' | translate }}</span>
     </button>
   </div>
 
   <!-- Tabs -->
-  <div class="discussions__tabs">
+  <div class="page-tabs">
     <button
       type="button"
-      class="discussions__tab"
-      [class.discussions__tab--active]="activeTab === 'PUBLIC'"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab === 'PUBLIC'"
       (click)="setTab('PUBLIC')">
       {{ 'discussions.public' | translate }}
     </button>
     <button
       type="button"
-      class="discussions__tab"
-      [class.discussions__tab--active]="activeTab === 'MINE'"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab === 'MINE'"
       (click)="setTab('MINE')">
       {{ 'discussions.mine' | translate }}
     </button>
   </div>
 
   <!-- List -->
-  <div class="discussions__list">
+  <div class="list-container">
     @if (loading && discussions.length === 0) {
-      <studer-loader></studer-loader>
+      <div class="loading-placeholder">
+        <studer-loader></studer-loader>
+      </div>
     }
 
     @for (discussion of discussions; track discussion.id) {
@@ -40,70 +42,74 @@
         class="discussion-card"
         [class.discussion-card--closed]="discussion.closed"
         (click)="openDiscussion(discussion)">
-        <div class="discussion-card__header">
-          <div class="discussion-card__title-row">
-            <h3 class="discussion-card__title">{{ discussion.title }}</h3>
-            @if (discussion.closed) {
-              <span class="discussion-card__closed-badge">
-                <span class="pi pi-lock"></span>
-                {{ 'discussions.closed' | translate }}
-              </span>
-            }
+
+        <!-- Left section: Stats -->
+        <div class="discussion-card__stats">
+          <div class="stat-item">
+            <span>{{ discussion.messageCount }}</span>
+            <label>{{ 'discussions.messages' | translate }}</label>
           </div>
-          <studer-username [username]="discussion.ownerUsername" (click)="$event.stopPropagation()"></studer-username>
+
         </div>
 
-        <p class="discussion-card__description">{{ discussion.description }}</p>
-
-        @if (discussion.tags && discussion.tags.length > 0) {
-          <div class="discussion-card__tags">
-            @for (tag of discussion.tags; track tag) {
-              <studer-tag [name]="tag"></studer-tag>
-            }
-          </div>
-        }
-
-        <div class="discussion-card__footer">
-          <div class="discussion-card__stats">
-            <span class="discussion-card__stat">
-              <span class="pi pi-comment"></span>
-              {{ discussion.messageCount }}
-            </span>
-            <span class="discussion-card__stat">
-              {{ discussion.createdAt | relativeTime }}
-            </span>
-            @if (discussion.participationType !== 'NONE') {
-              <span class="discussion-card__participation" [title]="discussion.participationType">
-                <span [class]="getParticipationIcon(discussion.participationType)"></span>
+        <!-- Middle section: Content -->
+        <div class="discussion-card__content">
+          <div class="discussion-card__header">
+            <h3 class="discussion-card__title">{{ discussion.title }}</h3>
+            @if (discussion.closed) {
+              <span class="badge badge--closed">
+                <i class="pi pi-lock"></i> {{ 'discussions.closed' | translate }}
               </span>
             }
           </div>
-          <button
-            type="button"
-            class="discussion-card__fav-btn"
-            [class.discussion-card__fav-btn--active]="discussion.favourite"
-            (click)="toggleFavourite(discussion, $event)"
-            [title]="'discussions.favourite' | translate">
-            <span class="pi" [class.pi-star-fill]="discussion.favourite" [class.pi-star]="!discussion.favourite"></span>
-          </button>
+
+          <p class="discussion-card__description">{{ discussion.description }}</p>
+
+          @if (discussion.tags && discussion.tags.length > 0) {
+            <div class="discussion-card__tags">
+              @for (tag of discussion.tags; track tag) {
+                <studer-tag [name]="tag"></studer-tag>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Right section: Meta -->
+        <div class="discussion-card__meta">
+          <div class="meta-item">
+            <studer-username [username]="discussion.ownerUsername" (click)="$event.stopPropagation()"></studer-username>
+            <span class="meta-label">{{ discussion.createdAt | relativeTime }}</span>
+          </div>
+          <div class="meta-actions">
+            @if (discussion.participationType !== 'NONE') {
+              <i [class]="getParticipationIcon(discussion.participationType)" class="participation-icon" [title]="discussion.participationType"></i>
+            }
+            <button
+              type="button"
+              class="icon-btn fav-btn"
+              [class.fav-btn--active]="discussion.favourite"
+              (click)="toggleFavourite(discussion, $event)"
+              [title]="'discussions.favourite' | translate">
+              <i class="pi" [class.pi-star-fill]="discussion.favourite" [class.pi-star]="!discussion.favourite"></i>
+            </button>
+          </div>
         </div>
       </div>
     }
 
     @if (!loading && discussions.length === 0) {
-      <div class="discussions__empty">
-        <span class="pi pi-megaphone"></span>
-        <span>{{ 'discussions.empty' | translate }}</span>
+      <div class="empty-placeholder">
+        <i class="pi pi-comments placeholder-icon"></i>
+        <h3>{{ 'discussions.empty' | translate }}</h3>
       </div>
     }
   </div>
 
-  @if (hasMore) {
-    <div class="discussions__load-more">
+  @if (hasMore && !loading) {
+    <div class="load-more-container">
       <button
         type="button"
-        class="discussions__load-more-btn"
-        [disabled]="loading"
+        class="load-more-btn"
         (click)="loadMore()">
         {{ 'discussions.load_more' | translate }}
       </button>
@@ -146,19 +152,19 @@
     <div class="create-form__actions">
       <button
         type="button"
-        class="create-form__cancel"
+        class="btn btn--secondary"
         (click)="closeCreateModal()">
         {{ 'discussions.cancel' | translate }}
       </button>
       <button
         type="button"
-        class="create-form__submit"
+        class="btn btn--primary"
         [disabled]="creating || !newTitle.trim() || !newDescription.trim()"
         (click)="submitCreate()">
         @if (creating) {
-          <span class="pi pi-spin pi-spinner"></span>
+          <i class="pi pi-spin pi-spinner"></i>
         }
-        {{ 'discussions.submit' | translate }}
+        <span>{{ 'discussions.submit' | translate }}</span>
       </button>
     </div>
   </div>

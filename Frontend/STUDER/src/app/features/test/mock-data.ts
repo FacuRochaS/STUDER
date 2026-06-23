@@ -16,10 +16,12 @@ export const MOCK_CHATS: ChatSummaryDTO[] = [
     },
     friendStatus: { isFollowing: true, isFriend: true },
     lastMessage: {
+      senderId: 2, // From JaneDoe
       content: 'Hey, how are you?',
       timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
       isRead: false
     },
+    unreadMessages: 3
   },
   {
     chatId: 2,
@@ -35,10 +37,12 @@ export const MOCK_CHATS: ChatSummaryDTO[] = [
     },
     friendStatus: { isFollowing: true, isFriend: true },
     lastMessage: {
+      senderId: 1, // From current user
       content: 'See you tomorrow!',
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
       isRead: true
     },
+    unreadMessages: 0
   }
 ];
 
@@ -69,16 +73,16 @@ export const MOCK_FRIENDS: FriendResponseDTO[] = [
 
 export const MOCK_MESSAGES: { [chatId: number]: MessageResponseDTO[] } = {
   1: [
-    { id: 1, chatId: 1, senderId: 2, content: 'Hey, how are you?', createdDatetime: new Date(Date.now() - 1000 * 60 * 6).toISOString(), isRead: true, link: null,  replyToId: 0 },
-    { id: 2, chatId: 1, senderId: 1, content: 'I am fine, thanks!', createdDatetime: new Date(Date.now() - 1000 * 60 * 5).toISOString(), isRead: true, link: null, replyToId: 0 },
-    { id: 3, chatId: 1, senderId: 2, content: 'Wanna hang out?', createdDatetime: new Date(Date.now() - 1000 * 60 * 4).toISOString(), isRead: false, link: null,  replyToId: 0 },
-    { id: 4, chatId: 1, senderId: 1, content: 'Sure, when?', createdDatetime: new Date(Date.now() - 1000 * 60 * 3).toISOString(), isRead: true, link: null, replyToId: 0 },
-    { id: 5, chatId: 1, senderId: 2, content: 'Now!', createdDatetime: new Date(Date.now() - 1000 * 60 * 2).toISOString(), isRead: false, link: null,  replyToId: 0 },
-    { id: 6, chatId: 1, senderId: 1, content: 'Ok, coming!', createdDatetime: new Date(Date.now() - 1000 * 60 * 1).toISOString(), isRead: true, link: null,  replyToId: 0 },
-    { id: 7, chatId: 1, senderId: 2, content: '', createdDatetime: new Date(Date.now() - 1000 * 60 * 1).toISOString(), isRead: true, link: 'https://i.pravatar.cc/150?img=5',  replyToId: 0 },
+    { id: 1, chatId: 1, senderId: 2, content: 'Hey, how are you?', createdDatetime: new Date(Date.now() - 1000 * 60 * 6).toISOString(), isRead: true, fileUrl: null, link: '', replyToId: 0 },
+    { id: 2, chatId: 1, senderId: 1, content: 'I am fine, thanks!', createdDatetime: new Date(Date.now() - 1000 * 60 * 5).toISOString(), isRead: true, fileUrl: null, link: '', replyToId: 0 },
+    { id: 3, chatId: 1, senderId: 2, content: 'Wanna hang out?', createdDatetime: new Date(Date.now() - 1000 * 60 * 4).toISOString(), isRead: false, fileUrl: null, link: '', replyToId: 0 },
+    { id: 4, chatId: 1, senderId: 1, content: 'Sure, when?', createdDatetime: new Date(Date.now() - 1000 * 60 * 3).toISOString(), isRead: true, fileUrl: null, link: '', replyToId: 0 },
+    { id: 5, chatId: 1, senderId: 2, content: 'Now!', createdDatetime: new Date(Date.now() - 1000 * 60 * 2).toISOString(), isRead: false, fileUrl: null, link: '', replyToId: 0 },
+    { id: 6, chatId: 1, senderId: 1, content: 'Ok, coming!', createdDatetime: new Date(Date.now() - 1000 * 60 * 1).toISOString(), isRead: true, fileUrl: null, link: '', replyToId: 0 },
+    { id: 7, chatId: 1, senderId: 2, content: '', createdDatetime: new Date(Date.now() - 1000 * 60 * 1).toISOString(), isRead: true, fileUrl: 'https://i.pravatar.cc/150?img=5', link: '', replyToId: 0 },
 
   ],
   2: [
-    { id: 8, chatId: 2, senderId: 3, content: 'See you tomorrow!', createdDatetime: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), isRead: true, link: null,  replyToId: 0 }
+    { id: 8, chatId: 2, senderId: 1, content: 'See you tomorrow!', createdDatetime: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), isRead: true, fileUrl: null, link: '', replyToId: 0 }
   ]
 };

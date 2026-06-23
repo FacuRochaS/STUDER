@@ -1,15 +1,13 @@
 <div class="chat-layout">
 
   <aside class="chat-sidebar">
-    <div class="chat-sidebar__header">
-      <h2 class="chat-sidebar__title">{{ 'chat.title' | translate }}</h2>
-    </div>
 
     <div class="chat-sidebar__search">
       <i class="pi pi-search search-icon"></i>
       <input type="text"
              [placeholder]="'chat.search_placeholder' | translate"
-             [(ngModel)]="searchQuery">
+             [(ngModel)]="searchQuery"
+             (keyup)="filterResults()">
     </div>
 
     <div class="chat-sidebar__tabs">
@@ -34,7 +32,7 @@
 
             <div class="chat-item__avatar">
               <img [src]="chat.otherUser.profilePictureAvatarUrl || 'assets/images/default-avatar.png'" alt="Avatar">
-              <div class="status-indicator"></div>
+
             </div>
 
             <div class="chat-item__content">
@@ -47,10 +45,15 @@
 
               <div class="chat-item__bottom">
                 @if (chat.lastMessage) {
-                  <studer-rich-text class="chat-item__last-msg" [text]="chat.lastMessage.content"></studer-rich-text>
+                  <div class="chat-item__last-msg">
+                    @if (chat.lastMessage.senderId === currentUserId) {
+                      <span class="last-msg__prefix">{{ 'chat.you' | translate }}: </span>
+                    }
+                    <studer-rich-text [text]="chat.lastMessage.content"></studer-rich-text>
+                  </div>
                 }
-                @if (chat.lastMessage && !chat.lastMessage.isRead) {
-                  <span class="chat-item__badge">1</span>
+                @if (chat.unreadMessages > 0) {
+                  <span class="chat-item__badge">{{ chat.unreadMessages }}</span>
                 }
               </div>
             </div>
@@ -93,10 +96,9 @@
             <span class="chat-main__status">{{ 'chat.status.online' | translate }}</span>
           </div>
         </div>
-
       </header>
 
-      <div class="chat-main__messages">
+      <div class="chat-main__messages" #scrollMe>
         @for (msg of messages; track msg.id) {
           <div class="message-wrapper" [class.message-wrapper--mine]="msg.senderId === currentUserId">
 
@@ -105,8 +107,8 @@
             }
 
             <div class="message-bubble" [class.message-bubble--mine]="msg.senderId === currentUserId">
-              @if (msg.link) {
-                <img [src]="msg.link" class="message-image" alt="Attached image">
+              @if (msg.fileUrl) {
+                <img [src]="msg.fileUrl" class="message-image" alt="Attached image">
               }
               @if(msg.content) {
                 <studer-rich-text [text]="msg.content"></studer-rich-text>

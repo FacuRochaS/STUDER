@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class LastMessageDTO {
+    private Long senderId;
     private String content;
     private LocalDateTime timestamp;
     private Boolean isRead;

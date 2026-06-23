@@ -89,6 +89,7 @@ public class FriendController {
         return ResponseEntity.ok(response);
     }
 
+
     /**
      * Gets friend relationship status for a target user.
      *

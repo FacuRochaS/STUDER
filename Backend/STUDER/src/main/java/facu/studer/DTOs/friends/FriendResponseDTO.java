@@ -43,13 +43,19 @@ public class FriendResponseDTO {
     private String lastName;
 
     /**
-     * Email of the friend.
-     */
-    private String email;
-
-    /**
      * Whether both users have accepted the friendship.
      */
     private Boolean isFriend;
+
+    /**
+    * Avatar URL of the friend's profile picture.
+     */
+    private String profilePictureAvatarUrl;
+
+    /**
+     * Thumbnail URL of the friend's profile picture.
+     */
+    private String profilePictureThumbnailUrl;
+
 }
 

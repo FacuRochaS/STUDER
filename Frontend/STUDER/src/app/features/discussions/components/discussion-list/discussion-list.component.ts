@@ -12,7 +12,8 @@ import { UsernameComponent } from '../../../../shared/components/username/userna
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { TagInputComponent } from '../../../../shared/components/tag-input/tag-input.component';
-import { NotificationService, AppNotification } from '../../../../core/notifications/notification.service';
+import { NewNotificationService } from '../../../../core/notifications/new-notification.service';
+import { NotificationResponseDTO } from '../../../notifications/notification.model';
 
 type TabFilter = 'PUBLIC' | 'MINE';
 
@@ -47,7 +48,7 @@ export class DiscussionListComponent implements OnInit, OnDestroy {
   constructor(
     private readonly discussionService: DiscussionService,
     private readonly router: Router,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NewNotificationService
   ) {}
 
   ngOnInit(): void {
@@ -63,7 +64,7 @@ export class DiscussionListComponent implements OnInit, OnDestroy {
   private subscribeToNotifications(): void {
     this.notificationService.getNotifications()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((notifications: AppNotification[]) => {
+      .subscribe((notifications: NotificationResponseDTO[]) => {
         const hasDiscussionNotification = notifications.some(n => n.type === 'DISCUSSION');
         if (hasDiscussionNotification) {
           this.loadDiscussions();

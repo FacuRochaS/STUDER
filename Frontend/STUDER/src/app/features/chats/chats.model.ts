@@ -16,6 +16,7 @@ export interface FriendStatusResponseDTO {
 }
 
 export interface LastMessageDTO {
+  senderId?: number; // Added this property
   content: string;
   timestamp: string;
   isRead: boolean;
@@ -26,6 +27,7 @@ export interface ChatSummaryDTO {
   otherUser: UserPublicResponseDTO;
   friendStatus: FriendStatusResponseDTO;
   lastMessage: LastMessageDTO;
+  unreadMessages: number;
 }
 
 export interface MessageResponseDTO {
@@ -37,6 +39,7 @@ export interface MessageResponseDTO {
   replyToId: number;
   isRead: boolean;
   createdDatetime: string;
+  fileUrl: string | null;
 }
 
 export interface MessageRequestDTO {

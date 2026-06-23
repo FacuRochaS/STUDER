@@ -35,7 +35,7 @@ public final class DiscussionMessageMapper {
                 .id(message.getId())
                 .senderUsername(message.getSender().getUsername())
                 .content(message.getContent())
-                .imageRef(message.getImageRef())
+                .imageRef(message.getLink())
                 .createdAt(message.getCreatedDatetime())
                 .likeCount(likeCount)
                 .likedByCurrentUser(likedByCurrentUser)

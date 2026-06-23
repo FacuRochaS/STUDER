@@ -173,6 +173,7 @@
   },
   "chat": {
     "title": "Chats",
+    "you": "tu",
     "search_placeholder": "Buscar...",
     "no_chats": "No tienes conversaciones activas.",
     "select_conversation": "Selecciona una conversación para empezar a chatear",

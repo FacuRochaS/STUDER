@@ -173,6 +173,7 @@
   },
   "chat": {
     "title": "Chats",
+    "you": "you",
     "search_placeholder": "Search...",
     "no_chats": "You dont have a conversation yet.",
     "no_friends": "You dont have friends yet.",

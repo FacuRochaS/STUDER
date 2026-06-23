@@ -30,8 +30,7 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
      */
     @Query("SELECT DISTINCT d FROM Discussion d " +
             "LEFT JOIN d.tags t " +
-            "WHERE d.course IS NULL " +
-            "AND d.isActive = true " +
+            "WHERE d.isActive = true " +
             "AND (:since IS NULL OR d.createdDatetime >= :since) " +
             "AND (:hasTags = false OR t.name IN :tagNames) " +
             "ORDER BY d.createdDatetime DESC")
@@ -48,8 +47,7 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
     @Query("SELECT d FROM Discussion d " +
             "LEFT JOIN d.tags t " +
             "LEFT JOIN DiscussionMessage dm ON dm.discussion = d AND dm.createdDatetime >= :activitySince " +
-            "WHERE d.course IS NULL " +
-            "AND d.isActive = true " +
+            "WHERE d.isActive = true " +
             "AND (:since IS NULL OR d.createdDatetime >= :since) " +
             "AND (:hasTags = false OR t.name IN :tagNames) " +
             "GROUP BY d " +
@@ -67,7 +65,6 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
     @Query("SELECT DISTINCT d FROM Discussion d " +
             "LEFT JOIN DiscussionMessage dm ON dm.discussion = d " +
             "WHERE d.isActive = true " +
-            "AND d.course IS NULL " +
             "AND (d.owner.username = :username OR dm.sender.username = :username)")
     Page<Discussion> findByUserParticipation(
             @Param("username") String username,
