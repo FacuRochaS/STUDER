@@ -6,6 +6,8 @@ export interface FriendResponseDTO {
   lastName: string;
   email: string;
   isFriend: boolean;
+  profilePictureAvatarUrl: string;
+  profilePictureThumbnailUrl: string;
 }
 
 export interface FriendsListResponseDTO {
@@ -19,4 +21,3 @@ export interface FriendStatusResponseDTO {
   isFollowing: boolean;
   isFriend: boolean;
 }
-

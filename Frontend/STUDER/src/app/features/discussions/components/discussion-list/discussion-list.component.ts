@@ -12,6 +12,7 @@ import { UsernameComponent } from '../../../../shared/components/username/userna
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { TagInputComponent } from '../../../../shared/components/tag-input/tag-input.component';
+import { NotificationService, AppNotification } from '../../../../core/notifications/notification.service';
 
 type TabFilter = 'PUBLIC' | 'MINE';
 
@@ -45,16 +46,29 @@ export class DiscussionListComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly discussionService: DiscussionService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.loadDiscussions();
+    this.subscribeToNotifications();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private subscribeToNotifications(): void {
+    this.notificationService.getNotifications()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((notifications: AppNotification[]) => {
+        const hasDiscussionNotification = notifications.some(n => n.type === 'DISCUSSION');
+        if (hasDiscussionNotification) {
+          this.loadDiscussions();
+        }
+      });
   }
 
   setTab(tab: TabFilter): void {
@@ -150,4 +164,3 @@ export class DiscussionListComponent implements OnInit, OnDestroy {
     }
   }
 }
-

@@ -45,18 +45,30 @@ export class ChatService {
    * Envía un mensaje a un usuario. Si no hay chat, el backend lo crea.
    * @param targetUserId ID del usuario destinatario.
    * @param request Datos del mensaje.
+   * @param file Archivo adjunto (opcional).
    */
-  sendMessageToUser(targetUserId: number, request: MessageRequestDTO): Observable<MessageResponseDTO> {
-    return this.http.post<MessageResponseDTO>(`${this.apiUrl}/user/${targetUserId}`, request);
+  sendMessageToUser(targetUserId: number, request: MessageRequestDTO, file?: File): Observable<MessageResponseDTO> {
+    const formData = new FormData();
+    formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
+    if (file) {
+      formData.append('file', file);
+    }
+    return this.http.post<MessageResponseDTO>(`${this.apiUrl}/user/${targetUserId}`, formData);
   }
 
   /**
    * Envía un mensaje a un chat existente.
    * @param chatId ID del chat.
    * @param request Datos del mensaje.
+   * @param file Archivo adjunto (opcional).
    */
-  sendMessageToChat(chatId: number, request: MessageRequestDTO): Observable<MessageResponseDTO> {
-    return this.http.post<MessageResponseDTO>(`${this.apiUrl}/${chatId}/messages`, request);
+  sendMessageToChat(chatId: number, request: MessageRequestDTO, file?: File): Observable<MessageResponseDTO> {
+    const formData = new FormData();
+    formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
+    if (file) {
+      formData.append('file', file);
+    }
+    return this.http.post<MessageResponseDTO>(`${this.apiUrl}/${chatId}/messages`, formData);
   }
 
   /**

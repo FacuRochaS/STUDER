@@ -177,6 +177,7 @@
     "no_chats": "No tienes conversaciones activas.",
     "select_conversation": "Selecciona una conversación para empezar a chatear",
     "type_message": "Escribe un mensaje...",
+    "no_friends": "No tienes amigos todavía.",
     "tabs": {
       "chat": "Chat",
       "friends": "Amigos"

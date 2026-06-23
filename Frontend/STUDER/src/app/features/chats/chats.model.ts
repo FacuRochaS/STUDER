@@ -33,7 +33,7 @@ export interface MessageResponseDTO {
   chatId: number;
   senderId: number;
   content: string;
-  link: string;
+  link: string | null;
   replyToId: number;
   isRead: boolean;
   createdDatetime: string;

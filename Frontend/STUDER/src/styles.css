@@ -30,6 +30,7 @@ body {
 :root {
   --color-primary: #4285f4;
   --color-primary-accent: #1a4b9a;
+  --color-primary-light: #71adff;
 
   --color-correct: #00bf63;
 
@@ -71,7 +72,7 @@ body {
   --footer-height-expanded: 10rem;
 
   --content-bg: transparent;
-  --content-max-width: 1200px;
+  --content-max-width: 1900px;
   --layout-body-bg: transparent;
 
   /* Sidebar nav colors (matching logo: S=primary, t=correct, u=error, d=warning, e=info, r=restriction) */

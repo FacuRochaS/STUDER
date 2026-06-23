@@ -7,19 +7,20 @@ import { DiscussionListComponent } from './features/discussions/components/discu
 import { DiscussionDetailComponent } from './features/discussions/components/discussion-detail/discussion-detail.component';
 import { TestComponent } from './features/test/test.component';
 import { SearchComponent } from './features/search/search.component';
-import { MessagesComponent } from './features/messages/components/messages/messages.component';
 import { UserProfileComponent } from './features/users/components/user-profile/user-profile.component';
 import { authGuard } from './core/auth/auth.guard';
-import {ChatComponent} from './features/chats/components/chat.component';
+import { ChatComponent } from './features/chats/components/chat.component';
+import { TestChatComponent } from './features/test/test-chat.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'login', component: LoginRegisterComponent},
   { path: 'test', component: TestComponent },
+  { path: 'test/chat', component: TestChatComponent },
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [authGuard],
+   // canActivate: [authGuard],
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'discussions', component: DiscussionListComponent },

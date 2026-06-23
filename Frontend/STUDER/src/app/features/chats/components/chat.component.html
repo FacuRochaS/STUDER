@@ -3,7 +3,6 @@
   <aside class="chat-sidebar">
     <div class="chat-sidebar__header">
       <h2 class="chat-sidebar__title">{{ 'chat.title' | translate }}</h2>
-      <button class="icon-btn"><i class="pi pi-plus"></i></button>
     </div>
 
     <div class="chat-sidebar__search">
@@ -27,40 +26,59 @@
     </div>
 
     <div class="chat-sidebar__list">
-      @for (chat of chats; track chat.chatId) {
-        <div class="chat-item"
-             [class.chat-item--active]="activeChat?.chatId === chat.chatId"
-             (click)="selectChat(chat)">
+      @if (activeTab === 'CHAT') {
+        @for (chat of chats; track chat.chatId) {
+          <div class="chat-item"
+               [class.chat-item--active]="activeChat?.chatId === chat.chatId"
+               (click)="selectChat(chat)">
 
-          <div class="chat-item__avatar">
-            <img [src]="chat.otherUser.profilePictureAvatarUrl || 'assets/images/default-avatar.png'" alt="Avatar">
-            <div class="status-indicator"></div>
-          </div>
-
-          <div class="chat-item__content">
-            <div class="chat-item__top">
-              <studer-rich-text class="chat-item__name" [text]="formatUsername(chat.otherUser.username)"></studer-rich-text>
-              @if (chat.lastMessage) {
-                <span class="chat-item__time">{{ chat.lastMessage.timestamp | date:'shortTime' }}</span>
-              }
+            <div class="chat-item__avatar">
+              <img [src]="chat.otherUser.profilePictureAvatarUrl || 'assets/images/default-avatar.png'" alt="Avatar">
+              <div class="status-indicator"></div>
             </div>
 
-            <div class="chat-item__bottom">
-              @if (chat.lastMessage) {
-                <studer-rich-text class="chat-item__last-msg" [text]="chat.lastMessage.content"></studer-rich-text>
-              }
-              @if (chat.lastMessage && !chat.lastMessage.isRead) {
-                <span class="chat-item__badge">1</span>
-              }
+            <div class="chat-item__content">
+              <div class="chat-item__top">
+                <studer-rich-text class="chat-item__name" [text]="formatUsername(chat.otherUser.username)"></studer-rich-text>
+                @if (chat.lastMessage) {
+                  <span class="chat-item__time">{{ chat.lastMessage.timestamp | date:'shortTime' }}</span>
+                }
+              </div>
+
+              <div class="chat-item__bottom">
+                @if (chat.lastMessage) {
+                  <studer-rich-text class="chat-item__last-msg" [text]="chat.lastMessage.content"></studer-rich-text>
+                }
+                @if (chat.lastMessage && !chat.lastMessage.isRead) {
+                  <span class="chat-item__badge">1</span>
+                }
+              </div>
             </div>
           </div>
-        </div>
-      }
-
-      @if (chats.length === 0 && !loading) {
-        <div class="chat-empty-state">
-          <p>{{ 'chat.no_chats' | translate }}</p>
-        </div>
+        }
+        @if (chats.length === 0 && !loading) {
+          <div class="chat-empty-state">
+            <p>{{ 'chat.no_chats' | translate }}</p>
+          </div>
+        }
+      } @else if (activeTab === 'FRIENDS') {
+        @for (friend of friends; track friend.id) {
+          <div class="chat-item" (click)="selectFriend(friend)">
+            <div class="chat-item__avatar">
+              <img [src]="friend.profilePictureAvatarUrl || 'assets/images/default-avatar.png'" alt="Avatar">
+            </div>
+            <div class="chat-item__content">
+              <div class="chat-item__top">
+                <studer-rich-text class="chat-item__name" [text]="formatUsername(friend.username)"></studer-rich-text>
+              </div>
+            </div>
+          </div>
+        }
+        @if (friends.length === 0 && !loading) {
+          <div class="chat-empty-state">
+            <p>{{ 'chat.no_friends' | translate }}</p>
+          </div>
+        }
       }
     </div>
   </aside>
@@ -75,11 +93,7 @@
             <span class="chat-main__status">{{ 'chat.status.online' | translate }}</span>
           </div>
         </div>
-        <div class="chat-main__actions">
-          <button class="icon-btn"><i class="pi pi-phone"></i></button>
-          <button class="icon-btn"><i class="pi pi-search"></i></button>
-          <button class="icon-btn"><i class="pi pi-ellipsis-h"></i></button>
-        </div>
+
       </header>
 
       <div class="chat-main__messages">
@@ -91,7 +105,12 @@
             }
 
             <div class="message-bubble" [class.message-bubble--mine]="msg.senderId === currentUserId">
-              <studer-rich-text [text]="msg.content"></studer-rich-text>
+              @if (msg.link) {
+                <img [src]="msg.link" class="message-image" alt="Attached image">
+              }
+              @if(msg.content) {
+                <studer-rich-text [text]="msg.content"></studer-rich-text>
+              }
               <span class="message-time">{{ msg.createdDatetime | date:'HH:mm' }}</span>
             </div>
           </div>
@@ -99,14 +118,22 @@
       </div>
 
       <footer class="chat-main__input-area">
-        <button class="icon-btn"><i class="pi pi-face-smile"></i></button>
-        <button class="icon-btn"><i class="pi pi-paperclip"></i></button>
+        <input type="file" #fileInput hidden (change)="onFileSelected($event)">
+        <button class="icon-btn" (click)="fileInput.click()"><i class="pi pi-paperclip"></i></button>
 
-        <input type="text"
-               class="chat-input"
-               [placeholder]="'chat.type_message' | translate"
-               [(ngModel)]="newMessage"
-               (keyup.enter)="sendMessage()">
+        <div class="chat-input-wrapper">
+          @if (selectedFile) {
+            <div class="file-preview">
+              <img [src]="filePreview" alt="File preview">
+              <button class="icon-btn" (click)="removeSelectedFile()"><i class="pi pi-times"></i></button>
+            </div>
+          }
+          <input type="text"
+                 class="chat-input"
+                 [placeholder]="'chat.type_message' | translate"
+                 [(ngModel)]="newMessage"
+                 (keyup.enter)="sendMessage()">
+        </div>
 
         <button class="send-btn" (click)="sendMessage()">
           <i class="pi pi-send"></i>
