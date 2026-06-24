@@ -20,6 +20,13 @@ public class NotificationController {
     private final NotificationService notificationService;
     private final SecurityUtils securityUtils;
 
+    /**
+     * Constructs a NotificationController with the specified notification service
+     * and security infrastructure utilities.
+     *
+     * @param notificationService the service handling notification processing and query logic
+     * @param securityUtils       the utility helper used to enforce user session constraints
+     */
     public NotificationController(NotificationService notificationService, SecurityUtils securityUtils) {
         this.notificationService = notificationService;
         this.securityUtils = securityUtils;

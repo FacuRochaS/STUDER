@@ -63,17 +63,16 @@ public class Block extends BaseEntity {
 
     /**
      * Difficulty type.
-
+     */
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private Difficulty difficulty;*/
+    private Difficulty difficulty;
 
     /**
      * Current active version.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_version_id")
-    private BlockVersion currentVersionId;
+    private BlockVersion currentVersion;
 
     /**
      * Tags associated with the block.
@@ -85,5 +84,8 @@ public class Block extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags;
+
+
+
 
 }

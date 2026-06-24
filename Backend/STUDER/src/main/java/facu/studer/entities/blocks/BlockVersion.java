@@ -36,4 +36,16 @@ public class BlockVersion extends BaseEntity {
     @Column(nullable = false)
     private Long versionNumber;
 
+    /**
+     * Description log.
+     */
+    @Column(nullable = false)
+    private String changeDescription;
+
+    /**
+     * Published status.
+     */
+    @Column(nullable = false)
+    private Boolean published;
+
 }

@@ -23,6 +23,13 @@ public class FriendController {
     private final FriendService friendService;
     private final SecurityUtils securityUtils;
 
+    /**
+     * Constructs a FriendController with the specified relationship management service
+     * and request security infrastructure.
+     *
+     * @param friendService the service containing business logic for social connections
+     * @param securityUtils the utility helper used to extract current session credentials
+     */
     public FriendController(FriendService friendService, SecurityUtils securityUtils) {
         this.friendService = friendService;
         this.securityUtils = securityUtils;

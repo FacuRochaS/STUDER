@@ -25,6 +25,12 @@ public class AuthController {
     private final AuthService authService;
     private final SecurityUtils securityUtils;
 
+    /**
+     * Constructs the AuthController with required services.
+     *
+     * @param authService   Service handling authentication logic.
+     * @param securityUtils Utility class for security operations like cookie management and request parsing.
+     */
     public AuthController(AuthService authService, SecurityUtils securityUtils) {
         this.authService = authService;
         this.securityUtils = securityUtils;

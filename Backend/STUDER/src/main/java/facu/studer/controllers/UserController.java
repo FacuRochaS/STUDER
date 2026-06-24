@@ -27,6 +27,13 @@ public class UserController {
     private final UserService userService;
     private final SecurityUtils securityUtils;
 
+    /**
+     * Constructs a UserController with the specified core user management service
+     * and request security evaluation utilities.
+     *
+     * @param userService   the service layers handling user CRUD and account workflows
+     * @param securityUtils the utility helper used to extract current session credentials
+     */
     public UserController(UserService userService, SecurityUtils securityUtils) {
         this.userService = userService;
         this.securityUtils = securityUtils;

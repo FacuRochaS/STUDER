@@ -2,6 +2,7 @@ package facu.studer.services.implementation;
 
 import facu.studer.DTOs.discussions.*;
 import facu.studer.DTOs.MessageDTO;
+import facu.studer.entities.BaseEntity;
 import facu.studer.entities.Tag;
 import facu.studer.entities.users.User;
 import facu.studer.entities.discussions.Discussion;
@@ -23,6 +24,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.domain.Sort.Order.by;
+
 /**
  * Implementation of DiscussionService.
  * Uses only DiscussionRepository (respects 1-repo-per-service).
@@ -41,7 +45,7 @@ import java.util.stream.Collectors;
 @Service
 public class DiscussionServiceImpl implements DiscussionService {
 
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 15;
     private static final int DEFAULT_ACTIVITY_HOURS = 24;
 
 
@@ -120,6 +124,86 @@ public class DiscussionServiceImpl implements DiscussionService {
                 .build();
     }
 
+
+
+
+    @Override
+    public DiscussionPageResponseDTO getUserOwnDiscussions(String username, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+
+        Page<Discussion> discussionPage = discussionRepository
+                .findByUsername(username, pageable);
+
+        List<DiscussionResponseDTO> dtos = discussionPage.getContent().stream()
+                .map(d -> mapToDTO(d, username))
+                .collect(Collectors.toList());
+
+        return DiscussionPageResponseDTO.builder()
+                .discussions(dtos)
+                .totalElements(discussionPage.getTotalElements())
+                .hasMore(discussionPage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
+    @Override
+    public DiscussionPageResponseDTO getNewDiscussions(String username, int page) {
+        Sort sort = Sort.sort(Discussion.class).by(Discussion::getCreatedDatetime).descending();
+
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, sort);
+
+        Page<Discussion> discussionPage = discussionRepository.findAll(pageable);
+
+        List<DiscussionResponseDTO> dtos = discussionPage.getContent().stream()
+                .map(d -> mapToDTO(d, username))
+                .collect(Collectors.toList());
+
+        return DiscussionPageResponseDTO.builder()
+                .discussions(dtos)
+                .totalElements(discussionPage.getTotalElements())
+                .hasMore(discussionPage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
+    @Override
+    public DiscussionPageResponseDTO getPopularDiscussions(String username, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+
+        Page<Discussion> discussionPage = discussionRepository
+                .findPopularDiscussions(pageable);
+
+        List<DiscussionResponseDTO> dtos = discussionPage.getContent().stream()
+                .map(d -> mapToDTO(d, username))
+                .collect(Collectors.toList());
+
+        return DiscussionPageResponseDTO.builder()
+                .discussions(dtos)
+                .totalElements(discussionPage.getTotalElements())
+                .hasMore(discussionPage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
+    @Override
+    public DiscussionPageResponseDTO getFavouriteDiscussions(String username, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+
+        Page<Discussion> discussionPage = discussionRepository
+                .findByUserFavourite(username, pageable);
+
+        List<DiscussionResponseDTO> dtos = discussionPage.getContent().stream()
+                .map(d -> mapToDTO(d, username))
+                .collect(Collectors.toList());
+
+        return DiscussionPageResponseDTO.builder()
+                .discussions(dtos)
+                .totalElements(discussionPage.getTotalElements())
+                .hasMore(discussionPage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
     /**
      * Gets a single discussion by ID.
      */
@@ -130,6 +214,8 @@ public class DiscussionServiceImpl implements DiscussionService {
                 .orElseThrow(() -> new ResourceNotFoundException("discussion.not_found"));
         return mapToDTO(discussion, username);
     }
+
+
 
     /**
      * Creates a new public discussion with the first message embedded in description.
@@ -148,7 +234,6 @@ public class DiscussionServiceImpl implements DiscussionService {
                 .description(request.getDescription())
                 .owner(owner)
                 .tags(managedTags)
-                .closed(false)
                 .messageCount(0)
                 .isActive(true)
                 .createdDatetime(LocalDateTime.now())
@@ -160,34 +245,6 @@ public class DiscussionServiceImpl implements DiscussionService {
         return mapToDTO(saved, username);
     }
 
-    /**
-     * Closes a discussion. Only the owner can close it.
-     * A closed discussion cannot receive new messages.
-     */
-    @Override
-    @Transactional
-    public MessageDTO close(String username, Long discussionId) {
-        Discussion discussion = discussionRepository.findByIdAndIsActiveTrue(discussionId)
-                .orElseThrow(() -> new ResourceNotFoundException("discussion.not_found"));
-
-        if (!discussion.getOwner().getUsername().equals(username)) {
-            throw new UnauthorizedOperationException("discussion.unauthorized_close");
-        }
-
-        if (discussion.isClosed()) {
-            throw new DiscussionClosedException("discussion.already_closed");
-        }
-
-        discussion.setClosed(true);
-        discussion.setClosedAt(LocalDateTime.now());
-        discussion.setLastUpdatedDatetime(LocalDateTime.now());
-        discussionRepository.save(discussion);
-
-        return MessageDTO.builder()
-                .success(true)
-                .message("discussion.closed_success")
-                .build();
-    }
 
     /**
      * Maps a Discussion entity to DTO, determining user participation type.
@@ -195,7 +252,10 @@ public class DiscussionServiceImpl implements DiscussionService {
     private DiscussionResponseDTO mapToDTO(Discussion discussion, String username) {
         boolean isFav = isFavourite(username, discussion.getId());
         String participationType = determineParticipationType(discussion, username, isFav);
-        return DiscussionMapper.toResponseDTO(discussion, isFav, participationType);
+        int favouriteCount = userDiscussionFavRepository.countByDiscussionIdAndIsActiveTrue(discussion.getId());
+        int likeCount = discussionMessageRepository.countLikesByDiscussionId(discussion.getId());
+
+        return DiscussionMapper.toResponseDTO(discussion, isFav, participationType, favouriteCount, likeCount);
     }
 
     /**
@@ -318,9 +378,6 @@ public class DiscussionServiceImpl implements DiscussionService {
             throw new ResourceNotFoundException("discussion.not_found");
         }
 
-        if (discussion.isClosed()) {
-            throw new DiscussionClosedException("discussion.closed");
-        }
 
         User sender = findUserByUsername(username);
 
@@ -372,6 +429,11 @@ public class DiscussionServiceImpl implements DiscussionService {
 
         return DiscussionMessageMapper.toResponseDTO(message, likeCount, likedByUser, childDTOs);
     }
+
+
+
+
+
 
     /**
      * Adds a like to a message. Checks that user hasn't already liked it.
