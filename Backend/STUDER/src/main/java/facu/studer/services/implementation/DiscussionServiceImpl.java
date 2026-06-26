@@ -2,6 +2,7 @@ package facu.studer.services.implementation;
 
 import facu.studer.DTOs.discussions.*;
 import facu.studer.DTOs.MessageDTO;
+import facu.studer.DTOs.media.ImageUploadResponseDTO;
 import facu.studer.entities.BaseEntity;
 import facu.studer.entities.Tag;
 import facu.studer.entities.users.User;
@@ -21,12 +22,22 @@ import facu.studer.repositories.discussion.UserDiscussionFavRepository;
 import facu.studer.services.DiscussionService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -48,6 +59,10 @@ public class DiscussionServiceImpl implements DiscussionService {
     private static final int PAGE_SIZE = 15;
     private static final int DEFAULT_ACTIVITY_HOURS = 24;
 
+    private static final Logger logger = LoggerFactory.getLogger(ChatServiceImpl.class);
+
+    private final RestTemplate restTemplate;
+    private final String mediaServiceUrl;
 
     private final DiscussionRepository discussionRepository;
     private final MessageLikeRepository messageLikeRepository;
@@ -57,11 +72,18 @@ public class DiscussionServiceImpl implements DiscussionService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public DiscussionServiceImpl(DiscussionRepository discussionRepository, MessageLikeRepository messageLikeRepository, DiscussionMessageRepository discussionMessageRepository, UserDiscussionFavRepository userDiscussionFavRepository) {
+    public DiscussionServiceImpl(DiscussionRepository discussionRepository,
+                                 MessageLikeRepository messageLikeRepository,
+                                 DiscussionMessageRepository discussionMessageRepository,
+                                 UserDiscussionFavRepository userDiscussionFavRepository,
+                                 RestTemplate restTemplate,
+                                 @Value("${app.media.service.url}") String mediaServiceUrl) {
         this.discussionRepository = discussionRepository;
         this.messageLikeRepository = messageLikeRepository;
         this.discussionMessageRepository = discussionMessageRepository;
         this.userDiscussionFavRepository = userDiscussionFavRepository;
+        this.restTemplate = restTemplate;
+        this.mediaServiceUrl = mediaServiceUrl;
     }
 
     /**
@@ -371,7 +393,8 @@ public class DiscussionServiceImpl implements DiscussionService {
     public DiscussionMessageResponseDTO createMessage(
             Long discussionId,
             String username,
-            DiscussionMessageCreateRequestDTO request) {
+            DiscussionMessageCreateRequestDTO request,
+            MultipartFile file) {
 
         Discussion discussion = entityManager.find(Discussion.class, discussionId);
         if (discussion == null || !discussion.getIsActive()) {
@@ -393,11 +416,13 @@ public class DiscussionServiceImpl implements DiscussionService {
             }
         }
 
+        String mediaLink = uploadMessageMedia(file, sender.getUsername());
+
         DiscussionMessage message = DiscussionMessage.builder()
                 .discussion(discussion)
                 .sender(sender)
                 .content(request.getContent())
-                .link(request.getImageRef())
+                .link((mediaLink != null ? mediaLink : ""))
                 .parentDiscussionMessage(parentMessage)
                 .isActive(true)
                 .createdDatetime(LocalDateTime.now())
@@ -557,7 +582,39 @@ public class DiscussionServiceImpl implements DiscussionService {
                 .existsByUserUsernameAndDiscussionIdAndIsActiveTrue(username, discussionId);
     }
 
+    private String uploadMessageMedia(MultipartFile file, String username) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
 
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", file.getResource());
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+
+            String url = mediaServiceUrl + "/upload-image/message";
+            logger.info("Calling media service at URL: {}", url);
+
+
+            ImageUploadResponseDTO response = restTemplate.postForObject(url, requestEntity, ImageUploadResponseDTO.class);
+            if (response != null && response.getUrls() != null) {
+                logger.info("Received URLs from media service for message: {}", response.getUrls());
+                return response.getUrls().get("original");
+            } else {
+                logger.warn("Media service returned a null or empty response for message file.");
+            }
+
+
+        } catch (Exception e) {
+            logger.error("🚨 Failed to call media service to upload image for message sent by {}", username, e);
+        }
+        return null;
+    }
 
     private User findUserByUsername(String username) {
         var query = entityManager.createQuery(

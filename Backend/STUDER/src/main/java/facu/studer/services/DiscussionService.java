@@ -2,6 +2,7 @@ package facu.studer.services;
 
 import facu.studer.DTOs.discussions.*;
 import facu.studer.DTOs.MessageDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -109,7 +110,8 @@ public interface DiscussionService {
     DiscussionMessageResponseDTO createMessage(
             Long discussionId,
             String username,
-            DiscussionMessageCreateRequestDTO request);
+            DiscussionMessageCreateRequestDTO request,
+            MultipartFile file);
 
 
     /**

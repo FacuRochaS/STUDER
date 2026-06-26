@@ -3,6 +3,7 @@ package facu.studer.DTOs.discussions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import facu.studer.DTOs.user.UserPublicResponseDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,8 +23,8 @@ public class DiscussionMessageResponseDTO {
 
     private Long id;
 
-    @JsonProperty("sender_username")
-    private String senderUsername;
+    @JsonProperty("sender")
+    private UserPublicResponseDTO sender;
 
     private String content;
 

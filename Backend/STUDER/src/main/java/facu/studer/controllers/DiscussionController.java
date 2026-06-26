@@ -1,14 +1,18 @@
 package facu.studer.controllers;
 
 import facu.studer.DTOs.MessageDTO;
+import facu.studer.DTOs.chats.MessageRequestDTO;
+import facu.studer.DTOs.chats.MessageResponseDTO;
 import facu.studer.DTOs.discussions.*;
 import facu.studer.security.SecurityUtils;
 
 import facu.studer.services.DiscussionService;
 
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -63,7 +67,7 @@ public class DiscussionController {
 
     /**
      * Gets paginated discussions where the authenticated user has participated
-     * (as owner, messaged, or favourited).
+     * (as owner, messaged, or favourite).
      *
      * @param page page number (0-based, default 0)
      * @return paginated discussion response with participation info
@@ -197,16 +201,18 @@ public class DiscussionController {
      * @param request the message creation data
      * @return the created message response
      */
-    @PostMapping("/{id}/messages")
+    @PostMapping(value="/{id}/messages", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<DiscussionMessageResponseDTO> createMessage(
             @PathVariable Long id,
-            @Valid @RequestBody DiscussionMessageCreateRequestDTO request) {
+            @Valid @RequestPart("request") DiscussionMessageCreateRequestDTO request,
+             @RequestPart(value = "file", required = false) MultipartFile file){
 
         String username = securityUtils.requireCurrentUsername();
         DiscussionMessageResponseDTO response = discussionService
-                .createMessage(id, username, request);
+                .createMessage(id, username, request, file);
         return ResponseEntity.ok(response);
     }
+
 
     /**
      * Adds a discussion to the authenticated user's favourites.

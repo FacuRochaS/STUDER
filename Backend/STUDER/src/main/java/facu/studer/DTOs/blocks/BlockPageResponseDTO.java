@@ -1,8 +1,9 @@
-package facu.studer.DTOs.discussions;
+package facu.studer.DTOs.blocks;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import lombok.*;
 
 import java.util.List;
@@ -13,9 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class DiscussionMessagePageResponseDTO {
+public class BlockPageResponseDTO {
 
-    private List<DiscussionMessageResponseDTO> messages;
+    private List<BlockResponseDTO>blocks;
 
     @JsonProperty("total_elements")
     private long totalElements;
@@ -25,24 +26,5 @@ public class DiscussionMessagePageResponseDTO {
 
     @JsonProperty("current_page")
     private int currentPage;
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
