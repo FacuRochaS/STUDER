@@ -1,0 +1,52 @@
+@if (block) {
+  <div class="info-grid">
+    <div class="info-item">
+      <label>Nombre</label>
+      <div>{{ block.name }}</div>
+    </div>
+    <div class="info-item">
+      <label>Slug</label>
+      <div>{{ block.slug }}</div>
+    </div>
+    <div class="info-item">
+      <label>Autor</label>
+      <div>{{ block.owner.username }}</div>
+    </div>
+    <div class="info-item">
+      <label>Fecha de creación</label>
+      <div>{{ block.createdDatetime | date:'medium' }}</div>
+    </div>
+    <div class="info-item">
+      <label>Última modificación</label>
+      <div>{{ block.lastUpdatedDatetime | date:'medium' }}</div>
+    </div>
+    <div class="info-item">
+      <label>Versión actual</label>
+      <div>{{ block.version.versionNumber }}</div>
+    </div>
+    <div class="info-item">
+      <label>Forks</label>
+      <div>0 (placeholder)</div>
+    </div>
+    <div class="info-item">
+      <label>Likes</label>
+      <div>0 (placeholder)</div>
+    </div>
+    <div class="info-item info-item--full">
+      <label>Descripción</label>
+      <div>(Placeholder)</div>
+    </div>
+    <div class="info-item info-item--full">
+      <label>Tags</label>
+      <div class="tags-container">
+        @for (tag of block.tags; track tag) {
+          <span class="tag">{{ tag }}</span>
+        }
+      </div>
+    </div>
+    <div class="info-item">
+      <label>Dificultad</label>
+      <div>{{ block.difficulty }}</div>
+    </div>
+  </div>
+}

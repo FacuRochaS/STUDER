@@ -1,0 +1,17 @@
+.block-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-large);
+}
+
+.metadata-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-medium);
+}
+
+.content-creator {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium);
+}

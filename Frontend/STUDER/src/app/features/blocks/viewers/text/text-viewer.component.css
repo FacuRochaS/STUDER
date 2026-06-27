@@ -1,0 +1,41 @@
+.text-viewer {
+  font-family: var(--font-family-sans-serif);
+  line-height: 1.6;
+}
+
+.paragraph {
+  margin: 0 0 1em 0;
+}
+
+.run--bold {
+  font-weight: bold;
+}
+
+.run--italic {
+  font-style: italic;
+}
+
+.run--underline {
+  text-decoration: underline;
+}
+
+.run--strike {
+  text-decoration: line-through;
+}
+
+.run--code {
+  font-family: var(--font-family-monospace);
+  background-color: var(--color-surface-container-high);
+  padding: 0.2em 0.4em;
+  border-radius: var(--border-radius-small);
+  font-size: 90%;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

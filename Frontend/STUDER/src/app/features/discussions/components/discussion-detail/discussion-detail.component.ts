@@ -167,17 +167,6 @@ export class DiscussionDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  closeDiscussion(): void {
-    this.discussionService
-      .close(this.discussionId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          if (this.discussion) {
-            this.discussion.closed = true;
-          }
-        }
-      });
-  }
+
 }
 

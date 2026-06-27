@@ -171,6 +171,39 @@
     "submit": "Crear",
     "create_error": "Error al crear la discusión"
   },
+  "discussion": {
+    "sidebar": {
+      "new": "Abrir nueva",
+      "yours": "Tus discusiones",
+      "favourites": "Favoritas",
+      "recent": "Recientes",
+      "popular": "Populares",
+      "new_discussions": "Nuevas",
+      "explore": "Explorar"
+    },
+    "item": {
+      "see_more": "Ver más",
+      "see_less": "Ver menos",
+      "no_messages": "Aún no hay mensajes en esta discusión.",
+      "reply_placeholder": "Escribe una respuesta...",
+      "attach_file": "Adjuntar archivo",
+      "reply": "responder..."
+    },
+    "list": {
+      "no_discussions_title": "No se encontraron discusiones",
+      "no_discussions_subtitle": "Intenta seleccionar otra categoría o crea una nueva discusión."
+    },
+    "search_placeholder": "Buscar discusiones...",
+    "explore": {
+      "filters_title": "Filtros de Exploración",
+      "tags": "Etiquetas",
+      "tags_placeholder": "Filtrar por etiquetas...",
+      "last_days": "Creadas en los últimos (días)",
+      "activity_hours": "Actividad reciente (horas)",
+      "reset": "Reiniciar",
+      "apply": "Aplicar Filtros"
+    }
+  },
   "chat": {
     "title": "Chats",
     "you": "tu",

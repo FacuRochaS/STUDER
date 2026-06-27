@@ -1,0 +1,10 @@
+.block-detail-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.tab-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}

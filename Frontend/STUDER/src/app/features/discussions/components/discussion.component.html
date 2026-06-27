@@ -1,75 +1,20 @@
-<div class="discussion-layout">
+<div class="discussion-container">
+  <app-discussion-sidebar
+    (categorySelected)="onCategorySelected($event)"
+    (newDiscussion)="onNewDiscussion()">
+  </app-discussion-sidebar>
 
-  <aside class="discussion-sidebar">
+  <main class="discussion-content">
+    @if (selectedCategory === 'explore') {
+      <app-explore-filters (filtersChanged)="onFiltersChanged($event)"></app-explore-filters>
+    }
 
-    <div class="discussion-sidebar__search">
-      <i class="pi pi-search search-icon"></i>
-      <input type="text"
-             [placeholder]="'discussion.search_placeholder' | translate"
-             [(ngModel)]="searchQuery"
-             (keyup)="filterResults()">
-    </div>
-
-    <div class="discussion-sidebar__list">
-      @for (discussion of discussions; track discussion.id) {
-        <div class="discussion-item"
-             [class.discussion-item--active]="activeDiscussion?.id === discussion.id"
-             (click)="selectDiscussion(discussion)">
-
-          <div class="discussion-item__content">
-            <div class="discussion-item__top">
-              <span class="discussion-item__title">{{ discussion.title }}</span>
-              <span class="discussion-item__time">{{ discussion.createdAt | date:'shortTime' }}</span>
-            </div>
-
-            <div class="discussion-item__bottom">
-              <span class="discussion-item__author">{{ discussion.ownerUsername }}</span>
-              <span class="discussion-item__replies">{{ discussion.messageCount }} replies</span>
-            </div>
-          </div>
-        </div>
-      }
-      @if (discussions.length === 0 && !loading) {
-        <div class="discussion-empty-state">
-          <p>{{ 'discussion.no_discussions' | translate }}</p>
-        </div>
-      }
-    </div>
-  </aside>
-
-  <main class="discussion-main">
-    @if (activeDiscussion) {
-      <header class="discussion-main__header">
-        <div class="discussion-main__user-info">
-          <div class="discussion-main__user-details">
-            <span class="discussion-main__username">{{ activeDiscussion.ownerUsername }}</span>
-          </div>
-        </div>
-      </header>
-
-      <div class="discussion-main__content">
-        <h2>{{ activeDiscussion.title }}</h2>
-        <studer-rich-text [text]="activeDiscussion.description"></studer-rich-text>
-      </div>
-
-      <div class="discussion-main__replies">
-        @for (reply of messages; track reply.id) {
-          <div class="reply-item">
-            <div class="reply-item__author">
-              <span>{{ reply.senderUsername }}</span>
-            </div>
-            <div class="reply-item__content">
-              <studer-rich-text [text]="reply.content"></studer-rich-text>
-            </div>
-          </div>
-        }
+    @if (loading) {
+      <div class="loading-spinner">
+        <studer-loader></studer-loader>
       </div>
     } @else {
-      <div class="discussion-main__placeholder">
-        <i class="pi pi-comments placeholder-icon"></i>
-        <h3>{{ 'discussion.select_discussion' | translate }}</h3>
-      </div>
+      <app-discussion-list [discussions]="discussions"></app-discussion-list>
     }
   </main>
-
 </div>

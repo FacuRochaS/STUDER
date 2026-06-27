@@ -16,7 +16,7 @@ public class BlockVersionCreateRequestDTO {
 
     private String changeDescription;
 
-    private Long BlockId;
+    private Long blockId;
 
     private Boolean published;
 }

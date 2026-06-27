@@ -1,0 +1,26 @@
+.tabs-nav {
+  display: flex;
+  border-bottom: 1px solid var(--color-outline);
+  gap: var(--spacing-large);
+  padding: 0 var(--spacing-large);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: var(--spacing-medium) 0;
+  cursor: pointer;
+  color: var(--color-on-surface-variant);
+  border-bottom: 2px solid transparent;
+  font-size: 1rem;
+}
+
+.tab-btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--color-on-surface);
+}

@@ -1,104 +1,121 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { Subject, takeUntil } from 'rxjs';
 import { DiscussionService } from '../discussion.service';
-import { DiscussionResponseDTO, DiscussionMessageResponseDTO } from '../discussion.model';
-import { RichTextComponent } from '../../../shared/rich-text.index';
-import { UserPublic } from '../../users/user.model';
+import { DiscussionCreateRequestDTO, DiscussionResponseDTO } from '../discussion.model';
+import { DiscussionSidebarComponent, DiscussionCategory } from './discussion-sidebar/discussion-sidebar.component';
+import { DiscussionListComponent } from './discussion-list/discussion-list.component';
+import { ExploreFiltersComponent, ExploreFilters } from './explore-filters/explore-filters.component';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
+import { ModalService } from '../../../shared/services/modal.service';
+import { DiscussionCreateFormComponent } from './discussion-create-form/discussion-create-form.component';
 
 @Component({
   selector: 'app-discussion',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, RichTextComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslateModule,
+    DiscussionSidebarComponent,
+    DiscussionListComponent,
+    ExploreFiltersComponent,
+    LoaderComponent,
+  ],
   templateUrl: './discussion.component.html',
   styleUrls: ['./discussion.component.css']
 })
-export class DiscussionComponent implements OnInit, OnDestroy {
-  private readonly destroy$ = new Subject<void>();
+export class DiscussionComponent implements OnInit {
   private discussionService = inject(DiscussionService);
-  private route = inject(ActivatedRoute);
+  private modalService = inject(ModalService);
 
-  allDiscussions: DiscussionResponseDTO[] = [];
   discussions: DiscussionResponseDTO[] = [];
-  activeDiscussion: DiscussionResponseDTO | null = null;
-  messages: DiscussionMessageResponseDTO[] = [];
+  loading = false;
+  selectedCategory: DiscussionCategory = 'recent';
 
-  searchQuery: string = '';
-  loading: boolean = false;
-
-  constructor() {}
+  currentExploreFilters: ExploreFilters = {
+    tags: [],
+    lastDays: null,
+    activityHours: 24
+  };
 
   ngOnInit(): void {
-    this.route.paramMap
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(params => {
-        const discussionId = params.get('id');
-        if (discussionId) {
-          this.loadDiscussionsAndSelect(Number(discussionId));
-        } else {
-          this.loadDiscussions();
-        }
-      });
+    this.loadDiscussionsByCategory('recent');
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  onCategorySelected(category: DiscussionCategory): void {
+    this.selectedCategory = category;
+    this.loadDiscussionsByCategory(category);
   }
 
-  loadDiscussions(): void {
+  onFiltersChanged(filters: ExploreFilters): void {
+    this.currentExploreFilters = filters;
+    if (this.selectedCategory === 'explore') {
+      this.loadDiscussionsByCategory('explore');
+    }
+  }
+
+  loadDiscussionsByCategory(category: DiscussionCategory): void {
     this.loading = true;
-    this.discussionService.getPublicDiscussions().subscribe({
-      next: (data) => {
-        this.allDiscussions = data.discussions;
-        this.discussions = data.discussions;
+    this.discussions = [];
+
+    const discussionObservable = this.getObservableForCategory(category);
+
+    discussionObservable.subscribe({
+      next: (response) => {
+        this.discussions = response.discussions;
         this.loading = false;
       },
-      error: () => this.loading = false
-    });
-  }
-
-  loadDiscussionsAndSelect(discussionId: number): void {
-    this.loading = true;
-    this.discussionService.getPublicDiscussions().subscribe({
-      next: (data) => {
-        this.allDiscussions = data.discussions;
-        this.discussions = data.discussions;
-        const discussionToSelect = this.discussions.find(d => d.id === discussionId);
-        if (discussionToSelect) {
-          this.selectDiscussion(discussionToSelect);
-        }
+      error: () => {
         this.loading = false;
-      },
-      error: () => this.loading = false
-    });
-  }
-
-  selectDiscussion(discussion: DiscussionResponseDTO): void {
-    this.discussionService.getById(discussion.id).subscribe({
-      next: (data) => {
-        this.activeDiscussion = data;
-        this.loadMessages(data.id);
       }
     });
   }
 
-  loadMessages(discussionId: number): void {
-    this.discussionService.getMessages(discussionId).subscribe({
-      next: (data) => {
-        this.messages = data.messages;
-      }
-    });
+  private getObservableForCategory(category: DiscussionCategory) {
+    switch (category) {
+      case 'yours':
+        return this.discussionService.getMyOwnDiscussions();
+      case 'favourites':
+        return this.discussionService.getMyFavouriteDiscussions();
+      case 'recent':
+        return this.discussionService.getMyDiscussions();
+      case 'popular':
+        return this.discussionService.getPopularDiscussions();
+      case 'new':
+        return this.discussionService.getNewDiscussions();
+      case 'explore':
+        return this.discussionService.getPublicDiscussions(
+          0,
+          this.currentExploreFilters.tags,
+          this.currentExploreFilters.lastDays ?? undefined,
+          this.currentExploreFilters.activityHours
+        );
+      default:
+        return this.discussionService.getMyDiscussions();
+    }
   }
 
-  filterResults(): void {
-    const query = this.searchQuery.toLowerCase();
-    this.discussions = this.allDiscussions.filter(discussion =>
-      discussion.title.toLowerCase().includes(query) ||
-      discussion.ownerUsername.toLowerCase().includes(query)
-    );
+  onNewDiscussion(): void {
+    this.modalService.open(DiscussionCreateFormComponent, {
+      title: 'discussions.create_title',
+      outputs: {
+        save: (request: DiscussionCreateRequestDTO) => {
+          this.discussionService.create(request).subscribe({
+            next: () => {
+              this.modalService.close();
+              this.onCategorySelected('yours');
+            },
+            error: () => {
+              // Handle error
+            }
+          });
+        },
+        cancel: () => {
+          this.modalService.close();
+        }
+      }
+    });
   }
 }

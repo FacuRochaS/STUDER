@@ -1,0 +1,10 @@
+<div class="block-editor">
+  <div class="metadata-form">
+    <!-- Form fields for metadata: name, slug, tags, difficulty, published -->
+  </div>
+  <div class="content-creator">
+    <studer-text-creator (contentChange)="onContentChange($event, 0)"></studer-text-creator>
+    <!-- More creator components can be added here -->
+  </div>
+  <button (click)="onSave()">Save Block</button>
+</div>

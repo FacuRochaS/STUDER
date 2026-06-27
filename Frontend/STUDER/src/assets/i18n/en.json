@@ -171,6 +171,39 @@
     "submit": "Create",
     "create_error": "Error creating discussion"
   },
+  "discussion": {
+    "sidebar": {
+      "new": "Open new",
+      "yours": "Yours",
+      "favourites": "Favourites",
+      "recent": "Recent",
+      "popular": "Popular",
+      "new_discussions": "New",
+      "explore": "Explore"
+    },
+    "item": {
+      "see_more": "See more",
+      "see_less": "See less",
+      "no_messages": "No messages in this discussion yet.",
+      "reply_placeholder": "Write a reply...",
+      "attach_file": "Attach file",
+      "reply": "reply..."
+    },
+    "list": {
+      "no_discussions_title": "No discussions found",
+      "no_discussions_subtitle": "Try selecting another category or create a new discussion."
+    },
+    "search_placeholder": "Search discussions...",
+    "explore": {
+      "filters_title": "Explore Filters",
+      "tags": "Tags",
+      "tags_placeholder": "Filter by tags...",
+      "last_days": "Created in last (days)",
+      "activity_hours": "Recent activity (hours)",
+      "reset": "Reset",
+      "apply": "Apply Filters"
+    }
+  },
   "chat": {
     "title": "Chats",
     "you": "you",
@@ -188,5 +221,4 @@
       "offline": "Offline"
     }
   }
-
 }

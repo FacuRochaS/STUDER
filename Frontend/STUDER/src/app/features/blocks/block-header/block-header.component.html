@@ -1,0 +1,27 @@
+@if (block) {
+  <header class="block-header">
+    <div class="block-header__left">
+      @if (block.isFork) {
+        <svg class="block-header__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm0 2.122a2.25 2.25 0 1 0-1.5 0v.878A2.25 2.25 0 0 0 5.75 8.5h1.5v2.128a2.251 2.251 0 1 0 1.5 0V8.5h1.5a2.25 2.25 0 0 0 2.25-2.25v-.878a2.25 2.25 0 1 0-1.5 0v.878a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 5 6.25v-.878ZM10.75 12a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0Z" clip-rule="evenodd" /></svg>
+      }
+      <a [routerLink]="['/u', block.owner.username]" class="block-header__owner">{{ block.owner.username }}</a>
+      <span class="block-header__separator">/</span>
+      <strong class="block-header__name">{{ block.name }}</strong>
+      <span class="block-header__slug">#{{ block.slug }}</span>
+    </div>
+    <div class="block-header__right">
+      <div class="block-header__meta">
+        <span class="block-header__difficulty block-header__difficulty--{{ block.difficulty | lowercase }}">{{ block.difficulty }}</span>
+        <div class="block-header__tags">
+          @for (tag of block.tags.slice(0, 3); track tag) {
+            <span class="block-header__tag">{{ tag }}</span>
+          }
+        </div>
+      </div>
+      <button class="block-header__like-btn" (click)="toggleLike()" [class.liked]="isLiked">
+        <svg class="block-header__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" /></svg>
+        <span>Like</span>
+      </button>
+    </div>
+  </header>
+}

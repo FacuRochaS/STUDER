@@ -1,0 +1,29 @@
+.block-editor {
+  padding: var(--spacing-large);
+}
+
+.component-wrapper {
+  position: relative;
+  padding: var(--spacing-medium);
+  border: 1px dashed var(--color-outline);
+  margin-bottom: var(--spacing-medium);
+  border-radius: var(--border-radius);
+}
+
+.component-menu {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: flex;
+  gap: var(--spacing-small);
+  background-color: var(--color-surface);
+  padding: var(--spacing-small);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-elevation-low);
+}
+
+.add-component-area {
+  margin-top: var(--spacing-large);
+  padding-top: var(--spacing-large);
+  border-top: 1px solid var(--color-outline);
+}

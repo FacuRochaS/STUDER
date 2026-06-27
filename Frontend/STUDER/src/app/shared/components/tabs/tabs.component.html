@@ -1,0 +1,11 @@
+<nav class="tabs-nav">
+  @for (tab of tabs; track tab.id) {
+    <button
+      class="tab-btn"
+      [class.active]="tab.id === activeTabId"
+      (click)="selectTab(tab.id)">
+      <!-- Optional icon can go here -->
+      <span class="tab-label">{{ tab.label }}</span>
+    </button>
+  }
+</nav>

@@ -1,0 +1,40 @@
+
+
+{
+  "text":{
+    "content":[
+      {"string": "texto",
+        "size": 1,
+        "color": "principal",
+        "align": "left",
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false},
+
+      {"string": "texto",
+        "size": 1,
+        "color": "principal",
+        "align": "left",
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false}
+    ],
+
+    "links":[
+      {"url": "https//www.example.com", "placeholder": "Enlace"},
+      {"url": "https//www.example.com", "placeholder": "Enlace"}
+    ],
+
+    "photo": {
+      "url": "https//www.example.com/photo.jpg",
+      "alt": "Descripción de la foto"
+    }
+  }
+}
+
+
+
+
+

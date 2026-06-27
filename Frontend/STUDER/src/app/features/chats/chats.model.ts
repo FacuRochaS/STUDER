@@ -4,10 +4,10 @@ export interface UserPublicResponseDTO {
   username: string;
   firstName: string;
   lastName: string;
-  profilePictureOriginalUrl: string;
-  profilePictureAvatarUrl: string;
-  profilePictureWebpUrl: string;
-  profilePictureThumbnailUrl: string;
+  profilePictureOriginalUrl?: string;
+  profilePictureAvatarUrl?: string;
+  profilePictureWebpUrl?: string;
+  profilePictureThumbnailUrl?: string;
 }
 
 export interface FriendStatusResponseDTO {

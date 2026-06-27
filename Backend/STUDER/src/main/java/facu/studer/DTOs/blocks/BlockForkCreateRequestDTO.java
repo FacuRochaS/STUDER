@@ -28,7 +28,7 @@ public class BlockForkCreateRequestDTO {
 
     private String content;
 
-    private Long BlockId;
+    private Long blockId;
 
     private Boolean published;
 

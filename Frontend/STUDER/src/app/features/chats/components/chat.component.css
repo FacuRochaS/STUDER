@@ -11,7 +11,7 @@
 
 .chat-layout {
   display: flex;
-  height: calc(100vh - (var(--header-height) + var(--footer-height)));
+  height: calc(100vh - (var(--header-height) + var(--footer-height-collapsed) + 0.1rem));
   width: 100%;
   max-width: var(--content-max-width);
 
@@ -103,7 +103,7 @@
 
 .tab-btn--active {
   background-color: var(--input-background);
-  color: var(--color-text-prim);
+  color: var(--color-primary);
 }
 
 .chat-sidebar__list {

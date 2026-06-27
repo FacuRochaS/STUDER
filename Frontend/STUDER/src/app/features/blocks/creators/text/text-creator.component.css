@@ -1,0 +1,17 @@
+.text-creator__textarea {
+  width: 100%;
+  min-height: 120px;
+  border: none;
+  padding: var(--spacing-medium);
+  background-color: var(--color-surface-container-lowest);
+  border-radius: var(--border-radius);
+  resize: vertical;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.text-creator__textarea:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

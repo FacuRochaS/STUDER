@@ -1,0 +1,35 @@
+<div class="block-editor">
+  <div class="metadata-editor">
+    <!-- Metadata form will go here -->
+  </div>
+
+  <div class="content-editor">
+    @for (item of content; track item.id) {
+      <div class="component-wrapper">
+        <!-- This will dynamically render the creator component -->
+        <ng-container
+          *ngComponentOutlet="contentRegistry.getCreatorComponent(item.type);
+                              inputs: { data: item.data };
+                              outputs: { dataChange: onComponentDataChange(item.id, $event) }">
+        </ng-container>
+
+        <div class="component-menu">
+          <button (click)="moveComponent(item.id, 'up')">Up</button>
+          <button (click)="moveComponent(item.id, 'down')">Down</button>
+          <button (click)="deleteComponent(item.id)">Delete</button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="add-component-area">
+    <select #newComponentType>
+      @for (type of availableContentTypes; track type) {
+        <option [value]="type">{{ type }}</option>
+      }
+    </select>
+    <button (click)="addComponent(newComponentType.value, content.length - 1)">Add</button>
+  </div>
+
+  <button (click)="onSave()">Save</button>
+</div>

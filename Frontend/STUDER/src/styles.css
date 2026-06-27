@@ -156,6 +156,7 @@ body.theme-dark {
 
   --layout-body-bg: transparent;
 
+
 }
 
 body.theme-light {
@@ -187,6 +188,11 @@ body.theme-light {
   opacity: 0.75;
   text-decoration: underline;
 }
+
+
+
+
+
 
 /* ======================== RICH TEXT ENTITIES ======================== */
 

@@ -1,0 +1,4 @@
+.stats-placeholder {
+  padding: var(--spacing-large);
+  color: var(--color-on-surface-variant);
+}
