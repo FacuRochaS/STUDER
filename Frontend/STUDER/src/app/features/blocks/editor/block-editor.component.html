@@ -1,0 +1,104 @@
+<div class="editor-layout">
+
+  <aside class="editor-sidebar">
+    <div class="metadata-card">
+      <h3 class="sidebar-title">{{ 'blocks.editor.metadata.title' | translate }}</h3>
+
+      <div class="form-group">
+        <label for="block-name">{{ 'blocks.editor.metadata.name' | translate }}</label>
+        <input
+          id="block-name"
+          type="text"
+          class="form-control"
+          [(ngModel)]="metadata.name"
+          (ngModelChange)="generateSlug()"
+          [placeholder]="'blocks.editor.metadata.name_placeholder' | translate">
+      </div>
+
+      <div class="form-group">
+        <label for="block-difficulty">{{ 'blocks.editor.metadata.difficulty' | translate }}</label>
+        <select id="block-difficulty" class="form-control" [(ngModel)]="metadata.difficulty">
+          <option value="EASY">{{ 'difficulty.easy' | translate }}</option>
+          <option value="NORMAL">{{ 'difficulty.normal' | translate }}</option>
+          <option value="HARD">{{ 'difficulty.hard' | translate }}</option>
+          <option value="EXPERT">{{ 'difficulty.expert' | translate }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'blocks.editor.metadata.tags' | translate }}</label>
+        <studer-tag-input [(tags)]="metadata.tags"></studer-tag-input>
+      </div>
+
+      <div class="form-switch">
+        <input id="block-published" type="checkbox" [(ngModel)]="metadata.published">
+        <label for="block-published">{{ 'blocks.editor.metadata.published' | translate }}</label>
+      </div>
+
+      <button class="btn btn-primary w-100 mt-4" (click)="onSave()">
+        {{ 'blocks.editor.actions.save' | translate }}
+      </button>
+    </div>
+  </aside>
+
+  <main class="editor-main">
+    <div class="content-header">
+      <h2>{{ 'blocks.editor.content.title' | translate }}</h2>
+
+      <div class="add-block-controls">
+        <select class="form-control selector-sm" #newComponentType>
+          <option value="" disabled selected>{{ 'blocks.editor.content.select_type' | translate }}</option>
+          @for (type of availableContentTypes; track type) {
+            <option [value]="type">{{ 'blocks.types.' + type | translate }}</option>
+          }
+        </select>
+        <button class="btn btn-secondary" (click)="addComponent(newComponentType.value)">
+          + {{ 'blocks.editor.content.add' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div class="blocks-container">
+      @if (content.length === 0) {
+        <div class="empty-state">
+          <p>{{ 'blocks.editor.content.empty' | translate }}</p>
+        </div>
+      }
+
+      @for (item of content; track item.id; let i = $index) {
+        <div class="block-card">
+
+          <div class="block-card-header">
+            <span class="block-badge">{{ 'blocks.types.' + item.type | translate }}</span>
+            <div class="block-actions">
+              <button class="btn-icon" [disabled]="i === 0" (click)="moveComponent(i, 'up')" [title]="'action.up' | translate">↑</button>
+              <button class="btn-icon" [disabled]="i === content.length - 1" (click)="moveComponent(i, 'down')" [title]="'action.down' | translate">↓</button>
+              <button class="btn-icon btn-danger" (click)="deleteComponent(item.id!)" [title]="'action.delete' | translate">✕</button>
+            </div>
+          </div>
+
+          <div class="block-card-body">
+            @switch (item.type) {
+              @case ('text') {
+                <studer-text-creator
+                  [data]="$any(item.data)"
+                  (dataChange)="onComponentDataChange(item.id!, $event)">
+                </studer-text-creator>
+              }
+              @case ('activity') {
+                <studer-activity-creator
+                  [data]="$any(item.data)"
+                  (dataChange)="onComponentDataChange(item.id!, $event)">
+                </studer-activity-creator>
+              }
+              @default {
+                <div class="unsupported-block">{{'block.empty-state' | translate }} {{ item.type }}</div>
+              }
+            }
+          </div>
+
+        </div>
+      }
+    </div>
+  </main>
+</div>

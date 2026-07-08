@@ -30,9 +30,11 @@ export class UserService {
     return this.http.get<UserSearchPageResponse>(`${this.apiUrl}/search?query=${encoded}&page=${page}&size=${size}`);
   }
 
-  updateMe(request: UserUpdateRequestDTO, file?: File | null): Observable<User> {
+  updateMe(request?: UserUpdateRequestDTO, file?: File | null): Observable<User> {
     const formData = new FormData();
-    formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
+    if (request) {
+      formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
+    }
     if (file) {
       formData.append('file', file);
     }

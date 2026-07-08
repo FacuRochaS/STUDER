@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 })
 export class MessageNotificationStrategy implements NotificationStrategy {
   getRoute(notification: NotificationResponseDTO): string {
-    return notification.linkedId ? `/messages/chats/${notification.linkedId}` : '/messages/chats';
+    return notification.linkedId ? `/messages/${notification.linkedId}` : '/messages';
   }
 
   getIcon(notification: NotificationResponseDTO): string {

@@ -27,3 +27,22 @@ public class DiscussionMessagePageResponseDTO {
     private int currentPage;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

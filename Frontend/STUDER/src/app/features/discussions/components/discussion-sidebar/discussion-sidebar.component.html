@@ -1,0 +1,40 @@
+<div class="sidebar-container">
+  <button class="new-discussion-btn" (click)="openNew()">
+    <i class="pi pi-plus"></i>
+    <span>{{ 'discussion.sidebar.new' | translate }}</span>
+  </button>
+
+  <hr class="divider">
+
+  <ul class="nav-list">
+    <li (click)="selectCategory('yours')" [class.active]="selectedCategory === 'yours'">
+      <i class="pi pi-user"></i>
+      <span>{{ 'discussion.sidebar.yours' | translate }}</span>
+    </li>
+    <li (click)="selectCategory('favourites')" [class.active]="selectedCategory === 'favourites'">
+      <i class="pi pi-star"></i>
+      <span>{{ 'discussion.sidebar.favourites' | translate }}</span>
+    </li>
+    <li (click)="selectCategory('recent')" [class.active]="selectedCategory === 'recent'">
+      <i class="pi pi-history"></i>
+      <span>{{ 'discussion.sidebar.recent' | translate }}</span>
+    </li>
+  </ul>
+
+  <hr class="divider">
+
+  <ul class="nav-list">
+    <li (click)="selectCategory('popular')" [class.active]="selectedCategory === 'popular'">
+      <i class="pi pi-bolt"></i>
+      <span>{{ 'discussion.sidebar.popular' | translate }}</span>
+    </li>
+    <li (click)="selectCategory('new')" [class.active]="selectedCategory === 'new'">
+      <i class="pi pi-sparkles"></i>
+      <span>{{ 'discussion.sidebar.new_discussions' | translate }}</span>
+    </li>
+    <li (click)="selectCategory('explore')" [class.active]="selectedCategory === 'explore'">
+      <i class="pi pi-compass"></i>
+      <span>{{ 'discussion.sidebar.explore' | translate }}</span>
+    </li>
+  </ul>
+</div>

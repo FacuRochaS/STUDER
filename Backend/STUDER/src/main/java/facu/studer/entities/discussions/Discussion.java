@@ -52,17 +52,6 @@ public class Discussion extends BaseEntity {
     )
     private Set<Tag> tags;
 
-    /**
-     * Whether the discussion is closed for new messages.
-     */
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean closed = false;
-
-    /**
-     * When the discussion was closed (nullable).
-     */
-    private LocalDateTime closedAt;
 
     /**
      * Number of messages for filtering/performance.

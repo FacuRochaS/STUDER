@@ -1,15 +1,17 @@
+import {UserPublicResponseDTO} from '../chats/chats.model';
+
 export interface DiscussionResponseDTO {
   id: number;
   title: string;
   description: string;
-  ownerUsername: string;
+  owner: UserPublicResponseDTO;
   tags: string[];
-  closed: boolean;
-  closedAt: string | null;
-  messageCount: number;
   createdAt: string;
   favourite: boolean;
+  messageCount: number;
   participationType: 'OWNER' | 'MESSAGED' | 'FAVOURITE' | 'NONE';
+  likeCount: number;
+  favouriteCount: number;
 }
 
 export interface DiscussionPageResponseDTO {
@@ -28,7 +30,7 @@ export interface DiscussionCreateRequestDTO {
 
 export interface DiscussionMessageResponseDTO {
   id: number;
-  senderUsername: string;
+  sender: UserPublicResponseDTO;
   content: string;
   imageRef: string;
   createdAt: string;

@@ -1,0 +1,25 @@
+<div class="filters-container">
+  <h4>{{ 'discussion.explore.filters_title' | translate }}</h4>
+
+  <div class="filter-group">
+    <label for="tags">{{ 'discussion.explore.tags' | translate }}</label>
+    <studer-tag-input [(tags)]="filters.tags" [placeholder]="'discussion.explore.tags_placeholder' | translate"></studer-tag-input>
+  </div>
+
+  <div class="inline-filters">
+    <div class="filter-group">
+      <label for="lastDays">{{ 'discussion.explore.last_days' | translate }}</label>
+      <input type="number" id="lastDays" [(ngModel)]="filters.lastDays" class="form-control" min="1">
+    </div>
+
+    <div class="filter-group">
+      <label for="activityHours">{{ 'discussion.explore.activity_hours' | translate }}</label>
+      <input type="number" id="activityHours" [(ngModel)]="filters.activityHours" class="form-control" min="1">
+    </div>
+  </div>
+
+  <div class="filter-actions">
+    <button class="btn btn-secondary" (click)="resetFilters()">{{ 'discussion.explore.reset' | translate }}</button>
+    <button class="btn btn-primary" (click)="applyFilters()">{{ 'discussion.explore.apply' | translate }}</button>
+  </div>
+</div>

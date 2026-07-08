@@ -42,12 +42,45 @@ export class DiscussionService {
   }
 
   /**
-   * Obtiene las discusiones del usuario autenticado
+   * Obtiene las discusiones en las que participó el usuario autenticado
    */
   getMyDiscussions(page = 0): Observable<DiscussionPageResponseDTO> {
     const params = new HttpParams().set('page', page.toString());
     return this.http.get<DiscussionPageResponseDTO>(`${this.base}/me`, { params });
   }
+
+  /**
+   * Obtiene las discusiones creadas por el usuario autenticado
+   */
+  getMyOwnDiscussions(page = 0): Observable<DiscussionPageResponseDTO> {
+    const params = new HttpParams().set('page', page.toString());
+    return this.http.get<DiscussionPageResponseDTO>(`${this.base}/own`, { params });
+  }
+
+  /**
+   * Obtiene las discusiones favoritas del usuario autenticado
+   */
+  getMyFavouriteDiscussions(page = 0): Observable<DiscussionPageResponseDTO> {
+    const params = new HttpParams().set('page', page.toString());
+    return this.http.get<DiscussionPageResponseDTO>(`${this.base}/favourites`, { params });
+  }
+
+  /**
+   * Obtiene las discusiones favoritas del usuario autenticado
+   */
+  getNewDiscussions(page = 0): Observable<DiscussionPageResponseDTO> {
+    const params = new HttpParams().set('page', page.toString());
+    return this.http.get<DiscussionPageResponseDTO>(`${this.base}/new`, { params });
+  }
+
+  /**
+   * Obtiene las discusiones populares
+   */
+  getPopularDiscussions(page = 0): Observable<DiscussionPageResponseDTO> {
+    const params = new HttpParams().set('page', page.toString());
+    return this.http.get<DiscussionPageResponseDTO>(`${this.base}/popular`, { params });
+  }
+
 
   /**
    * Obtiene una discusión por ID
@@ -79,11 +112,23 @@ export class DiscussionService {
    */
   createMessage(
     discussionId: number,
-    data: DiscussionMessageCreateRequestDTO
+    data: DiscussionMessageCreateRequestDTO,
+    file?: File // Añadimos el parámetro de archivo opcional
   ): Observable<DiscussionMessageResponseDTO> {
+    const formData = new FormData();
+
+    // El DTO de la request se debe enviar como un JSON string bajo la clave "request"
+    formData.append('request', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+
+    if (file) {
+      formData.append('file', file, file.name);
+    }
+
+    // No es necesario establecer el Content-Type, el navegador lo hará por nosotros
+    // al enviar un FormData, incluyendo el boundary correcto.
     return this.http.post<DiscussionMessageResponseDTO>(
       `${this.base}/${discussionId}/messages`,
-      data
+      formData
     );
   }
 
@@ -125,14 +170,5 @@ export class DiscussionService {
     );
   }
 
-  /**
-   * Cierra una discusión (solo el owner)
-   */
-  close(discussionId: number): Observable<MessageResponseDTO> {
-    return this.http.patch<MessageResponseDTO>(
-      `${this.base}/${discussionId}/close`,
-      {}
-    );
-  }
-}
 
+}

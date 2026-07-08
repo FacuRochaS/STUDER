@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, TemplateRef, ViewChild, ElementRef, HostL
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, takeUntil, debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged, switchMap, of, catchError, filter } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LogoComponent } from '../logo/logo.component';
 import { OverlayComponent } from '../overlay/overlay.component';
@@ -10,6 +10,7 @@ import { NotificationPanelComponent } from '../notification-panel/notification-p
 import { ThemeService, Theme } from '../../../core/theme/theme.service';
 import { LanguageService, Language } from '../../../core/i18n/language.service';
 import { NotificationService } from '../../../features/notifications/notification.service';
+import { NewNotificationService } from '../../../core/notifications/new-notification.service';
 import { AuthStateService } from '../../../core/auth/auth-state.service';
 import { UserPublic } from '../../../features/users/user.model';
 import { UserService } from '../../../features/users/user.service';
@@ -49,15 +50,28 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private readonly themeService: ThemeService,
     private readonly languageService: LanguageService,
     private readonly notificationService: NotificationService,
+    private readonly newNotificationService: NewNotificationService,
     private readonly authState: AuthStateService,
     private readonly userService: UserService
   ) {}
 
   ngOnInit(): void {
+    // Subscribe to the unread count from the main notification service
     this.notificationService.unreadCount$
       .pipe(takeUntil(this.destroy$))
       .subscribe(count => this.unreadCount = count);
 
+    // Listen for new notification events from the polling service
+    this.newNotificationService.getNotifications()
+      .pipe(
+        filter(notifications => notifications.length > 0),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.notificationService.loadUnreadCount();
+      });
+
+    // Initial load of the unread count
     this.notificationService.loadUnreadCount();
 
     this.searchInput$
@@ -162,4 +176,3 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 }
-

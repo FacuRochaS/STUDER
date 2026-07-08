@@ -1,0 +1,83 @@
+:host {
+  display: block;
+  height: 60px;
+  background-color: transparent; /* Hereda el fondo del padre */
+  border-bottom: 1px solid var(--border);
+}
+
+.block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 100%;
+  font-size: 1rem;
+}
+
+.block-header__left,
+.block-header__right,
+.block-header__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.block-header__icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secu);
+}
+
+.block-header__owner {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.block-header__owner:hover {
+  text-decoration: underline;
+}
+
+.block-header__separator {
+  color: var(--color-text-secu);
+}
+
+.block-header__difficulty {
+  font-size: 0.75em;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+
+.block-header__difficulty--easy { border-color: var(--color-correct); color: var(--color-correct); }
+.block-header__difficulty--normal { border-color: var(--color-primary); color: var(--color-primary); }
+.block-header__difficulty--hard { border-color: var(--color-error); color: var(--color-error); }
+.block-header__difficulty--expert { border-color: var(--color-info); color: var(--color-info); }
+
+.btn-icon {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--color-text-secu);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-icon:hover {
+  background-color: var(--sidebar-hover-bg);
+  color: var(--color-text-prim);
+}
+
+.btn-icon .pi-heart-fill {
+  color: var(--color-error);
+}
+
+.btn-icon:hover .pi-heart-fill {
+  filter: brightness(1.2);
+}

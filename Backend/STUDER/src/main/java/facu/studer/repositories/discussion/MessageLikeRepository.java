@@ -27,5 +27,8 @@ public interface MessageLikeRepository extends JpaRepository<MessageLike, Long> 
      * Counts active likes for a message.
      */
     long countByMessageIdAndIsActiveTrue(Long messageId);
+
+
+
 }
 

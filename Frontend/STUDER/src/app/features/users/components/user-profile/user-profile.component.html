@@ -11,6 +11,15 @@
             } @else {
               <span>{{ initials }}</span>
             }
+            @if (isOwnProfile) {
+              <label class="profile__upload">
+                <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                  <path d="M12 9a3.75 3.75 0 1 0 0 7.5A3.75 3.75 0 0 0 12 9Z" />
+                  <path fill-rule="evenodd" d="M9.344 3.071a49.52 49.52 0 0 1 5.312 0c.967.052 1.83.585 2.332 1.39l.821 1.317c.24.383.645.643 1.11.71.386.054.77.113 1.152.177 1.432.239 2.429 1.493 2.429 2.909V18a3 3 0 0 1-3 3h-15a3 3 0 0 1-3-3V9.574c0-1.416.997-2.67 2.429-2.909.382-.064.766-.123 1.152-.177.465-.067.87-.327 1.11-.71l.821-1.317A3.001 3.001 0 0 1 9.344 3.07Z" clip-rule="evenodd" />
+                </svg>
+              </label>
+            }
           </div>
 
           <div class="profile__identity">
@@ -20,9 +29,6 @@
 
           @if (canShowSocialActions) {
             <div class="profile__actions">
-              <button type="button" class="profile__btn" (click)="onMessage()">
-                {{ 'profile.message' | translate }}
-              </button>
               <button
                 type="button"
                 class="profile__btn profile__btn--secondary"
@@ -35,43 +41,36 @@
                 }
               </button>
             </div>
-          } @else {
-            <div class="profile__actions">
-              <label class="profile__upload">
-                <input type="file" accept="image/*" (change)="onFileSelected($event)" />
-                {{ 'profile.change_photo' | translate }}
-              </label>
-            </div>
           }
         </aside>
 
         <div class="profile__content">
-          @if (isOwnProfile) {
-            <form class="profile__form" (ngSubmit)="saveProfile()">
-              <div class="profile__field">
-                <label>{{ 'profile.email' | translate }}</label>
-                <input type="email" [(ngModel)]="editEmail" name="email" />
-              </div>
-              <div class="profile__field">
-                <label>{{ 'profile.password' | translate }}</label>
-                <input type="password" [(ngModel)]="editPassword" name="password" />
-              </div>
-              <div class="profile__field">
-                <label>{{ 'profile.password_confirm' | translate }}</label>
-                <input type="password" [(ngModel)]="editPasswordConfirm" name="passwordConfirm" />
-              </div>
-
-              @if (saveError) {
-                <div class="profile__error">{{ saveError | translate }}</div>
+          <div class="block-system">
+            <div class="block-system__header">
+              <h3>{{ 'profile.blocks.title' | translate }}</h3>
+              @if (isOwnProfile) {
+                <button class="block-system__add-btn" (click)="openBlockEditor()">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                    <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                  </svg>
+                  <span>{{ 'profile.blocks.create' | translate }}</span>
+                </button>
               }
-
-              <button type="submit" class="profile__btn" [disabled]="saving">
-                {{ 'profile.save' | translate }}
-              </button>
-            </form>
-          } @else {
-            <div class="profile__placeholder"></div>
-          }
+            </div>
+            <div class="blocks__list">
+              @if (blocksLoading) {
+                <div class="blocks__loading">{{ 'profile.blocks.loading' | translate }}</div>
+              } @else {
+                @if (blocks.length > 0) {
+                  @for (block of blocks; track block.id) {
+                    <studer-block-card [block]="block"></studer-block-card>
+                  }
+                } @else {
+                  <div class="blocks__empty">{{ 'profile.blocks.empty' | translate }}</div>
+                }
+              }
+            </div>
+          </div>
         </div>
       </div>
     } @else {
@@ -79,4 +78,3 @@
     }
   }
 </section>
-

@@ -34,8 +34,9 @@ public final class FriendMapper {
                 .username(friendUser.getUsername())
                 .firstName(friendUser.getFirstName())
                 .lastName(friendUser.getLastName())
-                .email(friendUser.getEmail())
                 .isFriend(isFriend)
+                .profilePictureAvatarUrl(friendUser.getProfilePictureAvatarUrl())
+                .profilePictureThumbnailUrl(friendUser.getProfilePictureThumbnailUrl())
                 .build();
     }
 }

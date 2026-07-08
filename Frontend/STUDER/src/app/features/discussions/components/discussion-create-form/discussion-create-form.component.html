@@ -1,0 +1,23 @@
+<div class="create-form">
+  <div class="form-group">
+    <label>{{ 'discussions.form_title' | translate }}</label>
+    <input type="text" [(ngModel)]="newDiscussionData.title" class="form-control">
+  </div>
+  <div class="form-group">
+    <label>{{ 'discussions.form_description' | translate }}</label>
+    <textarea [(ngModel)]="newDiscussionData.description" class="form-control" rows="4"></textarea>
+  </div>
+  <div class="form-group">
+    <label>{{ 'discussions.form_tags' | translate }}</label>
+    <studer-tag-input [(tags)]="newDiscussionData.tags!"></studer-tag-input>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-secondary" (click)="onCancel()">{{ 'discussions.cancel' | translate }}</button>
+    <button class="btn btn-primary" (click)="onSave()" [disabled]="isCreating">
+      @if (isCreating) {
+        <i class="pi pi-spin pi-spinner"></i>
+      }
+      <span>{{ 'discussions.submit' | translate }}</span>
+    </button>
+  </div>
+</div>

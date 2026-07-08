@@ -20,6 +20,13 @@ public class NotificationController {
     private final NotificationService notificationService;
     private final SecurityUtils securityUtils;
 
+    /**
+     * Constructs a NotificationController with the specified notification service
+     * and security infrastructure utilities.
+     *
+     * @param notificationService the service handling notification processing and query logic
+     * @param securityUtils       the utility helper used to enforce user session constraints
+     */
     public NotificationController(NotificationService notificationService, SecurityUtils securityUtils) {
         this.notificationService = notificationService;
         this.securityUtils = securityUtils;
@@ -48,6 +55,30 @@ public class NotificationController {
                 .getNotifications(username, page, type, read, lastDays);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Gets paginated notifications for the authenticated user.
+     * Supports optional filters: type, read status, and date range.
+     * Notifications with availableAt in the future are excluded.
+     *
+     * @param page     page number (0-based, default 0)
+     * @param type     optional LinkedType filter
+     * @param lastDays optional filter for notifications within last N days
+     * @return paginated notification response
+     */
+    @GetMapping("/pending")
+    public ResponseEntity<NotificationPageResponseDTO> getPendingNotifications(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) LinkedType type,
+            @RequestParam(required = false) Integer lastDays) {
+
+        String username = securityUtils.requireCurrentUsername();
+        NotificationPageResponseDTO response = notificationService
+                .getPendingNotifications(username, page, type, lastDays);
+        return ResponseEntity.ok(response);
+    }
+
+
 
     /**
      * Marks a notification as read for the authenticated user.

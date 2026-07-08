@@ -1,0 +1,126 @@
+<div class="activity-viewer-box">
+
+  <div class="activity-statement-box">
+    @for (node of data.statement; track $index) {
+      @if (node.type === 'text') { <p class="statement-text">{{ node.value }}</p> }
+      @if (node.type === 'image') { <img [src]="node.value" class="statement-img" alt="Resource"> }
+      @if (node.type === 'code') { <pre class="statement-code"><code>{{ node.value }}</code></pre> }
+    }
+  </div>
+
+  <div class="activity-interactive-body">
+
+    @if (data.activityType === 'multiple_choice') {
+      <div class="options-layout">
+        @for (opt of data.options; track opt.id) {
+          <div class="interactive-card choice"
+               [class.selected]="selectedChoices[opt.id]"
+               [class.eval-correct]="evaluated && results[opt.id]"
+               [class.eval-incorrect]="evaluated && !results[opt.id]"
+               (click)="toggleChoice(opt.id)">
+
+            <div class="status-indicator">
+              @if (!evaluated) {
+                <i class="pi checkbox-icon" [ngClass]="selectedChoices[opt.id] ? 'pi-check-square' : 'pi-stop'"></i>
+              } @else {
+                <i class="pi eval-icon" [ngClass]="results[opt.id] ? 'pi-check-circle correct-icon' : 'pi-times-circle incorrect-icon'"></i>
+              }
+            </div>
+
+            <div class="opt-content">
+              <span>{{ opt.text }}</span>
+              @if (opt.imageUrl) { <img [src]="opt.imageUrl" class="opt-img" alt="Option media"> }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (data.activityType === 'ordering') {
+      <div class="options-layout">
+        @for (opt of orderedOptions; track opt.id; let idx = $index) {
+          <div class="interactive-card orderable"
+               [attr.draggable]="!evaluated"
+               (dragstart)="onDragStart(idx)"
+               (dragover)="onDragOver($event)"
+               (drop)="onDrop(idx)"
+               [class.eval-correct]="evaluated && results[opt.id]"
+               [class.eval-incorrect]="evaluated && !results[opt.id]">
+
+            <div class="status-indicator">
+              @if (!evaluated) {
+                <i class="pi pi-bars drag-handle"></i>
+              } @else {
+                <i class="pi eval-icon" [ngClass]="results[opt.id] ? 'pi-check-circle correct-icon' : 'pi-times-circle incorrect-icon'"></i>
+              }
+            </div>
+
+            <div class="opt-content">
+              <span>{{ opt.text }}</span>
+              @if (opt.imageUrl) { <img [src]="opt.imageUrl" class="opt-img" alt="Option media"> }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (data.activityType === 'matching') {
+      <div class="options-layout">
+        @for (opt of data.options; track opt.id) {
+          <div class="interactive-card matching-row"
+               [class.eval-correct]="evaluated && results[opt.id]"
+               [class.eval-incorrect]="evaluated && !results[opt.id]">
+
+            <div class="status-indicator" *ngIf="evaluated">
+              <i class="pi eval-icon" [ngClass]="results[opt.id] ? 'pi-check-circle correct-icon' : 'pi-times-circle incorrect-icon'"></i>
+            </div>
+
+            <div class="opt-content left-side">
+              <span>{{ opt.text }}</span>
+              @if (opt.imageUrl) { <img [src]="opt.imageUrl" class="opt-img" alt="Option media"> }
+            </div>
+
+            <i class="pi pi-arrow-right match-arrow"></i>
+
+            <select class="styled-select right-side" [disabled]="evaluated" (change)="selectMatch(opt.id, $any($event.target).value)">
+              <option value="" selected disabled>{{ 'activity.viewer.select_match' | translate }}</option>
+              @for (matchOpt of shuffledMatchTexts; track $index) {
+                <option [value]="matchOpt">{{ matchOpt }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+
+  <div class="activity-footer">
+
+    @if (evaluated && data.showFeedback) {
+      <div class="feedback-panel">
+        <h4 class="feedback-title">{{ 'activity.viewer.feedback.title' | translate }}</h4>
+        <div class="feedback-stats">
+           <span>
+             {{ 'activity.viewer.feedback.score_label' | translate }}:
+             <strong class="correct-text">{{ getCorrectCount() }}</strong>
+             {{ 'activity.viewer.feedback.score_divider' | translate }}
+             {{ data.options.length }}
+           </span>
+        </div>
+      </div>
+    }
+
+    <div class="activity-actions">
+      @if (!evaluated) {
+        <button class="btn btn-primary" (click)="verifyAnswers()">
+          <i class="pi pi-check"></i> {{ 'activity.viewer.verify_btn' | translate }}
+        </button>
+      } @else if (data.allowRetry) {
+        <button class="btn btn-secondary" (click)="resetActivity()">
+          <i class="pi pi-refresh"></i> {{ 'activity.viewer.retry_btn' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

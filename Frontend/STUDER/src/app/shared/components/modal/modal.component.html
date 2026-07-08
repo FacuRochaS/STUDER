@@ -1,16 +1,15 @@
-@if (visible) {
-  <div class="modal__backdrop" (click)="onBackdropClick($event)">
-    <div class="modal__panel">
-      <div class="modal__header">
-        <h2 class="modal__title">{{ title }}</h2>
-        <button type="button" class="modal__close" (click)="close()">
-          <span class="pi pi-times"></span>
-        </button>
-      </div>
-      <div class="modal__body">
-        <ng-content></ng-content>
-      </div>
-    </div>
-  </div>
-}
+<div class="modal-overlay">
+  <div class="modal__backdrop" (click)="onBackdropClick($event)"></div>
 
+  <div class="modal__container">
+    <header class="modal__header">
+      <h2 class="modal__title">{{ title }}</h2>
+      <button class="modal__close-btn" (click)="close.emit()">
+        &times;
+      </button>
+    </header>
+    <section class="modal__content">
+      <ng-container #content></ng-container>
+    </section>
+  </div>
+</div>

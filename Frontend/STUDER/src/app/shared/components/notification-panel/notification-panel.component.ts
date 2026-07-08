@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -9,6 +9,7 @@ import {
   NotificationResponseDTO
 } from '../../../features/notifications/notification.model';
 import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
+import { NewNotificationService} from '../../../core/notifications/new-notification.service';
 
 type NotificationFilter = 'ALL' | 'UNREAD';
 
@@ -21,6 +22,7 @@ type NotificationFilter = 'ALL' | 'UNREAD';
 })
 export class NotificationPanelComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
+  private newNotificationService = inject(NewNotificationService);
 
   notifications: NotificationResponseDTO[] = [];
   loading = false;
@@ -35,12 +37,23 @@ export class NotificationPanelComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadNotifications();
+    this.subscribeToNotifications();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  private subscribeToNotifications(): void {
+    this.newNotificationService.getNotifications()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((notifications: NotificationResponseDTO[]) => {
+        this.loadNotifications();
+      });
+  }
+
+
 
   loadNotifications(append = false): void {
     this.loading = true;

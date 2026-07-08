@@ -1,0 +1,20 @@
+<div class="discussion-container">
+  <app-discussion-sidebar
+    (categorySelected)="onCategorySelected($event)"
+    (newDiscussion)="onNewDiscussion()">
+  </app-discussion-sidebar>
+
+  <main class="discussion-content">
+    @if (selectedCategory === 'explore') {
+      <app-explore-filters (filtersChanged)="onFiltersChanged($event)"></app-explore-filters>
+    }
+
+    @if (loading) {
+      <div class="loading-spinner">
+        <studer-loader></studer-loader>
+      </div>
+    } @else {
+      <app-discussion-list [discussions]="discussions"></app-discussion-list>
+    }
+  </main>
+</div>

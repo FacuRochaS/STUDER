@@ -30,8 +30,7 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
      */
     @Query("SELECT DISTINCT d FROM Discussion d " +
             "LEFT JOIN d.tags t " +
-            "WHERE d.course IS NULL " +
-            "AND d.isActive = true " +
+            "WHERE d.isActive = true " +
             "AND (:since IS NULL OR d.createdDatetime >= :since) " +
             "AND (:hasTags = false OR t.name IN :tagNames) " +
             "ORDER BY d.createdDatetime DESC")
@@ -48,8 +47,7 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
     @Query("SELECT d FROM Discussion d " +
             "LEFT JOIN d.tags t " +
             "LEFT JOIN DiscussionMessage dm ON dm.discussion = d AND dm.createdDatetime >= :activitySince " +
-            "WHERE d.course IS NULL " +
-            "AND d.isActive = true " +
+            "WHERE d.isActive = true " +
             "AND (:since IS NULL OR d.createdDatetime >= :since) " +
             "AND (:hasTags = false OR t.name IN :tagNames) " +
             "GROUP BY d " +
@@ -61,15 +59,37 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
             @Param("activitySince") LocalDateTime activitySince,
             Pageable pageable);
 
+    @Query(value = "SELECT d FROM Discussion d " +
+
+            "LEFT JOIN DiscussionMessage dm ON dm.discussion = d AND dm.sender.username = :username " +
+            "LEFT JOIN UserDiscussionFav u ON u.discussion = d AND u.user.username = :username " +
+            "WHERE d.isActive = true " +
+            "AND u.isActive= true " +
+            "AND (d.owner.username = :username OR dm.id IS NOT NULL OR u.id IS NOT NULL) " +
+            "GROUP BY d " +
+            "ORDER BY MAX(" +
+            "   GREATEST(" +
+            "       COALESCE(dm.createdDatetime, d.createdDatetime), " +
+            "       COALESCE(u.createdDatetime, d.createdDatetime) " +
+            "   )" +
+            ") DESC",
+            countQuery = "SELECT COUNT(DISTINCT d) FROM Discussion d " +
+                    "LEFT JOIN DiscussionMessage dm ON dm.discussion = d AND dm.sender.username = :username " +
+                    "LEFT JOIN UserDiscussionFav u ON u.discussion = d AND u.user.username = :username " +
+                    "WHERE d.isActive = true " +
+                    "AND (d.owner.username = :username OR dm.id IS NOT NULL OR u.id IS NOT NULL)")
+    Page<Discussion> findByUserParticipation(
+            @Param("username") String username,
+            Pageable pageable);
+
+
     /**
-     * Finds discussions where the user is the owner or has sent a message.
+     * Finds discussions where the user is the owner.
      */
     @Query("SELECT DISTINCT d FROM Discussion d " +
-            "LEFT JOIN DiscussionMessage dm ON dm.discussion = d " +
             "WHERE d.isActive = true " +
-            "AND d.course IS NULL " +
-            "AND (d.owner.username = :username OR dm.sender.username = :username)")
-    Page<Discussion> findByUserParticipation(
+            "AND (d.owner.username = :username )")
+    Page<Discussion> findByUsername(
             @Param("username") String username,
             Pageable pageable);
 
@@ -77,5 +97,31 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
      * Finds a discussion by ID only if active.
      */
     Optional<Discussion> findByIdAndIsActiveTrue(Long id);
+
+
+    /**
+     *
+     */
+    @Query(value = "SELECT d FROM Discussion d " +
+            "LEFT JOIN MessageLike l ON l.message.discussion = d " +
+            "WHERE d.isActive = true " +
+            "AND l.isActive = true " +
+            "GROUP BY d " +
+            "ORDER BY COUNT(l) DESC, d.createdDatetime DESC",
+            countQuery = "SELECT COUNT(d) FROM Discussion d WHERE d.isActive = true")
+    Page<Discussion> findPopularDiscussions(Pageable pageable);
+
+
+    /**
+     *
+     */
+    @Query("SELECT d FROM Discussion d " +
+            "JOIN UserDiscussionFav u ON u.discussion = d " +
+            "WHERE d.isActive = true " +
+            "AND u.isActive = true " +
+            "AND (u.user.username = :username)")
+    Page<Discussion> findByUserFavourite(
+            @Param("username") String username,
+            Pageable pageable);
 }
 

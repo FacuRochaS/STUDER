@@ -1,0 +1,36 @@
+<div class="message-input-container">
+  @if (replyingTo) {
+    <div class="replying-to-banner">
+      <span>{{ 'discussion.item.replying_to' | translate }} <strong>&#64;{{ replyingTo.sender.username }}</strong></span>
+      <button class="cancel-reply-btn" (click)="cancelReply()"><i class="pi pi-times"></i></button>
+    </div>
+  }
+
+  @if (attachedFile) {
+    <div class="attachment-preview">
+      <span>{{ attachedFile.name }}</span>
+      <button class="remove-attachment-btn" (click)="removeAttachment()"><i class="pi pi-times"></i></button>
+    </div>
+  }
+
+  <div class="input-area">
+    <input type="file" #fileInput hidden (change)="onFileSelected($event)">
+    <button class="action-btn" (click)="fileInput.click()" [disabled]="isSending" title="{{ 'discussion.item.attach_file' | translate }}">
+      <i class="pi pi-paperclip"></i>
+    </button>
+
+    <input type="text"
+           class="message-input"
+           [placeholder]="'discussion.item.reply_placeholder' | translate"
+           [(ngModel)]="content"
+           (keyup)="sendMessageOnEnter($event)">
+
+    <button class="send-btn" (click)="sendMessage()" [disabled]="isSending || (!content.trim() && !attachedFile)">
+      @if (isSending) {
+        <i class="pi pi-spin pi-spinner"></i>
+      } @else {
+        <i class="pi pi-send"></i>
+      }
+    </button>
+  </div>
+</div>

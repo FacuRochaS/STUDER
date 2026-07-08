@@ -95,6 +95,7 @@ public class ChatServiceImpl implements ChatService {
                     .content(msg.getContent())
                     .timestamp(msg.getCreatedDatetime())
                     .isRead(msg.getIsRead())
+                    .senderId(msg.getSender().getId())
                     .build()
             ).orElse(null);
 

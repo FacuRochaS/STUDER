@@ -1,15 +1,18 @@
 package facu.studer.controllers;
 
 import facu.studer.DTOs.MessageDTO;
+import facu.studer.DTOs.chats.MessageRequestDTO;
+import facu.studer.DTOs.chats.MessageResponseDTO;
 import facu.studer.DTOs.discussions.*;
 import facu.studer.security.SecurityUtils;
-import facu.studer.services.beta.DiscussionMessageService;
+
 import facu.studer.services.DiscussionService;
-import facu.studer.services.beta.MessageLikeService;
-import facu.studer.services.beta.UserDiscussionFavService;
+
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,6 +28,13 @@ public class DiscussionController {
     private final DiscussionService discussionService;
     private final SecurityUtils securityUtils;
 
+    /**
+     * Constructs a DiscussionController with the required core discussion domain service
+     * and security operations utility helper.
+     *
+     * @param discussionService the service executing core discussion thread logic and filters
+     * @param securityUtils       the security component for identity contextual lookups
+     */
     public DiscussionController(
             DiscussionService discussionService,
             SecurityUtils securityUtils) {
@@ -57,7 +67,7 @@ public class DiscussionController {
 
     /**
      * Gets paginated discussions where the authenticated user has participated
-     * (as owner, messaged, or favourited).
+     * (as owner, messaged, or favourite).
      *
      * @param page page number (0-based, default 0)
      * @return paginated discussion response with participation info
@@ -68,6 +78,69 @@ public class DiscussionController {
 
         String username = securityUtils.requireCurrentUsername();
         DiscussionPageResponseDTO response = discussionService.getUserDiscussions(username, page);
+        return ResponseEntity.ok(response);
+    }
+
+
+    /**
+     * Gets paginated discussions where the authenticated user has marked as favourite
+     *
+     * @param page page number (0-based, default 0)
+     * @return paginated discussion response with participation info
+     */
+    @GetMapping("/favourites")
+    public ResponseEntity<DiscussionPageResponseDTO> getUserFavouriteDiscussions(
+            @RequestParam(defaultValue = "0") int page) {
+
+        String username = securityUtils.requireCurrentUsername();
+        DiscussionPageResponseDTO response = discussionService.getFavouriteDiscussions(username, page);
+        return ResponseEntity.ok(response);
+    }
+
+
+    /**
+     * Gets paginated discussions where the authenticated user is the owner
+     *
+     * @param page page number (0-based, default 0)
+     * @return paginated discussion response with participation info
+     */
+    @GetMapping("/own")
+    public ResponseEntity<DiscussionPageResponseDTO> getUserOwnDiscussions(
+            @RequestParam(defaultValue = "0") int page) {
+
+        String username = securityUtils.requireCurrentUsername();
+        DiscussionPageResponseDTO response = discussionService.getUserOwnDiscussions(username, page);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Gets paginated popular discussions
+     *
+     * @param page page number (0-based, default 0)
+     * @return paginated discussion response with participation info
+     */
+    @GetMapping("/popular")
+    public ResponseEntity<DiscussionPageResponseDTO> getPopularDiscussions(
+            @RequestParam(defaultValue = "0") int page) {
+
+        String username = securityUtils.requireCurrentUsername();
+        DiscussionPageResponseDTO response = discussionService.getPopularDiscussions(username, page);
+        return ResponseEntity.ok(response);
+    }
+
+
+    /**
+     * Gets paginated new discussions
+     *
+     * @param page page number (0-based, default 0)
+     * @return paginated discussion response with participation info
+     */
+    @GetMapping("/new")
+    public ResponseEntity<DiscussionPageResponseDTO> getNewDiscussions(
+            @RequestParam(defaultValue = "0") int page) {
+
+        String username = securityUtils.requireCurrentUsername();
+        DiscussionPageResponseDTO response = discussionService.getNewDiscussions(username, page);
         return ResponseEntity.ok(response);
     }
 
@@ -128,16 +201,18 @@ public class DiscussionController {
      * @param request the message creation data
      * @return the created message response
      */
-    @PostMapping("/{id}/messages")
+    @PostMapping(value="/{id}/messages", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<DiscussionMessageResponseDTO> createMessage(
             @PathVariable Long id,
-            @Valid @RequestBody DiscussionMessageCreateRequestDTO request) {
+            @Valid @RequestPart("request") DiscussionMessageCreateRequestDTO request,
+             @RequestPart(value = "file", required = false) MultipartFile file){
 
         String username = securityUtils.requireCurrentUsername();
         DiscussionMessageResponseDTO response = discussionService
-                .createMessage(id, username, request);
+                .createMessage(id, username, request, file);
         return ResponseEntity.ok(response);
     }
+
 
     /**
      * Adds a discussion to the authenticated user's favourites.
@@ -192,18 +267,5 @@ public class DiscussionController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Closes a discussion. Only the owner can close it.
-     * A closed discussion cannot receive new messages but remains visible.
-     *
-     * @param id the discussion ID
-     * @return success/error response
-     */
-    @PatchMapping("/{id}/close")
-    public ResponseEntity<MessageDTO> closeDiscussion(@PathVariable Long id) {
-        String username = securityUtils.requireCurrentUsername();
-        MessageDTO response = discussionService.close(username, id);
-        return ResponseEntity.ok(response);
-    }
 }
 

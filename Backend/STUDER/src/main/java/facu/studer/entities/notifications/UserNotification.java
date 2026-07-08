@@ -4,6 +4,7 @@ import facu.studer.entities.BaseEntity;
 import facu.studer.entities.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,5 +40,8 @@ public class UserNotification extends BaseEntity {
     /** Timestamp when marked as read. */
     private LocalDateTime readAt;
 
-}
+    /** Sent status. */
+    @Builder.Default
+    private boolean sent = false;
 
+}

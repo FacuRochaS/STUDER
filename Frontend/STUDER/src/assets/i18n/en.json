@@ -131,7 +131,17 @@
     "password_confirm": "Confirm password",
     "save": "Save changes",
     "password_mismatch": "Passwords do not match.",
-    "save_error": "Could not save changes."
+    "save_error": "Could not save changes.",
+    "blocks": {
+      "title": "Block System",
+      "create": "Create Block",
+      "tabs": {
+        "content": "Content",
+        "info": "Information"
+      },
+      "loading": "Loading blocks...",
+      "empty": "This user has not created any blocks yet."
+    }
   },
   "footer": {
     "version": "Version",
@@ -171,10 +181,45 @@
     "submit": "Create",
     "create_error": "Error creating discussion"
   },
+  "discussion": {
+    "sidebar": {
+      "new": "Open new",
+      "yours": "Yours",
+      "favourites": "Favourites",
+      "recent": "Recent",
+      "popular": "Popular",
+      "new_discussions": "New",
+      "explore": "Explore"
+    },
+    "item": {
+      "see_more": "See more",
+      "see_less": "See less",
+      "no_messages": "No messages in this discussion yet.",
+      "reply_placeholder": "Write a reply...",
+      "attach_file": "Attach file",
+      "reply": "reply..."
+    },
+    "list": {
+      "no_discussions_title": "No discussions found",
+      "no_discussions_subtitle": "Try selecting another category or create a new discussion."
+    },
+    "search_placeholder": "Search discussions...",
+    "explore": {
+      "filters_title": "Explore Filters",
+      "tags": "Tags",
+      "tags_placeholder": "Filter by tags...",
+      "last_days": "Created in last (days)",
+      "activity_hours": "Recent activity (hours)",
+      "reset": "Reset",
+      "apply": "Apply Filters"
+    }
+  },
   "chat": {
     "title": "Chats",
+    "you": "you",
     "search_placeholder": "Search...",
     "no_chats": "You dont have a conversation yet.",
+    "no_friends": "You dont have friends yet.",
     "select_conversation": "Select a conversation to start chatting",
     "type_message": "Type a message...",
     "tabs": {
@@ -185,6 +230,146 @@
       "online": "Online",
       "offline": "Offline"
     }
+  },
+  "blocks": {
+    "editor": {
+      "metadata": {
+        "title": "Block Data",
+        "name": "Name",
+        "name_placeholder": "E.g., Introduction to...",
+        "difficulty": "Difficulty",
+        "tags": "Tags",
+        "published": "Published"
+      },
+      "actions": {
+        "save": "Save Block"
+      },
+      "content": {
+        "title": "Content",
+        "select_type": "Select type...",
+        "add": "Add",
+        "empty": "No content yet. Add a block to get started."
+      }
+    },
+    "empty-state": "No content.",
+    "header": {
+      "fork_title": "Forked block",
+      "like": "Like"
+    },
+    "info": {
+      "name": "Name",
+      "slug": "Slug",
+      "author": "Author",
+      "created_date": "Creation date",
+      "last_modified": "Last modified",
+      "current_version": "Current version",
+      "forks": "Forks",
+      "likes": "Likes",
+      "description": "Description",
+      "tags": "Tags",
+      "difficulty": "Difficulty",
+      "placeholder": "(no data)",
+      "details": "Details",
+      "description_placeholder": "No description provided."
+    },
+    "versions": {
+      "content_placeholder": "Selected version content (placeholder)."
+    },
+    "stats": {
+      "title": "Statistics (Placeholder)",
+      "views": "Views: N/A",
+      "likes": "Likes: N/A",
+      "forks": "Forks: N/A",
+      "used_in_courses": "Used in courses: N/A",
+      "avg_read_time": "Average reading time: N/A"
+    },
+    "detail": {
+      "loading": "Loading block...",
+      "error": "Error loading the block.",
+      "tabs": {
+        "content": "Content",
+        "info": "Information",
+        "versions": "Versions",
+        "stats": "Statistics"
+      }
+    },
+    "types": {
+      "text": "Text",
+      "activity": "Activity",
+      "video": "Video",
+      "gallery": "Gallery"
+    }
+  },
+  "difficulty": {
+    "easy": "Easy",
+    "normal": "Normal",
+    "hard": "Hard",
+    "expert": "Expert"
+  },
+  "action": {
+    "up": "Move Up",
+    "down": "Move Down",
+    "delete": "Delete",
+    "delete_fragment": "Delete fragment",
+    "delete_option": "Delete entire option"
+  },
+  "text_editor": {
+    "sizes": {
+      "small": "Small",
+      "medium": "Normal",
+      "large": "Large",
+      "xlarge": "Extra Large"
+    },
+    "colors": {
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "blue": "Blue (Highlight)",
+      "green": "Green (Correct)",
+      "orange": "Orange (Warning)",
+      "red": "Red (Error)",
+      "purple": "Purple (Info)"
+    }
+  },
+  "activity": {
+    "types": {
+      "multiple_choice": "Multiple Choice",
+      "matching": "Matching Pairs",
+      "ordering": "Ordering Items"
+    },
+    "nodes": {
+      "text": "Text",
+      "image": "Image",
+      "code": "Code"
+    },
+    "creator": {
+      "type_label": "Interactive Dynamics Type",
+      "allow_retry": "Allow Retries",
+      "show_feedback": "Show Feedback",
+      "statement_title": "Activity Prompt Formulation",
+      "options_title": "Options and Answers Setup",
+      "add_to_statement": "Add to prompt",
+      "option_prefix": "Option",
+      "position": "Position",
+      "add_option": "Add New Option",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "placeholders": {
+        "statement_text": "Write the activity prompt here...",
+        "image_url": "https://url-of-your-image.jpg",
+        "code_snippet": "console.log('Hello World');",
+        "option_text": "Option content...",
+        "match_key": "Match key"
+      }
+    },
+    "viewer": {
+      "select_match": "Select the corresponding match...",
+      "verify_btn": "Verify Answer",
+      "retry_btn": "Try Again",
+      "feedback": {
+        "title": "Activity results",
+        "score_label": "Correct answers",
+        "score_divider": "out of"
+      }
+    }
   }
-
 }

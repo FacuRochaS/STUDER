@@ -1,0 +1,53 @@
+.studer-text-viewer {
+  width: 100%;
+  color: var(--color-text-prim, #212529);
+  font-size: 1rem;
+  word-break: break-word;
+}
+
+.viewer-paragraph {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+}
+
+.viewer-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.viewer-inline-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+  display: block;
+}
+
+/* Modificadores Estilos Estrictos */
+.run--bold { font-weight: 700; }
+.run--italic { font-style: italic; }
+.run--underline { text-decoration: underline; }
+.run--strikethrough { text-decoration: line-through; }
+.run--underline.run--strikethrough { text-decoration: underline line-through; }
+
+/* Variaciones de Tamaños */
+.run-size--small { font-size: 0.85rem; }
+.run-size--medium { font-size: 1rem; }
+.run-size--large { font-size: 1.35rem; }
+.run-size--xlarge { font-size: 1.75rem; font-weight: 600; }
+
+
+.run-color--primary { color: var(--color-text-prim); }
+.run-color--secondary { color: var(--color-text-secu); }
+.run-color--blue { color: var(--color-primary); }
+.run-color--green { color: var(--color-correct); }
+.run-color--orange { color: var(--color-warning); }
+.run-color--red { color: var(--color-error); }
+.run-color--purple { color: var(--color-info); }
+
+.viewer-paragraph {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+  min-height: 1.6rem; /* ESTO ES CLAVE: hace que un párrafo vacío (<p></p>) ocupe el alto de un renglón */
+}

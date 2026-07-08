@@ -1,0 +1,28 @@
+.tabs-nav {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  gap: 1.5rem;
+  padding: 0 1.5rem;
+  background-color: transparent; /* Hereda el fondo del padre */
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 1rem 0;
+  cursor: pointer;
+  color: var(--color-text-secu);
+  border-bottom: 2px solid transparent;
+  font-size: 1rem;
+  margin-bottom: -1px; /* Aligns with the parent border */
+}
+
+.tab-btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--color-text-prim);
+}
