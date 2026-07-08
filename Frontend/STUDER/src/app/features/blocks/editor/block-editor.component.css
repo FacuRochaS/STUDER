@@ -1,29 +1,239 @@
-.block-editor {
-  padding: var(--spacing-large);
-}
-
-.component-wrapper {
-  position: relative;
-  padding: var(--spacing-medium);
-  border: 1px dashed var(--color-outline);
-  margin-bottom: var(--spacing-medium);
-  border-radius: var(--border-radius);
-}
-
-.component-menu {
-  position: absolute;
-  top: 5px;
-  right: 5px;
+/* Layout Principal - Separando Metadata de Contenido */
+.editor-layout {
+  background:  var(--color-bg);
   display: flex;
-  gap: var(--spacing-small);
-  background-color: var(--color-surface);
-  padding: var(--spacing-small);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-elevation-low);
+  gap: 2rem;
+  padding: 1.5rem;
+  max-width: var(--content-max-width, 1900px);
+  margin: 0 auto;
+  align-items: flex-start;
 }
 
-.add-component-area {
-  margin-top: var(--spacing-large);
-  padding-top: var(--spacing-large);
-  border-top: 1px solid var(--color-outline);
+.editor-sidebar {
+  flex: 0 0 320px;
+  position: sticky;
+  top: 1.5rem;
 }
+
+.editor-main {
+  flex: 1;
+  min-width: 0;
+  background:  var(--color-bg);
+}
+
+/* Tarjetas (Cards) */
+.metadata-card {
+  background-color: var(--color-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px var(--box-shadow-color);
+}
+
+.sidebar-title, .content-header h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  color: var(--color-text-prim);
+}
+
+/* Formularios */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secu);
+}
+
+.form-control {
+  width: 90%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border);
+  background-color: var(--input-background);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: var(--color-text-prim);
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  /* Utiliza el color primario con algo de opacidad para el foco */
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.15);
+}
+
+.slug-preview {
+  padding: 0.65rem;
+  background-color: var(--input-background);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--color-text-secu);
+  word-break: break-all;
+}
+
+/* Switches */
+.form-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.form-switch label {
+  font-weight: 600;
+  color: var(--color-text-prim);
+  cursor: pointer;
+}
+
+/* Contenido Principal */
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.add-block-controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.selector-sm {
+  width: auto;
+  min-width: 150px;
+}
+
+/* Bloques del Editor */
+.blocks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.empty-state {
+  padding: 3rem;
+  text-align: center;
+  background-color: var(--input-background);
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  color: var(--color-text-secu);
+}
+
+.block-card {
+  background-color: var(--color-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.block-card:hover {
+  box-shadow: 0 4px 12px var(--box-shadow-color);
+  border-color: var(--color-primary);
+}
+
+.block-card-header {
+  /* Usamos un fondo ligeramente diferente o el input-background para contrastar el header */
+  background-color: var(--input-background);
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.block-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secu);
+  background: var(--color-bg); /* Contraste con el header */
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.block-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* Modificado: Sin padding ni márgenes para que el componente hijo ocupe todo */
+.block-card-body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+/* Botones */
+.btn {
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-btn);
+}
+
+.btn-primary:hover {
+  filter: brightness(0.9);
+}
+
+.btn-secondary {
+  background-color: var(--color-bg);
+  color: var(--color-text-prim);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  /* En tema oscuro, un hover sutil */
+  background-color: var(--input-background);
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secu);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 1.1rem;
+}
+
+.btn-icon:hover:not([disabled]) {
+  background-color: var(--border);
+  color: var(--color-text-prim);
+}
+
+.btn-icon[disabled] {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btn-danger:hover:not([disabled]) {
+  color: var(--color-error);
+  background-color: rgba(255, 49, 49, 0.1); /* Usa un alpha de tu color de error */
+}
+
+.w-100 { width: 100%; }
+.mt-4 { margin-top: 1.5rem; }
+
+

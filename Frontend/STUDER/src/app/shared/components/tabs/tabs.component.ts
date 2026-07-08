@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface Tab {
   id: string;
@@ -10,7 +11,7 @@ export interface Tab {
 @Component({
   selector: 'studer-tabs',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.css']
 })

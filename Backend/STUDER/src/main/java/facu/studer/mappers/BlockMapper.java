@@ -24,7 +24,7 @@ public final class BlockMapper {
                 .id(blockVersion.getId())
                 .lastUpdatedDatetime(blockVersion.getLastUpdatedDatetime())
                 .createdDatetime(blockVersion.getCreatedDatetime())
-                .content(blockVersion.getContent())
+                .content(String.valueOf(blockVersion.getContent()))
                 .versionNumber(blockVersion.getVersionNumber())
                 .build();;
 
@@ -53,7 +53,7 @@ public final class BlockMapper {
                 .id(blockVersion.getId())
                 .lastUpdatedDatetime(blockVersion.getLastUpdatedDatetime())
                 .createdDatetime(blockVersion.getCreatedDatetime())
-                .content(blockVersion.getContent())
+                .content(String.valueOf(blockVersion.getContent()))
                 .versionNumber(blockVersion.getVersionNumber())
                 .build()).toList();
 

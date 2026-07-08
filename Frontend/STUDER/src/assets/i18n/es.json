@@ -131,7 +131,17 @@
     "password_confirm": "Confirmar contraseña",
     "save": "Guardar cambios",
     "password_mismatch": "Las contraseñas no coinciden.",
-    "save_error": "No se pudieron guardar los cambios."
+    "save_error": "No se pudieron guardar los cambios.",
+    "blocks": {
+      "title": "Sistema de bloques",
+      "create": "Crear bloque",
+      "tabs": {
+        "content": "Contenido",
+        "info": "Información"
+      },
+      "loading": "Cargando bloques...",
+      "empty": "Este usuario todavía no ha creado ningún bloque."
+    }
   },
   "footer": {
     "version": "Versión",
@@ -219,6 +229,147 @@
     "status": {
       "online": "En línea",
       "offline": "Desconectado"
+    }
+  },
+  "blocks": {
+    "editor": {
+      "metadata": {
+        "title": "Datos del Bloque",
+        "name": "Nombre",
+        "name_placeholder": "Ej: Introducción a...",
+        "difficulty": "Dificultad",
+        "tags": "Etiquetas",
+        "published": "Publicado"
+      },
+      "actions": {
+        "save": "Guardar Bloque"
+      },
+      "content": {
+        "title": "Contenido",
+        "select_type": "Seleccionar tipo...",
+        "add": "Agregar",
+        "empty": "No hay contenido aún. Agrega un bloque para empezar."
+      }
+    },
+    "empty-state": "Sin contenido.",
+    "header": {
+      "fork_title": "Bloque bifurcado",
+      "like": "Me gusta"
+    },
+    "info": {
+      "name": "Nombre",
+      "slug": "Slug",
+      "author": "Autor",
+      "created_date": "Fecha de creación",
+      "last_modified": "Última modificación",
+      "current_version": "Versión actual",
+      "forks": "Bifurcaciones",
+      "likes": "Me gusta",
+      "description": "Descripción",
+      "tags": "Etiquetas",
+      "difficulty": "Dificultad",
+      "placeholder": "(sin datos)",
+      "details": "Detalles",
+      "description_placeholder": "No se ha proporcionado una descripción."
+    },
+    "versions": {
+      "content_placeholder": "Contenido de la versión seleccionada (placeholder)."
+    },
+    "stats": {
+      "title": "Estadísticas (Placeholder)",
+      "views": "Visualizaciones: N/A",
+      "likes": "Me gusta: N/A",
+      "forks": "Bifurcaciones: N/A",
+      "used_in_courses": "Utilizado en cursos: N/A",
+      "avg_read_time": "Tiempo promedio de lectura: N/A"
+    },
+    "detail": {
+      "loading": "Cargando bloque...",
+      "error": "Error al cargar el bloque.",
+      "tabs": {
+        "content": "Contenido",
+        "info": "Información",
+        "versions": "Versiones",
+        "stats": "Estadísticas"
+      }
+    },
+    "types": {
+      "text": "Texto",
+      "activity": "Actividad",
+      "video": "Video",
+      "gallery": "Galería"
+    }
+  },
+  "difficulty": {
+    "easy": "Fácil",
+    "normal": "Normal",
+    "hard": "Difícil",
+    "expert": "Experto"
+  },
+  "action": {
+    "up": "Subir",
+    "down": "Bajar",
+    "delete": "Eliminar",
+    "delete_fragment": "Eliminar fragmento",
+    "delete_option": "Eliminar opción completa"
+  },
+  "text_editor": {
+    "sizes": {
+      "small": "Pequeño",
+      "medium": "Normal",
+      "large": "Grande",
+      "xlarge": "Extra grande"
+    },
+    "colors": {
+      "primary": "Principal",
+      "secondary": "Secundario",
+      "blue": "Azul (Destacado)",
+      "green": "Verde (Correcto)",
+      "orange": "Naranja (Alerta)",
+      "red": "Rojo (Error)",
+      "purple": "Morado (Info)"
+    }
+  },
+  "activity": {
+    "types": {
+      "multiple_choice": "Opción Múltiple",
+      "matching": "Unir con Flechas",
+      "ordering": "Ordenar Elementos"
+    },
+    "nodes": {
+      "text": "Texto",
+      "image": "Imagen",
+      "code": "Código"
+    },
+    "creator": {
+      "type_label": "Tipo de Dinámica Interactiva",
+      "allow_retry": "Permitir Reintentos",
+      "show_feedback": "Mostrar Retroalimentación",
+      "statement_title": "Redacción de la Consigna",
+      "options_title": "Configuración de Opciones y Respuestas",
+      "add_to_statement": "Agregar a la consigna",
+      "option_prefix": "Opción",
+      "position": "Posición",
+      "add_option": "Añadir Nueva Opción",
+      "correct": "Correcta",
+      "incorrect": "Incorrecta",
+      "placeholders": {
+        "statement_text": "Escribe la consigna aquí...",
+        "image_url": "https://url-de-tu-imagen.jpg",
+        "code_snippet": "console.log('Hola Mundo');",
+        "option_text": "Contenido de la opción...",
+        "match_key": "Clave de match"
+      }
+    },
+    "viewer": {
+      "select_match": "Selecciona la pareja correspondiente...",
+      "verify_btn": "Verificar Respuesta",
+      "retry_btn": "Intentar de Nuevo",
+      "feedback": {
+        "title": "Resultados de la actividad",
+        "score_label": "Aciertos",
+        "score_divider": "de"
+      }
     }
   }
 }

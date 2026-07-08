@@ -7,9 +7,9 @@ import { DiscussionComponent } from './features/discussions/components/discussio
 import { TestComponent } from './features/test/test.component';
 import { SearchComponent } from './features/search/search.component';
 import { UserProfileComponent } from './features/users/components/user-profile/user-profile.component';
-import { authGuard } from './core/auth/auth.guard';
 import { ChatComponent } from './features/chats/components/chat.component';
-import { DiscussionsTestComponent } from './features/test/discussions-test.component'; // Importamos el nuevo componente
+import { DiscussionsTestComponent } from './features/test/discussions-test.component';
+import {authGuard} from './core/auth/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -19,7 +19,7 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-   // canActivate: [authGuard],
+    //canActivate: [authGuard],
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'discussions', component: DiscussionComponent },

@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { TranslatePipe } from '@ngx-translate/core';
-import { User, UserPublic } from '../../user.model';
+import { TranslatePipe, TranslateModule } from '@ngx-translate/core';
+import {User, UserPublic, UserUpdateRequestDTO} from '../../user.model';
 import { UserService } from '../../user.service';
 import { FriendService } from '../../../friends/friend.service';
 import { FriendStatusResponseDTO } from '../../../friends/friend.model';
@@ -12,19 +12,17 @@ import { RichTextComponent } from '../../../../shared/components/rich-text/rich-
 import { BlockService } from '../../../blocks/block.service';
 import { BlockCreateRequestDTO, BlockResponseDTO } from '../../../blocks/block.model';
 import { ModalService } from '../../../../shared/services/modal.service';
-import {BlockEditorComponent} from '../../../blocks/block-editor/block-editor.component';
-import {BlockHeaderComponent} from '../../../blocks/block-header/block-header.component';
-import {BlockViewerComponent} from '../../../blocks/block-viewer/block-viewer.component';
+import { BlockEditorComponent } from '../../../blocks/editor/block-editor.component';
+import { BlockCardComponent } from '../../../blocks/component/block-card/block-card.component';
 
 @Component({
   selector: 'studer-user-profile',
   standalone: true,
   imports: [
     CommonModule,
-    TranslatePipe,
+    TranslateModule,
     RichTextComponent,
-    BlockHeaderComponent,
-    BlockViewerComponent,
+    BlockCardComponent,
   ],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
@@ -115,7 +113,13 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   private uploadProfilePicture(file: File): void {
-    this.userService.updateMe(undefined, file).subscribe({
+    const request: UserUpdateRequestDTO = {
+      email: "aaaaaaffafa@gmail.com",
+      password: null
+    };
+
+
+    this.userService.updateMe(request, file).subscribe({
       next: () => {
         // Optionally refresh user data from auth state
       },
@@ -127,7 +131,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   openBlockEditor(): void {
     this.modalService.open(BlockEditorComponent, {
-      title: 'Create New Block',
+      title: 'Crear nuevo bloque',
       inputs: {
         mode: 'create',
       },
@@ -248,16 +252,5 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         this.blocksLoading = false;
       },
     });
-  }
-
-  parseBlockContent(block: BlockResponseDTO): any[] {
-    try {
-      if (block.version && block.version.content) {
-        return JSON.parse(block.version.content);
-      }
-    } catch (e) {
-      console.error('Error parsing block content', e);
-    }
-    return [];
   }
 }

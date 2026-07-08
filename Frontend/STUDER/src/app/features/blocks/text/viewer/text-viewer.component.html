@@ -1,0 +1,19 @@
+<div class="studer-text-viewer">
+  @if (data && data.paragraphs) {
+    @for (paragraph of data.paragraphs; track $index) {
+      <p [style.text-align]="paragraph.align" class="viewer-paragraph">
+        @for (run of paragraph.runs; track $index) {
+          @if (run.imageUrl) {
+            <img [src]="run.imageUrl" class="viewer-inline-img" alt="Embedded graphic">
+          } @else {
+            @if (run.link) {
+              <a [href]="run.link" target="_blank" rel="noopener noreferrer" [ngClass]="getRunClasses(run)">{{ run.text }}</a>
+            } @else {
+              <span [ngClass]="getRunClasses(run)">{{ run.text }}</span>
+            }
+          }
+        }
+      </p>
+    }
+  }
+</div>

@@ -34,6 +34,8 @@ export class ModalService {
     modalComponent.instance.outputs = options?.outputs || {};
     modalComponent.instance.close.subscribe(() => this.close());
 
+    modalComponent.changeDetectorRef.detectChanges();
+
     document.body.appendChild(modalComponent.location.nativeElement);
     this.appRef.attachView(modalComponent.hostView);
     this.modalComponentRef = modalComponent;

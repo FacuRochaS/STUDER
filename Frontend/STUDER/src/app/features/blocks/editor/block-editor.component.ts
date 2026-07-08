@@ -3,63 +3,89 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
 import { BlockContentItem } from '../interfaces/content.interfaces';
-import { ContentRegistryService } from '../registry/content-registry.service';
-import { BlockCreateRequestDTO, Difficulty } from '../block.model';
+import { TagInputComponent } from '../../../shared/components/tag-input/tag-input.component';
+
+import { TranslateModule } from '@ngx-translate/core';
+import {TextCreatorComponent} from '../text/creator/text-creator.component';
+import {ActivityCreatorComponent} from '../activity/creator/activity-creator.component';
+
+export type Difficulty = 'EASY' | 'NORMAL' | 'HARD' | 'EXPERT';
+
+
 
 @Component({
   selector: 'studer-block-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  // Agregamos los componentes al array de imports
+  imports: [CommonModule, FormsModule, TranslateModule, TagInputComponent, TextCreatorComponent, ActivityCreatorComponent],
   templateUrl: './block-editor.component.html',
   styleUrls: ['./block-editor.component.css']
 })
 export class BlockEditorComponent implements OnInit {
   @Input() initialContent: BlockContentItem[] = [];
-  @Output() save = new EventEmitter<Partial<BlockCreateRequestDTO>>();
+  @Output() save = new EventEmitter<any>();
 
   content: BlockContentItem[] = [];
   metadata = {
     name: '',
     slug: '',
-    tags: [],
+    tags: [] as string[],
     difficulty: 'NORMAL' as Difficulty,
     published: false,
   };
 
-  availableContentTypes: string[] = [];
-
-  constructor(private readonly contentRegistry: ContentRegistryService) {}
+  // Nuestra lista estática de tipos soportados
+  availableContentTypes: string[] = ['text', 'activity'];
 
   ngOnInit(): void {
-    this.content = JSON.parse(JSON.stringify(this.initialContent)); // Deep copy
-    this.availableContentTypes = this.contentRegistry.getRegisteredTypes();
+    this.content = JSON.parse(JSON.stringify(this.initialContent));
   }
 
-  addComponent(type: string, index: number): void {
+  generateSlug(): void {
+    this.metadata.slug = this.metadata.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  addComponent(type: string): void {
+    if (!type) return;
+
+    // INICIALIZACIÓN SEGURA: Generamos el JSON por defecto según el tipo
+    let defaultData: any = {};
+    if (type === 'text') {
+      defaultData = { paragraphs: [] };
+    } else if (type === 'activity') {
+      defaultData = {
+        activityType: 'multiple_choice',
+        statement: [],
+        options: [],
+        allowRetry: true,
+        showFeedback: true
+      };
+    }
+
     const newComponent: BlockContentItem = {
       id: uuidv4(),
-      type: type,
-      data: {} // Default empty data
+      type: type as BlockContentItem['type'],
+      data: defaultData
     };
-    this.content.splice(index + 1, 0, newComponent);
+
+    this.content.push(newComponent);
   }
 
   deleteComponent(id: string): void {
-    const index = this.content.findIndex(c => c.id === id);
-    if (index > -1) {
-      this.content.splice(index, 1);
-    }
+    this.content = this.content.filter(c => c.id !== id);
   }
 
-  moveComponent(id: string, direction: 'up' | 'down'): void {
-    const index = this.content.findIndex(c => c.id === id);
-    if (index === -1) return;
-
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= this.content.length) return;
-
-    const [item] = this.content.splice(index, 1);
-    this.content.splice(newIndex, 0, item);
+  moveComponent(index: number, direction: 'up' | 'down'): void {
+    if (direction === 'up' && index > 0) {
+      [this.content[index - 1], this.content[index]] = [this.content[index], this.content[index - 1]];
+    } else if (direction === 'down' && index < this.content.length - 1) {
+      [this.content[index + 1], this.content[index]] = [this.content[index], this.content[index + 1]];
+    }
   }
 
   onComponentDataChange(id: string, newData: any): void {

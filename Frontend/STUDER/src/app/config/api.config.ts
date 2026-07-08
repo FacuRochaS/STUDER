@@ -7,5 +7,5 @@ export const API_CONFIG = {
   friends: '/friends',
   messages: '/messages',
   chats: '/chats',
-  blocks:'/block'
+  blocks:'/blocks'
 };

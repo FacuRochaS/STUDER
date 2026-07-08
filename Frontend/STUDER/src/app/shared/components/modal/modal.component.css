@@ -1,43 +1,61 @@
-:host {
+/* 1. Contenedor principal de pantalla completa (Reemplaza al :host) */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   z-index: 1000;
-}
-
-.modal__backdrop {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* 2. Fondo oscuro semitransparente */
+.modal__backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: -1; /* Lo enviamos al fondo para que no cubra el modal */
+}
+
+/* 3. La caja del modal */
 .modal__container {
-  background-color: var(--color-surface);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-elevation-high);
-  max-width: 90vw;
+  background-color: var(--sidebar-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: var(--overlay-shadow);
+
+  /* Configuracion elastica */
+  width: fit-content;
+  min-width: 300px;
+  max-width: 95vw;
   max-height: 90vh;
+
   display: flex;
   flex-direction: column;
 }
 
+/* 4. Cabecera y botón de cerrar */
 .modal__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-medium);
-  border-bottom: 1px solid var(--color-outline);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .modal__title {
   margin: 0;
-  font-size: 1.2rem;
-  color: var(--color-on-surface);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-prim);
 }
 
 .modal__close-btn {
@@ -45,10 +63,23 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: var(--color-on-surface-variant);
+  color: var(--color-text-secu);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.modal__close-btn:hover {
+  background-color: var(--sidebar-hover-bg);
+  color: var(--color-text-prim);
+}
+
+/* 5. Contenedor de contenido interno */
 .modal__content {
-  padding: var(--spacing-medium);
-  overflow-y: auto;
+  overflow: auto;
+  flex-grow: 1;
+  padding: 1rem 1.5rem;
 }

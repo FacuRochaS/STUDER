@@ -1,5 +1,6 @@
 package facu.studer.entities.blocks;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import facu.studer.entities.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "blocks_versions")
@@ -21,14 +24,15 @@ public class BlockVersion extends BaseEntity {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "block_id")
-    private Block Block;
+    private Block block;
 
 
     /**
-     * Content of the block.
+     * Content.
      */
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private String content;
+    private JsonNode content;
 
     /**
      * Version number.

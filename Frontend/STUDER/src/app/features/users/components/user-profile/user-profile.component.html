@@ -47,37 +47,26 @@
         <div class="profile__content">
           <div class="block-system">
             <div class="block-system__header">
-              <h3 i18n>Sistema de bloques</h3>
+              <h3>{{ 'profile.blocks.title' | translate }}</h3>
               @if (isOwnProfile) {
                 <button class="block-system__add-btn" (click)="openBlockEditor()">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                     <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                   </svg>
-                  <span i18n>Crear bloque</span>
+                  <span>{{ 'profile.blocks.create' | translate }}</span>
                 </button>
               }
             </div>
-            <div class="block-system__tabs">
-              <div class="tab tab--active" i18n>Contenido</div>
-              <div class="tab" i18n>Información</div>
-            </div>
-            <div class="block-system__content">
+            <div class="blocks__list">
               @if (blocksLoading) {
-                <div class="blocks__loading" i18n>Cargando bloques...</div>
+                <div class="blocks__loading">{{ 'profile.blocks.loading' | translate }}</div>
               } @else {
                 @if (blocks.length > 0) {
-                  <div class="blocks__list">
-                    @for (block of blocks; track block.id) {
-                      <div class="block-item">
-                        <studer-block-header [block]="block"></studer-block-header>
-                        <div class="block-item__content">
-                          <studer-block-viewer [content]="parseBlockContent(block)"></studer-block-viewer>
-                        </div>
-                      </div>
-                    }
-                  </div>
+                  @for (block of blocks; track block.id) {
+                    <studer-block-card [block]="block"></studer-block-card>
+                  }
                 } @else {
-                  <div class="blocks__empty" i18n>Este usuario todavía no ha creado ningún bloque.</div>
+                  <div class="blocks__empty">{{ 'profile.blocks.empty' | translate }}</div>
                 }
               }
             </div>

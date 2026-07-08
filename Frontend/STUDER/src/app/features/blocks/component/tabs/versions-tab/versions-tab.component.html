@@ -1,0 +1,21 @@
+@if (block) {
+  <div class="versions-layout">
+    <aside class="versions-list">
+      @for (version of block.versions.slice().reverse(); track version.id) {
+        <div
+          class="version-item"
+          [class.active]="version.id === selectedVersionId"
+          (click)="selectVersion(version.id)">
+          <div class="version-item__main">
+            <span class="version-item__number">v{{ version.versionNumber }}</span>
+            <span class="version-item__date">{{ version.createdDatetime | date:'short' }}</span>
+          </div>
+          <p class="version-item__description">{{ version.changeDescription }}</p>
+        </div>
+      }
+    </aside>
+    <main class="version-content-viewer">
+      <p>{{ 'blocks.versions.content_placeholder' | translate }}</p>
+    </main>
+  </div>
+}

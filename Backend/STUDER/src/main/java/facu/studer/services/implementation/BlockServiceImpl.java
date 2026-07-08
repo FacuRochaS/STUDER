@@ -1,5 +1,8 @@
 package facu.studer.services.implementation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import facu.studer.DTOs.blocks.*;
 import facu.studer.entities.Tag;
 import facu.studer.entities.blocks.Block;
@@ -13,11 +16,14 @@ import facu.studer.repositories.block.BlockVersionRepository;
 import facu.studer.services.BlockService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Version;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -30,6 +36,7 @@ public class BlockServiceImpl implements BlockService {
     private final BlockRepository blockRepository;
     private final BlockVersionRepository blockVersionRepository;
 
+
     private static final int PAGE_SIZE = 15;
 
     @PersistenceContext
@@ -38,9 +45,11 @@ public class BlockServiceImpl implements BlockService {
     public BlockServiceImpl(BlockRepository blockRepository, BlockVersionRepository blockVersionRepository) {
         this.blockRepository = blockRepository;
         this.blockVersionRepository = blockVersionRepository;
+
     }
 
     @Override
+    @Transactional
     public BlockResponseDTO create(String username, BlockCreateRequestDTO request) {
 
         User owner = findUserByUsername(username);
@@ -63,9 +72,11 @@ public class BlockServiceImpl implements BlockService {
 
         Block createdBlock = blockRepository.save(block);
 
+
+
         BlockVersion version = BlockVersion.builder()
-                .Block(createdBlock)
-                .content(request.getContent())
+                .block(createdBlock)
+                .content(parseContent(request.getContent()))
                 .versionNumber(1L)
                 .changeDescription("Original")
                 .published(request.getPublished())
@@ -86,6 +97,7 @@ public class BlockServiceImpl implements BlockService {
     }
 
     @Override
+    @Transactional
     public BlockResponseDTO fork(String username, BlockForkCreateRequestDTO request) {
 
         User owner = findUserByUsername(username);
@@ -115,8 +127,8 @@ public class BlockServiceImpl implements BlockService {
         Block createdBlock = blockRepository.save(block);
 
         BlockVersion version = BlockVersion.builder()
-                .Block(createdBlock)
-                .content(request.getContent())
+                .block(createdBlock)
+                .content(parseContent(request.getContent()))
                 .versionNumber(1L)
                 .changeDescription("Forked")
                 .published(request.getPublished())
@@ -138,6 +150,7 @@ public class BlockServiceImpl implements BlockService {
 
 
     @Override
+    @Transactional
     public BlockResponseDTO newVersion(String username, BlockVersionCreateRequestDTO request) {
 
         User owner = findUserByUsername(username);
@@ -152,8 +165,8 @@ public class BlockServiceImpl implements BlockService {
 
 
         BlockVersion version = BlockVersion.builder()
-                .Block(parent)
-                .content(request.getContent())
+                .block(parent)
+                .content(parseContent(request.getContent()))
                 .versionNumber(parent.getCurrentVersion().getVersionNumber() + 1)
                 .changeDescription(request.getChangeDescription())
                 .published(request.getPublished())
@@ -294,7 +307,7 @@ public class BlockServiceImpl implements BlockService {
                 throw new ResourceNotFoundException("block_version.not_found");
             }
 
-            BlockVersion version = blockVersionRepository.findById(id)
+            BlockVersion version = blockVersionRepository.findById(block.getCurrentVersion().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("block_version.not_found"));
 
             responseDTOS.add(BlockMapper.toResponseDTO(block, version));
@@ -373,5 +386,17 @@ public class BlockServiceImpl implements BlockService {
         }
 
         return result;
+    }
+
+    private JsonNode parseContent(String content) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readTree(content);
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid block content."
+            );
+        }
     }
 }
