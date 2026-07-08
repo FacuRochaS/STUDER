@@ -29,5 +29,7 @@ public interface UserDiscussionFavRepository extends JpaRepository<UserDiscussio
      * Finds all favourite discussions for a user (paginated).
      */
     Page<UserDiscussionFav> findByUserUsernameAndIsActiveTrue(String username, Pageable pageable);
+
+    int countByDiscussionIdAndIsActiveTrue(Long id);
 }
 

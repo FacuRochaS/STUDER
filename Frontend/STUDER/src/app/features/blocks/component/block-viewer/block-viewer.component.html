@@ -1,0 +1,13 @@
+<div class="block-viewer-container">
+  @if (content && content.length > 0) {
+    @for (item of content; track item.id || $index) {
+      <div class="block-wrapper">
+        <ng-container
+          *ngComponentOutlet="getComponentForType(item.type); inputs: { data: item.data }">
+        </ng-container>
+      </div>
+    }
+  } @else {
+    <p class="empty-state">{{ 'block.empty-state' | translate }}</p>
+  }
+</div>

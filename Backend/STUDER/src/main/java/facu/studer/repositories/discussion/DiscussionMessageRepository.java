@@ -49,6 +49,16 @@ public interface DiscussionMessageRepository extends JpaRepository<DiscussionMes
     long countLikesByMessageId(@Param("messageId") Long messageId);
 
     /**
+     * Counts likes for a specific discussion.
+     */
+    @Query("SELECT COUNT(ml) FROM MessageLike ml" +
+            " WHERE ml.message.discussion.id = :discussionId " +
+            "AND ml.isActive = true")
+    int countLikesByDiscussionId(@Param("discussionId") Long discussionId);
+
+
+
+    /**
      * Checks if a user has liked a specific message.
      */
     @Query("SELECT CASE WHEN COUNT(ml) > 0 THEN true ELSE false END " +

@@ -25,7 +25,9 @@ public final class DiscussionMapper {
     public static DiscussionResponseDTO toResponseDTO(
             Discussion discussion,
             boolean isFavourite,
-            String participationType) {
+            String participationType,
+            int favouriteCount,
+            int likeCount) {
 
         if (discussion == null) {
             return null;
@@ -39,14 +41,14 @@ public final class DiscussionMapper {
                 .id(discussion.getId())
                 .title(discussion.getTitle())
                 .description(discussion.getDescription())
-                .ownerUsername(discussion.getOwner().getUsername())
+                .owner(UserMapper.toPublicResponseDTO(discussion.getOwner()))
                 .tags(tagNames)
-                .closed(discussion.isClosed())
-                .closedAt(discussion.getClosedAt())
                 .messageCount(discussion.getMessageCount())
                 .createdAt(discussion.getCreatedDatetime())
                 .favourite(isFavourite)
                 .participationType(participationType)
+                .favouriteCount(favouriteCount)
+                .likeCount(likeCount)
                 .build();
     }
 }

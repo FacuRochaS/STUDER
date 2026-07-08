@@ -2,6 +2,8 @@ package facu.studer.services.implementation;
 
 import facu.studer.DTOs.discussions.*;
 import facu.studer.DTOs.MessageDTO;
+import facu.studer.DTOs.media.ImageUploadResponseDTO;
+import facu.studer.entities.BaseEntity;
 import facu.studer.entities.Tag;
 import facu.studer.entities.users.User;
 import facu.studer.entities.discussions.Discussion;
@@ -20,11 +22,22 @@ import facu.studer.repositories.discussion.UserDiscussionFavRepository;
 import facu.studer.services.DiscussionService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -32,6 +45,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.domain.Sort.Order.by;
 
 /**
  * Implementation of DiscussionService.
@@ -41,9 +56,13 @@ import java.util.stream.Collectors;
 @Service
 public class DiscussionServiceImpl implements DiscussionService {
 
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 15;
     private static final int DEFAULT_ACTIVITY_HOURS = 24;
 
+    private static final Logger logger = LoggerFactory.getLogger(ChatServiceImpl.class);
+
+    private final RestTemplate restTemplate;
+    private final String mediaServiceUrl;
 
     private final DiscussionRepository discussionRepository;
     private final MessageLikeRepository messageLikeRepository;
@@ -53,11 +72,18 @@ public class DiscussionServiceImpl implements DiscussionService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public DiscussionServiceImpl(DiscussionRepository discussionRepository, MessageLikeRepository messageLikeRepository, DiscussionMessageRepository discussionMessageRepository, UserDiscussionFavRepository userDiscussionFavRepository) {
+    public DiscussionServiceImpl(DiscussionRepository discussionRepository,
+                                 MessageLikeRepository messageLikeRepository,
+                                 DiscussionMessageRepository discussionMessageRepository,
+                                 UserDiscussionFavRepository userDiscussionFavRepository,
+                                 RestTemplate restTemplate,
+                                 @Value("${app.media.service.url}") String mediaServiceUrl) {
         this.discussionRepository = discussionRepository;
         this.messageLikeRepository = messageLikeRepository;
         this.discussionMessageRepository = discussionMessageRepository;
         this.userDiscussionFavRepository = userDiscussionFavRepository;
+        this.restTemplate = restTemplate;
+        this.mediaServiceUrl = mediaServiceUrl;
     }
 
     /**
@@ -120,6 +146,86 @@ public class DiscussionServiceImpl implements DiscussionService {
                 .build();
     }
 
+
+
+
+    @Override
+    public DiscussionPageResponseDTO getUserOwnDiscussions(String username, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+
+        Page<Discussion> discussionPage = discussionRepository
+                .findByUsername(username, pageable);
+
+        List<DiscussionResponseDTO> dtos = discussionPage.getContent().stream()
+                .map(d -> mapToDTO(d, username))
+                .collect(Collectors.toList());
+
+        return DiscussionPageResponseDTO.builder()
+                .discussions(dtos)
+                .totalElements(discussionPage.getTotalElements())
+                .hasMore(discussionPage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
+    @Override
+    public DiscussionPageResponseDTO getNewDiscussions(String username, int page) {
+        Sort sort = Sort.sort(Discussion.class).by(Discussion::getCreatedDatetime).descending();
+
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, sort);
+
+        Page<Discussion> discussionPage = discussionRepository.findAll(pageable);
+
+        List<DiscussionResponseDTO> dtos = discussionPage.getContent().stream()
+                .map(d -> mapToDTO(d, username))
+                .collect(Collectors.toList());
+
+        return DiscussionPageResponseDTO.builder()
+                .discussions(dtos)
+                .totalElements(discussionPage.getTotalElements())
+                .hasMore(discussionPage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
+    @Override
+    public DiscussionPageResponseDTO getPopularDiscussions(String username, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+
+        Page<Discussion> discussionPage = discussionRepository
+                .findPopularDiscussions(pageable);
+
+        List<DiscussionResponseDTO> dtos = discussionPage.getContent().stream()
+                .map(d -> mapToDTO(d, username))
+                .collect(Collectors.toList());
+
+        return DiscussionPageResponseDTO.builder()
+                .discussions(dtos)
+                .totalElements(discussionPage.getTotalElements())
+                .hasMore(discussionPage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
+    @Override
+    public DiscussionPageResponseDTO getFavouriteDiscussions(String username, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+
+        Page<Discussion> discussionPage = discussionRepository
+                .findByUserFavourite(username, pageable);
+
+        List<DiscussionResponseDTO> dtos = discussionPage.getContent().stream()
+                .map(d -> mapToDTO(d, username))
+                .collect(Collectors.toList());
+
+        return DiscussionPageResponseDTO.builder()
+                .discussions(dtos)
+                .totalElements(discussionPage.getTotalElements())
+                .hasMore(discussionPage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
     /**
      * Gets a single discussion by ID.
      */
@@ -130,6 +236,8 @@ public class DiscussionServiceImpl implements DiscussionService {
                 .orElseThrow(() -> new ResourceNotFoundException("discussion.not_found"));
         return mapToDTO(discussion, username);
     }
+
+
 
     /**
      * Creates a new public discussion with the first message embedded in description.
@@ -148,7 +256,6 @@ public class DiscussionServiceImpl implements DiscussionService {
                 .description(request.getDescription())
                 .owner(owner)
                 .tags(managedTags)
-                .closed(false)
                 .messageCount(0)
                 .isActive(true)
                 .createdDatetime(LocalDateTime.now())
@@ -160,34 +267,6 @@ public class DiscussionServiceImpl implements DiscussionService {
         return mapToDTO(saved, username);
     }
 
-    /**
-     * Closes a discussion. Only the owner can close it.
-     * A closed discussion cannot receive new messages.
-     */
-    @Override
-    @Transactional
-    public MessageDTO close(String username, Long discussionId) {
-        Discussion discussion = discussionRepository.findByIdAndIsActiveTrue(discussionId)
-                .orElseThrow(() -> new ResourceNotFoundException("discussion.not_found"));
-
-        if (!discussion.getOwner().getUsername().equals(username)) {
-            throw new UnauthorizedOperationException("discussion.unauthorized_close");
-        }
-
-        if (discussion.isClosed()) {
-            throw new DiscussionClosedException("discussion.already_closed");
-        }
-
-        discussion.setClosed(true);
-        discussion.setClosedAt(LocalDateTime.now());
-        discussion.setLastUpdatedDatetime(LocalDateTime.now());
-        discussionRepository.save(discussion);
-
-        return MessageDTO.builder()
-                .success(true)
-                .message("discussion.closed_success")
-                .build();
-    }
 
     /**
      * Maps a Discussion entity to DTO, determining user participation type.
@@ -195,7 +274,10 @@ public class DiscussionServiceImpl implements DiscussionService {
     private DiscussionResponseDTO mapToDTO(Discussion discussion, String username) {
         boolean isFav = isFavourite(username, discussion.getId());
         String participationType = determineParticipationType(discussion, username, isFav);
-        return DiscussionMapper.toResponseDTO(discussion, isFav, participationType);
+        int favouriteCount = userDiscussionFavRepository.countByDiscussionIdAndIsActiveTrue(discussion.getId());
+        int likeCount = discussionMessageRepository.countLikesByDiscussionId(discussion.getId());
+
+        return DiscussionMapper.toResponseDTO(discussion, isFav, participationType, favouriteCount, likeCount);
     }
 
     /**
@@ -311,16 +393,14 @@ public class DiscussionServiceImpl implements DiscussionService {
     public DiscussionMessageResponseDTO createMessage(
             Long discussionId,
             String username,
-            DiscussionMessageCreateRequestDTO request) {
+            DiscussionMessageCreateRequestDTO request,
+            MultipartFile file) {
 
         Discussion discussion = entityManager.find(Discussion.class, discussionId);
         if (discussion == null || !discussion.getIsActive()) {
             throw new ResourceNotFoundException("discussion.not_found");
         }
 
-        if (discussion.isClosed()) {
-            throw new DiscussionClosedException("discussion.closed");
-        }
 
         User sender = findUserByUsername(username);
 
@@ -336,11 +416,13 @@ public class DiscussionServiceImpl implements DiscussionService {
             }
         }
 
+        String mediaLink = uploadMessageMedia(file, sender.getUsername());
+
         DiscussionMessage message = DiscussionMessage.builder()
                 .discussion(discussion)
                 .sender(sender)
                 .content(request.getContent())
-                .link(request.getImageRef())
+                .link((mediaLink != null ? mediaLink : ""))
                 .parentDiscussionMessage(parentMessage)
                 .isActive(true)
                 .createdDatetime(LocalDateTime.now())
@@ -372,6 +454,11 @@ public class DiscussionServiceImpl implements DiscussionService {
 
         return DiscussionMessageMapper.toResponseDTO(message, likeCount, likedByUser, childDTOs);
     }
+
+
+
+
+
 
     /**
      * Adds a like to a message. Checks that user hasn't already liked it.
@@ -495,7 +582,39 @@ public class DiscussionServiceImpl implements DiscussionService {
                 .existsByUserUsernameAndDiscussionIdAndIsActiveTrue(username, discussionId);
     }
 
+    private String uploadMessageMedia(MultipartFile file, String username) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
 
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", file.getResource());
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+
+            String url = mediaServiceUrl + "/upload-image/message";
+            logger.info("Calling media service at URL: {}", url);
+
+
+            ImageUploadResponseDTO response = restTemplate.postForObject(url, requestEntity, ImageUploadResponseDTO.class);
+            if (response != null && response.getUrls() != null) {
+                logger.info("Received URLs from media service for message: {}", response.getUrls());
+                return response.getUrls().get("original");
+            } else {
+                logger.warn("Media service returned a null or empty response for message file.");
+            }
+
+
+        } catch (Exception e) {
+            logger.error("🚨 Failed to call media service to upload image for message sent by {}", username, e);
+        }
+        return null;
+    }
 
     private User findUserByUsername(String username) {
         var query = entityManager.createQuery(

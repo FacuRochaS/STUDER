@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--sidebar-bg);
+  overflow: hidden; /* Crucial para que los hijos respeten el borde redondeado */
+  transition: box-shadow 0.2s;
+}
+
+:host:hover {
+  box-shadow: var(--overlay-shadow);
+}
+
+.block-card__content {
+  padding: 1.5rem;
+}

@@ -8,8 +8,7 @@ import {
   NotificationPageResponseDTO,
   NotificationResponseDTO
 } from './notification.model';
-import {NotificationStrategyFactory} from './factories/notification-strategy.factory';
-
+import { NotificationStrategyFactory } from './factories/notification-strategy.factory';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
@@ -42,6 +41,13 @@ export class NotificationService {
     return this.http.get<NotificationPageResponseDTO>(
       `${API_CONFIG.baseUrl}${API_CONFIG.notifications}`,
       { params }
+    ).pipe(
+      tap(pageResponse => {
+        // If we are fetching unread notifications, update the unread count
+        if (read === false) {
+          this.setUnreadCount(pageResponse.totalElements);
+        }
+      })
     );
   }
 
@@ -49,14 +55,18 @@ export class NotificationService {
     return this.http.patch<MessageResponseDTO>(
       `${API_CONFIG.baseUrl}${API_CONFIG.notifications}/${id}/read`,
       {}
+    ).pipe(
+      tap(() => this.decrementUnread())
     );
   }
 
   loadUnreadCount(): void {
-    this.getNotifications(0, undefined, false).subscribe({
-      next: (page) => this.unreadCountSubject.next(page.totalElements),
-      error: () => this.unreadCountSubject.next(0)
-    });
+    // This will now automatically update the count via the tap operator in getNotifications
+    this.getNotifications(0, undefined, false).subscribe();
+  }
+
+  setUnreadCount(count: number): void {
+    this.unreadCountSubject.next(count);
   }
 
   decrementUnread(): void {

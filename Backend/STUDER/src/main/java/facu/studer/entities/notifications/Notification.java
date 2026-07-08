@@ -40,4 +40,5 @@ public class Notification extends BaseEntity {
     /** Notification linked id entity. */
     private Long linkedId;
 
+
 }

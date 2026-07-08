@@ -1,0 +1,70 @@
+:host {
+  display: block;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.replying-to-banner, .attachment-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: var(--input-background);
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secu);
+}
+.cancel-reply-btn, .remove-attachment-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secu);
+}
+
+.input-area {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 2rem; /* Bordes redondeados */
+  padding: 0.25rem 0.5rem;
+  background-color: var(--color-bg);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.message-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--color-text-prim);
+  font-size: 1rem;
+  padding: 0.5rem;
+  outline: none;
+}
+
+.action-btn, .send-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secu);
+  font-size: 1.25rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  flex-shrink: 0; /* Evita que los botones se encojan */
+}
+
+.action-btn:hover, .send-btn:hover {
+  background-color: var(--input-background);
+}
+
+.send-btn {
+  background-color: var(--color-primary);
+  color: var(--color-text-btn);
+}
+
+.send-btn:disabled {
+  background-color: var(--input-background);
+  cursor: not-allowed;
+}

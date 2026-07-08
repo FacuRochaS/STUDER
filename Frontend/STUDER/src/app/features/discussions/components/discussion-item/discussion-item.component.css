@@ -1,0 +1,213 @@
+:host {
+  display: block;
+}
+
+.discussion-card {
+  background-color: var(--color-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.card-header-clickable {
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.discussion-card:hover .card-header-clickable {
+  background-color: var(--sidebar-hover-bg);
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* --- Fila 1: Autor, Fecha, Tags, Acciones --- */
+.author-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* Reducido */
+}
+.user-photo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.author-info studer-username {
+  font-size: 1.1rem;
+}
+.creation-date {
+  font-size: 0.875rem;
+  color: var(--color-text-secu);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.card-header-clickable:hover .creation-date {
+  color: var(--color-warning);
+}
+
+.tags-and-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.tags {
+  display: flex;
+  gap: 0.5rem;
+}
+.tags .entity--tag {
+  font-size: 0.85rem;
+}
+
+/* --- Fila 2: Título --- */
+.title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text-prim);
+  width: 100%;
+}
+
+/* --- Fila 3: Descripción y Metadatos --- */
+.description {
+  font-size: 0.95rem;
+  color: var(--color-text-secu);
+  margin: 0;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.meta-stats {
+  margin-left: auto;
+  display: flex;
+  gap: 1rem;
+  color: var(--color-text-secu);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* --- Sección de Mensajes --- */
+.messages-section {
+  border-top: 1px solid var(--border);
+}
+.message-container {
+  position: relative;
+}
+.message-item {
+  display: flex;
+  padding: 1rem 1.5rem;
+  gap: 1rem;
+  border: none; /* Sin bordes */
+}
+.message-children {
+  margin-left: 20px;
+  padding-left: 20px;
+  border-left: 2px solid var(--border);
+}
+.message-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.action-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secu);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+.action-btn:hover {
+  background-color: var(--input-background);
+}
+.action-btn.like-btn {
+  /* Sin estilos extra de círculo */
+}
+.message-item.liked .like-btn {
+  color: var(--color-error);
+}
+
+.favourite-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secu);
+  font-size: 1.25rem;
+  padding: 0.25rem;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  transition: background-color 0.2s;
+}
+.favourite-btn:hover {
+  background-color: var(--sidebar-hover-bg);
+}
+.favourite-btn .pi-star-fill {
+  color: var(--color-warning);
+}
+
+.loading-messages {
+  text-align: center;
+  padding: 2rem;
+}
+
+.user-photo-sm {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.message-content {
+  flex: 1;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  color: var(--color-text-secu);
+  transition: color 0.2s;
+}
+.message-item:hover .message-time {
+  color: var(--color-warning);
+}
+
+.message-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  object-fit: cover;
+}
+
+.empty-messages {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: var(--color-text-secu);
+}

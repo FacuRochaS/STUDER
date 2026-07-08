@@ -6,5 +6,6 @@ export const API_CONFIG = {
   discussions: '/discussions',
   friends: '/friends',
   messages: '/messages',
-  chats: '/chats'
+  chats: '/chats',
+  blocks:'/blocks'
 };

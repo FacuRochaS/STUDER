@@ -1,0 +1,55 @@
+<div class="text-creator-wrapper">
+  <div class="editor-toolbar">
+    <div class="toolbar-group">
+      <button type="button" class="tool-btn" (click)="execute('bold')" title="Negrita"><b>B</b></button>
+      <button type="button" class="tool-btn" (click)="execute('italic')" title="Cursiva"><i>I</i></button>
+      <button type="button" class="tool-btn" (click)="execute('underline')" title="Subrayado"><u>U</u></button>
+      <button type="button" class="tool-btn" (click)="execute('strikeThrough')" title="Tachado"><s>S</s></button>
+    </div>
+
+    <div class="toolbar-divider"></div>
+
+    <div class="toolbar-group">
+      <button type="button" class="tool-btn" (click)="execute('justifyLeft')" title="Izquierda">⌸</button>
+      <button type="button" class="tool-btn" (click)="execute('justifyCenter')" title="Centrar">⌺</button>
+      <button type="button" class="tool-btn" (click)="execute('justifyRight')" title="Derecha">⌹</button>
+      <button type="button" class="tool-btn" (click)="execute('justifyFull')" title="Justificar">⌻</button>
+    </div>
+
+    <div class="toolbar-divider"></div>
+
+    <div class="toolbar-group">
+        <select class="tool-select" (change)="changeSize($event)">
+          <option value="medium" selected>{{ 'text_editor.sizes.medium' | translate }}</option>
+          <option value="small">{{ 'text_editor.sizes.small' | translate }}</option>
+          <option value="large">{{ 'text_editor.sizes.large' | translate }}</option>
+          <option value="xlarge">{{ 'text_editor.sizes.xlarge' | translate }}</option>
+        </select>
+
+        <select class="tool-select" (change)="changeColor($event)">
+          <option value="primary" selected>{{ 'text_editor.colors.primary' | translate }}</option>
+          <option value="secondary">{{ 'text_editor.colors.secondary' | translate }}</option>
+          <option value="blue">{{ 'text_editor.colors.blue' | translate }}</option>
+          <option value="green">{{ 'text_editor.colors.green' | translate }}</option>
+          <option value="orange">{{ 'text_editor.colors.orange' | translate }}</option>
+          <option value="red">{{ 'text_editor.colors.red' | translate }}</option>
+          <option value="purple">{{ 'text_editor.colors.purple' | translate }}</option>
+        </select>
+      </div>
+
+    <div class="toolbar-divider"></div>
+
+    <div class="toolbar-group">
+      <button type="button" class="tool-btn" (click)="promptLink()" title="Enlace">🔗</button>
+      <button type="button" class="tool-btn" (click)="promptImage()" title="Imagen">🖼️</button>
+    </div>
+  </div>
+
+  <div
+    #editableArea
+    class="editable-container"
+    contenteditable="true"
+    (input)="updateModel()"
+    (blur)="updateModel()">
+  </div>
+</div>

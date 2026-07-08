@@ -10,7 +10,6 @@ def exportar_subsecciones_a_pdf():
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        # Forzamos el esquema de color claro desde el navegador
         context = browser.new_context(color_scheme="light")
         page = context.new_page()
 

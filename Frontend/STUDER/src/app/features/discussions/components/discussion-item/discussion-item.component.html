@@ -1,0 +1,103 @@
+<div class="discussion-card">
+
+  <!-- Header Clickeable -->
+  <div class="card-header-clickable" (click)="toggleExpand()">
+
+    <!-- Fila 1: Autor, Fecha, Tags, Fav -->
+    <div class="header-row">
+      <div class="author-info">
+        <img [src]="discussion.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'" alt="User photo" class="user-photo">
+        <studer-username [username]="discussion.owner.username"></studer-username>
+        <span class="creation-date">{{ discussion.createdAt | relativeTime }}</span>
+      </div>
+      <div class="tags-and-actions">
+        <div class="tags">
+          @for(tag of discussion.tags; track tag) {
+            <a class="entity entity--tag">#{{ tag }}</a>
+          }
+        </div>
+        <button class="favourite-btn" (click)="toggleFavourite($event)">
+          <i class="pi" [ngClass]="discussion.favourite ? 'pi-star-fill' : 'pi-star'"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Fila 2: Título -->
+    <div class="header-row">
+      <h2 class="title">{{ discussion.title }}</h2>
+    </div>
+
+    <!-- Fila 3: Descripción y Metadatos -->
+    <div class="header-row">
+      <p class="description">{{ discussion.description }}</p>
+      <div class="meta-stats">
+        <span class="meta-item"><i class="pi pi-comments"></i> {{ discussion.messageCount }}</span>
+        <span class="meta-item"><i class="pi pi-star"></i> {{ discussion.favouriteCount }}</span>
+        <span class="meta-item"><i class="pi pi-heart"></i> {{ discussion.likeCount }}</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sección de Mensajes -->
+  @if (isExpanded) {
+    <div class="messages-section" (click)="$event.stopPropagation()">
+      @if (isLoadingMessages) {
+        <div class="loading-messages"><studer-loader></studer-loader></div>
+      } @else {
+        <div class="messages-list">
+          <!-- Usamos la plantilla recursiva para los mensajes -->
+          <ng-container *ngTemplateOutlet="messageTree; context: { messages: messages }"></ng-container>
+          @if (messages.length === 0) {
+            <p class="empty-messages">{{ 'discussion.item.no_messages' | translate }}</p>
+          }
+        </div>
+      }
+
+      <!-- Input para nuevos mensajes -->
+      <app-discussion-message-input (messageSent)="handleMessageSent($event)" [replyingTo]="replyingToMessage" (replyCancelled)="cancelReply()"></app-discussion-message-input>
+    </div>
+  }
+</div>
+
+
+<!-- Plantilla Recursiva para el Árbol de Mensajes -->
+<ng-template #messageTree let-messages="messages">
+  @for(message of messages; track message.id) {
+    <div class="message-container">
+      <div class="message-item" [class.liked]="message.likedByCurrentUser">
+        <img [src]="message.sender.profilePictureWebpUrl || 'assets/images/default-avatar.png'" alt="Sender photo" class="user-photo-sm">
+        <div class="message-content">
+          <div class="message-header">
+            <studer-username [username]="message.sender.username"></studer-username>
+            <span class="message-time">{{ message.createdAt | relativeTime }}</span>
+          </div>
+
+          @if (message.imageRef) {
+            <img [src]="message.imageRef" alt="Message image" class="message-image">
+          }
+
+          <studer-rich-text [text]="message.content"></studer-rich-text>
+
+          <div class="message-actions">
+            <button class="action-btn like-btn" (click)="toggleLike(message)">
+              <i class="pi pi-heart-fill"></i>
+              <span>{{ message.likeCount }}</span>
+            </button>
+            <button class="action-btn reply-btn" (click)="startReply(message, $event)">
+              <i class="pi pi-reply"></i>
+              <span>{{ 'discussion.item.reply' | translate }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Renderiza los hijos del mensaje con indentación -->
+      @if (message.children && message.children.length > 0) {
+        <div class="message-children">
+          <ng-container *ngTemplateOutlet="messageTree; context: { messages: message.children }"></ng-container>
+        </div>
+      }
+    </div>
+  }
+</ng-template>

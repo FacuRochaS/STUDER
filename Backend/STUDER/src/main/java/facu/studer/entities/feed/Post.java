@@ -48,8 +48,8 @@ public class Post extends BaseEntity {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "discussion_tags",
-            joinColumns = @JoinColumn(name = "discussion_id"),
+            name = "post_tags",
+            joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags;

@@ -64,6 +64,9 @@ public class NewNotificationServiceImpl implements NewNotificationService {
                         .notification(savedNotification)
                         .read(false)
                         .isActive(true)
+                        .sent(false)
+                        .createdDatetime(LocalDateTime.now())
+                        .lastUpdatedDatetime(LocalDateTime.now())
                         .build();
                 userNotificationRepository.save(userNotification);
             }
@@ -112,6 +115,7 @@ public class NewNotificationServiceImpl implements NewNotificationService {
                     .notification(savedNotification)
                     .read(false)
                     .isActive(true)
+                    .sent(false)
                     .createdDatetime(LocalDateTime.now())
                     .lastUpdatedDatetime(LocalDateTime.now())
                     .build();

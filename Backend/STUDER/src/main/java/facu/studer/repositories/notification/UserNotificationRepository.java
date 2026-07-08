@@ -14,12 +14,10 @@ import java.util.Optional;
 @Repository
 public interface UserNotificationRepository extends JpaRepository<UserNotification, Long>, JpaSpecificationExecutor<UserNotification> {
 
-    List<UserNotification> findByUser(User user);
-
-    List<UserNotification> findByUserAndReadFalse(User user);
-
     @Query("SELECT un FROM UserNotification un " +
             "JOIN FETCH un.notification n " +
             "WHERE un.id = :id AND un.isActive = true AND n.isActive = true")
     Optional<UserNotification> findByIdWithNotification(@Param("id") Long id);
+
+    List<UserNotification> findByUserAndSentIsFalse(User user);
 }

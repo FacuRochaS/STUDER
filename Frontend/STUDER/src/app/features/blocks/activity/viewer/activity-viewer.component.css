@@ -1,0 +1,245 @@
+.activity-viewer-box {
+  background-color: var(--color-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem;
+  color: var(--color-text-prim);
+}
+
+/* ============ CONSIGNA ============ */
+.activity-statement-box {
+  margin-bottom: 2rem;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 1.5rem;
+}
+
+.statement-text {
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.6;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.statement-img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px var(--box-shadow-color);
+}
+
+.statement-code {
+  background-color: var(--input-background);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: monospace;
+  color: var(--color-text-secu);
+}
+
+/* ============ INTERACTIVOS ============ */
+.options-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.interactive-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--color-bg);
+  transition: all 0.2s ease;
+}
+
+/* Variante: Multiple Choice */
+.choice {
+  cursor: pointer;
+}
+
+.choice:hover:not(.eval-correct):not(.eval-incorrect) {
+  background-color: var(--input-background);
+  border-color: var(--color-primary);
+}
+
+.choice.selected {
+  border-color: var(--color-primary);
+  background-color: rgba(66, 133, 244, 0.08); /* Fondo azul claro */
+}
+
+/* Variante: Ordering */
+.orderable[draggable="true"] {
+  cursor: grab;
+}
+
+.orderable[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* Variante: Matching */
+.matching-row {
+  justify-content: space-between;
+}
+
+.left-side {
+  flex: 1;
+  font-weight: 600;
+}
+
+.right-side {
+  flex: 1;
+}
+
+.match-arrow {
+  color: var(--color-text-secu);
+  font-size: 1.2rem;
+  padding: 0 1rem;
+}
+
+.styled-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  background-color: var(--input-background);
+  color: var(--color-text-prim);
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.styled-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* Elementos Internos */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+}
+
+.checkbox-icon {
+  font-size: 1.5rem;
+  color: var(--color-text-secu);
+  transition: color 0.2s;
+}
+
+.choice.selected .checkbox-icon {
+  color: var(--color-primary);
+}
+
+.drag-handle {
+  font-size: 1.5rem;
+  color: var(--color-text-secu);
+}
+
+.opt-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.opt-img {
+  max-width: 200px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+/* ============ EVALUACIÓN Y COLORES ============ */
+.eval-icon {
+  font-size: 1.5rem;
+}
+
+.correct-icon {
+  color: var(--color-correct);
+}
+
+.incorrect-icon {
+  color: var(--color-error);
+}
+
+.correct-text {
+  color: var(--color-correct);
+}
+
+/* Bordes y fondos al evaluar */
+.eval-correct {
+  border-color: var(--color-correct) !important;
+  background-color: rgba(0, 191, 99, 0.08) !important;
+}
+
+.eval-incorrect {
+  border-color: var(--color-error) !important;
+  background-color: rgba(255, 49, 49, 0.08) !important;
+}
+
+/* ============ PANEL FINAL Y BOTONES ============ */
+.activity-footer {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.feedback-panel {
+  background-color: var(--input-background);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--color-primary);
+  padding: 1.5rem;
+  border-radius: 6px;
+}
+
+.feedback-title {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  color: var(--color-text-prim);
+}
+
+.feedback-stats {
+  font-size: 1.1rem;
+  color: var(--color-text-secu);
+}
+
+.activity-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: filter 0.2s, background-color 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-btn);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-secondary {
+  background-color: var(--color-bg);
+  color: var(--color-text-prim);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--input-background);
+}

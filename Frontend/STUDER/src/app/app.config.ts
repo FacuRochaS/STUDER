@@ -7,12 +7,14 @@ import { languageInterceptor } from './core/i18n/language.interceptor';
 import { refreshInterceptor } from './core/auth/refresh.interceptor';
 import { caseConverterInterceptor } from './core/http/case-converter.interceptor';
 import { routes } from './app.routes';
+import {provideContentRegistry} from './features/blocks/registry/content-registration';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptors([ caseConverterInterceptor,refreshInterceptor, authInterceptor, languageInterceptor])),
-    ...provideI18n()
+    ...provideI18n(),
+    provideContentRegistry()
   ]
 };

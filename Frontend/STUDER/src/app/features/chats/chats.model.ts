@@ -4,10 +4,10 @@ export interface UserPublicResponseDTO {
   username: string;
   firstName: string;
   lastName: string;
-  profilePictureOriginalUrl: string;
-  profilePictureAvatarUrl: string;
-  profilePictureWebpUrl: string;
-  profilePictureThumbnailUrl: string;
+  profilePictureOriginalUrl?: string;
+  profilePictureAvatarUrl?: string;
+  profilePictureWebpUrl?: string;
+  profilePictureThumbnailUrl?: string;
 }
 
 export interface FriendStatusResponseDTO {
@@ -16,6 +16,7 @@ export interface FriendStatusResponseDTO {
 }
 
 export interface LastMessageDTO {
+  senderId?: number; // Added this property
   content: string;
   timestamp: string;
   isRead: boolean;
@@ -26,6 +27,7 @@ export interface ChatSummaryDTO {
   otherUser: UserPublicResponseDTO;
   friendStatus: FriendStatusResponseDTO;
   lastMessage: LastMessageDTO;
+  unreadMessages: number;
 }
 
 export interface MessageResponseDTO {
@@ -33,10 +35,11 @@ export interface MessageResponseDTO {
   chatId: number;
   senderId: number;
   content: string;
-  link: string;
+  link: string | null;
   replyToId: number;
   isRead: boolean;
   createdDatetime: string;
+  fileUrl: string | null;
 }
 
 export interface MessageRequestDTO {

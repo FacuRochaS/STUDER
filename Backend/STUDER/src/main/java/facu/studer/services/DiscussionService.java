@@ -2,6 +2,7 @@ package facu.studer.services;
 
 import facu.studer.DTOs.discussions.*;
 import facu.studer.DTOs.MessageDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -38,6 +39,8 @@ public interface DiscussionService {
      */
     DiscussionResponseDTO getById(String username, Long discussionId);
 
+
+
     /**
      * Gets paginated discussions where the user has participated or favourited.
      *
@@ -46,6 +49,31 @@ public interface DiscussionService {
      * @return paginated discussion response
      */
     DiscussionPageResponseDTO getUserDiscussions(String username, int page);
+
+    DiscussionPageResponseDTO getFavouriteDiscussions(
+            String username,
+            int page );
+
+    /**
+     * Gets user owned discussions.
+     *
+     * @param username the authenticated username
+     * @param page     page number (0-based)
+     * @return paginated discussion response
+     */
+    DiscussionPageResponseDTO getUserOwnDiscussions(String username, int page);
+
+    DiscussionPageResponseDTO getNewDiscussions(
+            String username,
+            int page );
+
+    DiscussionPageResponseDTO getPopularDiscussions(
+            String username,
+            int page );
+
+
+
+
 
     /**
      * Creates a new public discussion.
@@ -56,16 +84,6 @@ public interface DiscussionService {
      * @return the created discussion response
      */
     DiscussionResponseDTO create(String username, DiscussionCreateRequestDTO request);
-
-    /**
-     * Closes a discussion. Only the owner can close it.
-     *
-     * @param username     the authenticated username
-     * @param discussionId the discussion ID
-     * @return success/error response
-     */
-    MessageDTO close(String username, Long discussionId);
-
 
 
     /**
@@ -92,7 +110,8 @@ public interface DiscussionService {
     DiscussionMessageResponseDTO createMessage(
             Long discussionId,
             String username,
-            DiscussionMessageCreateRequestDTO request);
+            DiscussionMessageCreateRequestDTO request,
+            MultipartFile file);
 
 
     /**

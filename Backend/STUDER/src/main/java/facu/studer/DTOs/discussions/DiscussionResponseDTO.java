@@ -3,6 +3,7 @@ package facu.studer.DTOs.discussions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import facu.studer.DTOs.user.UserPublicResponseDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,20 +21,14 @@ import java.util.List;
 public class DiscussionResponseDTO {
 
     private Long id;
+
     private String title;
+
     private String description;
 
-    @JsonProperty("owner_username")
-    private String ownerUsername;
+    private UserPublicResponseDTO owner;
 
     private List<String> tags;
-    private boolean closed;
-
-    @JsonProperty("closed_at")
-    private LocalDateTime closedAt;
-
-    @JsonProperty("message_count")
-    private int messageCount;
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
@@ -42,5 +37,18 @@ public class DiscussionResponseDTO {
 
     @JsonProperty("participation_type")
     private String participationType;
+
+    @JsonProperty("message_count")
+    private int messageCount;
+
+    @JsonProperty("like_count")
+    private int likeCount;
+
+    @JsonProperty("favourite_count")
+    private int favouriteCount;
+
+
+
+
 }
 

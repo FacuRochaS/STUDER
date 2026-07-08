@@ -86,6 +86,66 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
     }
 
+    /**
+     * Gets paginated notifications for the authenticated user with optional filters.
+     * Only returns notifications where availableAt <= now.
+     *
+     * @param username the authenticated username
+     * @param page     page number (0-based)
+     * @param type     optional LinkedType filter
+     * @param lastDays optional filter for notifications within last N days
+     * @return paginated notification response
+     */
+    @Override
+    @Transactional
+    public NotificationPageResponseDTO getPendingNotifications(String username, int page, LinkedType type, Integer lastDays) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("notification.createdDatetime").descending());
+
+        Specification<UserNotification> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            Join<UserNotification, Notification> notificationJoin = root.join("notification");
+
+            // Basic conditions
+            predicates.add(cb.equal(root.get("user").get("username"), username));
+            predicates.add(cb.isTrue(root.get("isActive")));
+            predicates.add(cb.isTrue(notificationJoin.get("isActive")));
+            predicates.add(cb.isFalse(root.get("sent")));
+
+            // Optional filters
+            if (type != null) {
+                predicates.add(cb.equal(notificationJoin.get("type"), type));
+            }
+            if (lastDays != null) {
+                LocalDateTime since = LocalDateTime.now().minusDays(lastDays);
+                predicates.add(cb.greaterThanOrEqualTo(notificationJoin.get("createdDatetime"), since));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<UserNotification> notificationPage = userNotificationRepository.findAll(spec, pageable);
+
+        List<NotificationResponseDTO> dtos = notificationPage.getContent().stream()
+                .map(NotificationMapper::toResponseDTO)
+                .collect(Collectors.toList());
+
+        List<UserNotification> notificationsToUpdate = notificationPage.getContent();
+
+        if (!notificationsToUpdate.isEmpty()) {
+            for (UserNotification userNotification : notificationsToUpdate) {
+                userNotification.setSent(true);
+            }
+            userNotificationRepository.saveAll(notificationsToUpdate);
+        }
+
+        return NotificationPageResponseDTO.builder()
+                .notifications(dtos)
+                .totalElements(notificationPage.getTotalElements())
+                .hasMore(notificationPage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
     @Override
     @Transactional
     public MessageDTO markAsRead(String username, Long userNotificationId) {
