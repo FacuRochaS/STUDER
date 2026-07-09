@@ -1,7 +1,6 @@
 package facu.studer.entities.courses;
 
 import facu.studer.entities.BaseEntity;
-import facu.studer.entities.blocks.Block;
 import facu.studer.entities.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,30 +10,29 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "course_blocks")
+@Table(name = "user_course_blocks")
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseBlock extends BaseEntity {
+public class UserCourseBlock extends BaseEntity {
+    /** Associated user. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     /**
      * Course.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
-    private Course course;
-
-    /**
-     * block.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "block_id", nullable = false)
-    private Block block;
-
-    private Integer order;
+    @JoinColumn(name = "course_block_id", nullable = false)
+    private CourseBlock courseBlock;
 
 
+    private Boolean completed;
 
+    private Long duration;
 
+    private Integer attempts;
 }
