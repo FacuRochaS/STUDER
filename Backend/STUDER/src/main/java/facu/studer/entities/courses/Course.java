@@ -52,4 +52,16 @@ public class Course extends BaseEntity {
     )
     private Set<Tag> tags;
 
+    /**
+     * Published status.
+     */
+    @Column(nullable = false)
+    private Boolean published;
+
+    /**
+     * link to photo.
+     */
+    @Column(nullable = false)
+    private String link;
+
 }
