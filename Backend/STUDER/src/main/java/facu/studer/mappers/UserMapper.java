@@ -27,7 +27,8 @@ public final class UserMapper {
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .birthDate(dto.getBirthDate())
-                .points(0L) // Initialize points to 0 for new users
+                .points(0L)
+                .role("USER")
                 .build();
     }
 

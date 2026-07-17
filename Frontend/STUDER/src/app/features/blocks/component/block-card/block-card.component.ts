@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BlockResponseDTO } from '../../block.model';
 import { BlockHeaderComponent } from '../block-header/block-header.component';
@@ -22,8 +22,10 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './block-card.component.html',
   styleUrls: ['./block-card.component.css']
 })
-export class BlockCardComponent {
+export class BlockCardComponent implements OnChanges {
   @Input() block!: BlockResponseDTO;
+
+  parsedContent: BlockContentItem[] = [];
 
   tabs: Tab[] = [
     { id: 'content', label: 'blocks.detail.tabs.content' },
@@ -31,11 +33,17 @@ export class BlockCardComponent {
   ];
   activeTabId: string = 'content';
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['block']) {
+      this.parsedContent = this.parseContent(this.block?.version?.content);
+    }
+  }
+
   onTabChange(tabId: string): void {
     this.activeTabId = tabId;
   }
 
-  parseContent(content: string | undefined): BlockContentItem[] {
+  private parseContent(content: string | undefined): BlockContentItem[] {
     if (!content) return [];
     try {
       return JSON.parse(content);

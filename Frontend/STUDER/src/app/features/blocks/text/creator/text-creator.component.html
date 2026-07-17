@@ -52,4 +52,61 @@
     (input)="updateModel()"
     (blur)="updateModel()">
   </div>
+
+  <!-- Link Modal -->
+  @if (showLinkModal) {
+    <div class="editor-modal-overlay" (click)="showLinkModal = false">
+      <div class="editor-modal" (click)="$event.stopPropagation()">
+        <div class="editor-modal__header">
+          <span>{{ 'text_editor.insert_link' | translate }}</span>
+          <button type="button" class="editor-modal__close" (click)="showLinkModal = false">&times;</button>
+        </div>
+        <div class="editor-modal__body">
+          <input
+            [(ngModel)]="linkUrl"
+            class="editor-modal__input"
+            placeholder="https://..."
+            autofocus
+            (keyup.enter)="insertLink()" />
+        </div>
+        <div class="editor-modal__footer">
+          <button type="button" class="editor-modal__btn editor-modal__btn--cancel" (click)="showLinkModal = false">
+            {{ 'common.cancel' | translate }}
+          </button>
+          <button type="button" class="editor-modal__btn editor-modal__btn--confirm" (click)="insertLink()" [disabled]="!linkUrl">
+            {{ 'text_editor.insert' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Image Upload Modal -->
+  @if (showImageModal) {
+    <div class="editor-modal-overlay" (click)="showImageModal = false">
+      <div class="editor-modal" (click)="$event.stopPropagation()">
+        <div class="editor-modal__header">
+          <span>{{ 'text_editor.insert_image' | translate }}</span>
+          <button type="button" class="editor-modal__close" (click)="showImageModal = false">&times;</button>
+        </div>
+        <div class="editor-modal__body">
+          <label class="editor-modal__upload-label">
+            @if (imageUploading) {
+              <span class="pi pi-spin pi-spinner"></span>
+              <span>{{ 'common.uploading' | translate }}</span>
+            } @else {
+              <input type="file" accept="image/*" (change)="onImageSelected($event)" />
+              <i class="pi pi-cloud-upload"></i>
+              <span>{{ 'text_editor.click_to_upload' | translate }}</span>
+            }
+          </label>
+        </div>
+        <div class="editor-modal__footer">
+          <button type="button" class="editor-modal__btn editor-modal__btn--cancel" (click)="showImageModal = false">
+            {{ 'common.cancel' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

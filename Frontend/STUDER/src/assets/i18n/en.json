@@ -2,7 +2,11 @@
   "common": {
     "hello": "Hello",
     "language": "Language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "cancel": "Cancel",
+    "uploading": "Uploading...",
+    "toast_success": "Operation successful",
+    "toast_error": "An error occurred"
   },
   "home": {
     "welcome": "Welcome to Studer, {{name}}",
@@ -28,12 +32,14 @@
     "last_name_error": "Last name is required.",
     "birthdate": "Birthdate",
     "birthdate_error": "Birthdate is required.",
+    "birthdate_age_error": "You must be at least 13 years old.",
     "email": "Email",
     "email_error": "Email must be valid and between 5 and 50 characters.",
     "username": "Username",
     "username_error": "Username must be between 6 and 50 characters.",
     "password": "Password",
     "password_error": "Password must be at least 8 characters.",
+    "password_complexity_error": "Must include uppercase, lowercase, number, and special character.",
     "confirm_password": "Confirm password",
     "confirm_password_error": "Passwords do not match.",
     "submit": "Create account",
@@ -50,13 +56,19 @@
     "slogan4": "From content to understanding.",
     "slogan5": "Build courses. Share knowledge. Measure progress.",
     "slogan6": "Empowering educators. Engaging learners.",
+    "tagline": "The education platform that transforms how you learn and teach.",
     "nav_features": "Features",
+    "nav_how": "How it works",
     "nav_about": "About",
     "hero_title": "Learn with ",
     "hero_description": "The modular education platform that combines courses, reusable exercises, advanced analytics, and artificial intelligence to transform the way you teach and learn.",
     "badge_free": "Free to use",
     "badge_ai": "AI-powered",
     "badge_social": "Social learning",
+    "stat_students": "Active students",
+    "stat_courses": "Courses created",
+    "stat_satisfaction": "Satisfaction",
+    "stat_countries": "Countries reached",
     "features_title": "Everything you need to learn",
     "features_subtitle": "A comprehensive platform that enhances every aspect of the educational experience.",
     "feat_courses_title": "Courses & content",
@@ -71,6 +83,24 @@
     "feat_analytics_text": "Metrics per course, exercise, and user. Success rates, common errors, progress, and temporal evolution.",
     "feat_ai_title": "Artificial intelligence",
     "feat_ai_text": "AI assistant that generates exercises, exams, and study plans. Always proposed, never automatic.",
+    "how_title": "How it works",
+    "how_step1_title": "Create your account",
+    "how_step1_text": "Sign up in seconds and access all platform features.",
+    "how_step2_title": "Explore and learn",
+    "how_step2_text": "Discover courses, exercises, and content created by the community. Follow other users and join discussions.",
+    "how_step3_title": "Share and grow",
+    "how_step3_text": "Create your own courses, share exercises, and get feedback. AI helps you improve your content.",
+    "testimonials_title": "What our users say",
+    "testimonials_subtitle": "Thousands of students and educators already trust Studer for their daily learning.",
+    "testimonial_1_text": "Studer transformed my teaching. I can now create complete courses with interactive exercises and my students progress much faster.",
+    "testimonial_1_name": "Maria Garcia",
+    "testimonial_1_role": "Math Teacher",
+    "testimonial_2_text": "The ability to reuse exercises saves me a lot of time. I can adapt existing content and create new lessons in minutes.",
+    "testimonial_2_name": "Carlos Lopez",
+    "testimonial_2_role": "Content Developer",
+    "testimonial_3_text": "As a student, the advanced analytics help me see exactly where I need to improve. It's like having a personal tutor available 24/7.",
+    "testimonial_3_name": "Ana Martinez",
+    "testimonial_3_role": "College Student",
     "about_title": "Why Studer?",
     "about_text": "Studer is not just about watching content. It's about creating, practicing, sharing, and improving. Our platform lets you build complete educational experiences.",
     "about_calendar": "AI-integrated planning and calendar",
@@ -132,6 +162,9 @@
     "save": "Save changes",
     "password_mismatch": "Passwords do not match.",
     "save_error": "Could not save changes.",
+    "level": "Level",
+    "points": "Pts",
+    "followers": "Followers",
     "blocks": {
       "title": "Block System",
       "create": "Create Block",
@@ -238,8 +271,7 @@
         "name": "Name",
         "name_placeholder": "E.g., Introduction to...",
         "difficulty": "Difficulty",
-        "tags": "Tags",
-        "published": "Published"
+        "tags": "Tags"
       },
       "actions": {
         "save": "Save Block"
@@ -314,6 +346,10 @@
     "delete_option": "Delete entire option"
   },
   "text_editor": {
+    "insert_link": "Insert link",
+    "insert_image": "Insert image",
+    "insert": "Insert",
+    "click_to_upload": "Click to upload an image",
     "sizes": {
       "small": "Small",
       "medium": "Normal",
@@ -371,5 +407,111 @@
         "score_divider": "out of"
       }
     }
+  },
+  "feed": {
+    "title": "Feed",
+    "recent": "Recent",
+    "popular": "Popular",
+    "following": "Following",
+    "create_post": "Create post",
+    "write_something": "Write something...",
+    "publish": "Publish",
+    "empty": "No posts yet"
+  },
+  "course": {
+    "sidebar": {
+      "recent": "Recent",
+      "popular": "Popular",
+      "yours": "Your courses",
+      "favourites": "Favorites",
+      "create": "Create"
+    },
+    "list": {
+      "title": "Courses",
+      "empty": "No courses",
+      "loading": "Loading courses...",
+      "by": "by",
+      "rating": "Rating",
+      "blocks": "blocks"
+    },
+    "create": {
+      "title": "Create Course",
+      "name": "Name",
+      "name_placeholder": "E.g., Introduction to Algebra",
+      "image": "Course image",
+      "image_placeholder": "Click to upload an image",
+      "tags": "Tags",
+      "tags_placeholder": "E.g., math, algebra...",
+      "blocks": "Blocks",
+      "blocks_title": "Course blocks",
+      "search_blocks": "Search blocks...",
+      "create_block": "Create block",
+      "create_new_block": "Create new block",
+      "select_version": "Version",
+      "remove": "Remove",
+      "no_blocks": "Add blocks to your course",
+      "no_blocks_found": "No blocks found",
+      "no_blocks_selected": "No blocks selected yet",
+      "selected_blocks": "Selected blocks",
+      "latest_version": "Latest version",
+      "version_label": "v",
+      "remove_block": "Remove block",
+      "save": "Save course",
+      "saving": "Saving..."
+    },
+    "detail": {
+      "title": "Course Detail",
+      "blocks": "Blocks",
+      "progress": "Progress",
+      "completed": "Completed",
+      "mark_complete": "Mark complete",
+      "favourite": "Favorite",
+      "unfavourite": "Remove favorite",
+      "rating": "Rating",
+      "not_found": "Course not found"
+    }
+  },
+  "contest": {
+    "title": "Contest",
+    "start_date": "Start",
+    "change_date": "Change to validation",
+    "end_date": "End",
+    "submit_course": "Submit course",
+    "submit_hint": "Create a course to participate in this contest. It won't be published until it ends.",
+    "validate": "Validate courses",
+    "submit_rating": "Submit rating",
+    "finished": "Contest finished",
+    "finish_contest": "Finish contest",
+    "leaderboard": "Leaderboard",
+    "leaderboard_empty": "No courses on the leaderboard yet",
+    "course_name": "Course",
+    "rating": "Rating",
+    "likes": "Likes",
+    "score": "Score",
+    "consigna": "Brief",
+    "tags": "Tags"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "contests": "Contests",
+    "contests_desc": "Manage platform contests",
+    "create_contest": "Create Contest"
+  },
+  "video": {
+    "url": "Video URL",
+    "platform": "Platform",
+    "start_time": "Start time (seconds)",
+    "autoplay": "Autoplay",
+    "controls": "Controls"
+  },
+  "gallery": {
+    "image_url": "Image URL",
+    "alt_text": "Alt text",
+    "caption": "Caption",
+    "add_image": "Add image",
+    "layout": "Layout",
+    "carousel": "Carousel",
+    "grid": "Grid",
+    "masonry": "Masonry"
   }
 }

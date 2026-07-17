@@ -23,4 +23,6 @@ public interface BlockRepository extends JpaRepository<Block, Long> {
             Pageable pageable);
 
     List<Block> findByParentBlock_Id(Long parentBlockId);
+
+    Integer countBlocksByName(String name);
 }

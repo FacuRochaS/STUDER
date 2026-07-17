@@ -52,6 +52,7 @@ public class Contest extends BaseEntity {
 
     private LocalDateTime endDate;
 
-
+    @Column(nullable = false)
+    private String status;
 
 }

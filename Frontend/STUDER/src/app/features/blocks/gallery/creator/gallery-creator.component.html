@@ -1,0 +1,56 @@
+<div class="gallery-creator-wrapper">
+  <div class="section-container">
+    <div class="section-header">
+      <h4 class="section-title">{{ 'gallery.images' | translate }}</h4>
+    </div>
+
+    <div class="add-image-row">
+      <input type="text" class="styled-input" [(ngModel)]="newImageUrl" (keyup.enter)="addImage()" placeholder="{{ 'gallery.image_url_placeholder' | translate }}" />
+      <input type="text" class="styled-input alt-input" [(ngModel)]="newImageAlt" (keyup.enter)="addImage()" placeholder="{{ 'gallery.image_alt_placeholder' | translate }}" />
+      <button class="btn-add" (click)="addImage()">
+        {{ 'gallery.add_image' | translate }}
+      </button>
+    </div>
+
+    <div class="image-list">
+      @for (image of data.images; track $index; let i = $index) {
+        <div class="image-preview-card">
+          <div class="preview-thumb">
+            @if (image.url) {
+              <img [src]="image.url" [alt]="image.alt" />
+            } @else {
+              <div class="no-preview">{{ 'gallery.no_preview' | translate }}</div>
+            }
+          </div>
+          <div class="preview-info">
+            <input type="text" class="styled-input compact" [(ngModel)]="image.alt" (ngModelChange)="emitChange()" placeholder="{{ 'gallery.image_alt_placeholder' | translate }}" />
+            <input type="text" class="styled-input compact" [(ngModel)]="image.caption" (ngModelChange)="emitChange()" placeholder="{{ 'gallery.caption_placeholder' | translate }}" />
+          </div>
+          <button class="btn-icon-danger" (click)="removeImage(i)">
+            <i class="pi pi-trash"></i>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-container">
+    <div class="section-header">
+      <h4 class="section-title">{{ 'gallery.layout' | translate }}</h4>
+    </div>
+
+    <div class="layout-options">
+      <button class="layout-btn" [class.active]="data.layout === 'carousel'" (click)="setLayout('carousel')">
+        {{ 'gallery.layout_carousel' | translate }}
+      </button>
+      <button class="layout-btn" [class.active]="data.layout === 'grid'" (click)="setLayout('grid')">
+        {{ 'gallery.layout_grid' | translate }}
+      </button>
+      <button class="layout-btn" [class.active]="data.layout === 'masonry'" (click)="setLayout('masonry')">
+        {{ 'gallery.layout_masonry' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

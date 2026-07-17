@@ -1,10 +1,5 @@
 <div class="sidebar-container">
-  <button class="new-discussion-btn" (click)="openNew()">
-    <i class="pi pi-plus"></i>
-    <span>{{ 'discussion.sidebar.new' | translate }}</span>
-  </button>
 
-  <hr class="divider">
 
   <ul class="nav-list">
     <li (click)="selectCategory('yours')" [class.active]="selectedCategory === 'yours'">
@@ -35,6 +30,15 @@
     <li (click)="selectCategory('explore')" [class.active]="selectedCategory === 'explore'">
       <i class="pi pi-compass"></i>
       <span>{{ 'discussion.sidebar.explore' | translate }}</span>
+    </li>
+  </ul>
+
+  <hr class="divider">
+
+  <ul class="nav-list">
+    <li (click)="selectCategory('create')" [class.active]="selectedCategory === 'create'">
+      <i class="pi pi-plus-circle"></i>
+      <span>{{ 'discussion.sidebar.new' | translate }}</span>
     </li>
   </ul>
 </div>

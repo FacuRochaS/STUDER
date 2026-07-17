@@ -1,0 +1,114 @@
+<div class="course-detail">
+  @if (loading) {
+    <div class="course-detail__loading">
+      <i class="pi pi-spin pi-spinner"></i>
+      <span>{{ 'course.detail.loading' | translate }}</span>
+    </div>
+  } @else if (error) {
+    <div class="course-detail__error">
+      <i class="pi pi-exclamation-triangle"></i>
+      <h3>{{ 'course.detail.error_title' | translate }}</h3>
+      <p>{{ 'course.detail.error_message' | translate }}</p>
+    </div>
+  } @else if (course) {
+    <div class="course-detail__header">
+      <div class="course-detail__header-top">
+        <div class="course-detail__owner">
+          <img [src]="course.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'" alt="Owner" class="course-detail__avatar" />
+          <studer-username [username]="course.owner.username"></studer-username>
+        </div>
+        <button class="favourite-btn" (click)="toggleFavourite()" [disabled]="favouriteLoading">
+          <i class="pi" [ngClass]="course.favourite ? 'pi-star-fill' : 'pi-star'"></i>
+        </button>
+      </div>
+
+      <h1 class="course-detail__name">{{ course.name }}</h1>
+
+      @if (course.tags.length > 0) {
+        <div class="course-detail__tags">
+          @for (tag of course.tags; track tag) {
+            <studer-tag [name]="tag"></studer-tag>
+          }
+        </div>
+      }
+
+      @if (course.link) {
+        <a class="course-detail__link" [href]="course.link" target="_blank" rel="noopener noreferrer">
+          <i class="pi pi-external-link"></i>
+          {{ course.link }}
+        </a>
+      }
+
+      <div class="course-detail__stats">
+        <div class="course-detail__rating">
+          @if (course.ratingCount > 0) {
+            <i class="pi pi-star-fill"></i>
+            <span>{{ getAverageRating() }} ({{ course.ratingCount }})</span>
+          } @else {
+            <span class="no-rating">{{ 'course.detail.no_rating' | translate }}</span>
+          }
+        </div>
+        <div class="course-detail__favourite-count">
+          <i class="pi pi-heart"></i>
+          {{ course.favouriteCount }}
+        </div>
+        <div class="course-detail__block-count">
+          <i class="pi pi-box"></i>
+          {{ course.blocks.length }} {{ 'course.detail.blocks' | translate }}
+        </div>
+      </div>
+
+      <div class="course-detail__progress-section">
+        <div class="course-detail__progress-header">
+          <span>{{ 'course.detail.progress' | translate }}</span>
+          <span>{{ completedCount }}/{{ blockStates.length }} ({{ completionPercentage }}%)</span>
+        </div>
+        <div class="course-detail__progress-bar">
+          <div class="course-detail__progress-fill" [style.width.%]="completionPercentage"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-detail__blocks">
+      <h2 class="course-detail__blocks-title">{{ 'course.detail.blocks_title' | translate }}</h2>
+
+      @for (state of blockStates; track trackByCourseBlockId; let i = $index) {
+        <div class="block-item">
+          <div class="block-item__row">
+            <button class="block-item__checkbox" (click)="toggleBlockComplete(i)" [disabled]="state.loading">
+              @if (state.loading) {
+                <i class="pi pi-spin pi-spinner"></i>
+              } @else {
+                <i class="pi" [ngClass]="state.completed ? 'pi-check-circle' : 'pi-circle'"></i>
+              }
+            </button>
+
+            <span class="block-item__order">#{{ state.order }}</span>
+
+            <button class="block-item__name" (click)="toggleBlockContent(i)">
+              {{ state.blockName }}
+            </button>
+
+            @if (state.completed) {
+              <span class="block-item__badge block-item__badge--done">
+                {{ 'course.detail.completed' | translate }}
+              </span>
+            }
+          </div>
+
+          @if (state.showContent) {
+            <div class="block-item__content">
+              @if (state.contentLoading) {
+                <div class="block-item__content-loading">
+                  <i class="pi pi-spin pi-spinner"></i>
+                </div>
+              } @else {
+                <studer-block-viewer [content]="state.content"></studer-block-viewer>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

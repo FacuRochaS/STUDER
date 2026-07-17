@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, HostListener } from '@angular/core';
 import { LogoComponent } from '../../shared/components/logo/logo.component';
 import { LoginRegisterComponent } from '../users/components/login-register/login-register.component';
 import { PhrasesComponent } from './phrases/phrases.component';
@@ -18,6 +18,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class LandingComponent implements AfterViewInit {
   sloganColors = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'];
+  navScrolled = false;
 
   phraseKeys = [
     'landing.slogan1',
@@ -27,6 +28,11 @@ export class LandingComponent implements AfterViewInit {
     'landing.slogan5',
     'landing.slogan6',
   ];
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.navScrolled = window.scrollY > 20;
+  }
 
   ngAfterViewInit(): void {
     this.animateSectionsOnScroll();

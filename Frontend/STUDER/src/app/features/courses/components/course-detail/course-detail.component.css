@@ -1,0 +1,251 @@
+.course-detail {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.course-detail__loading,
+.course-detail__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-secu);
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.course-detail__loading i,
+.course-detail__error i {
+  font-size: 2rem;
+}
+
+.course-detail__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.course-detail__header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.course-detail__owner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.course-detail__avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.favourite-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: var(--color-warning);
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: background 0.15s;
+}
+
+.favourite-btn:hover {
+  background: rgba(255, 117, 31, 0.1);
+}
+
+.favourite-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.course-detail__name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-prim);
+  margin: 0 0 0.75rem;
+}
+
+.course-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.course-detail__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+  word-break: break-all;
+}
+
+.course-detail__link:hover {
+  text-decoration: underline;
+}
+
+.course-detail__stats {
+  display: flex;
+  gap: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secu);
+  margin-bottom: 1rem;
+}
+
+.course-detail__stats i {
+  margin-right: 0.25rem;
+}
+
+.no-rating {
+  color: var(--color-text-secu);
+  font-style: italic;
+}
+
+.course-detail__progress-section {
+  margin-top: 1rem;
+}
+
+.course-detail__progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secu);
+  margin-bottom: 0.4rem;
+}
+
+.course-detail__progress-bar {
+  height: 0.5rem;
+  background: var(--input-background);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.course-detail__progress-fill {
+  height: 100%;
+  background: var(--color-correct);
+  border-radius: 0.25rem;
+  transition: width 0.3s ease;
+}
+
+.course-detail__blocks {
+  margin-top: 1rem;
+}
+
+.course-detail__blocks-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-text-prim);
+  margin-bottom: 1rem;
+}
+
+.block-item {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.block-item__row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.75rem;
+}
+
+.block-item__checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--color-text-secu);
+  padding: 0;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.block-item__checkbox:hover {
+  color: var(--color-correct);
+}
+
+.block-item__checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pi-check-circle {
+  color: var(--color-correct);
+}
+
+.block-item__order {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-secu);
+  min-width: 1.8rem;
+  flex-shrink: 0;
+}
+
+.block-item__name {
+  flex: 1;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: pointer;
+  padding: 0;
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  transition: opacity 0.2s;
+}
+
+.block-item__name:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.block-item__badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 1rem;
+  flex-shrink: 0;
+}
+
+.block-item__badge--done {
+  background: rgba(0, 191, 99, 0.12);
+  color: var(--color-correct);
+}
+
+.block-item__content {
+  border-top: 1px solid var(--border);
+  padding: 1rem;
+  background: var(--input-background);
+}
+
+.block-item__content-loading {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+  color: var(--color-text-secu);
+  font-size: 1.5rem;
+}

@@ -5,26 +5,51 @@
     @if (user) {
       <div class="profile__layout">
         <aside class="profile__sidebar">
-          <div class="profile__avatar">
-            @if (avatarUrl) {
-              <img [src]="avatarUrl" [alt]="user.username" />
-            } @else {
-              <span>{{ initials }}</span>
-            }
-            @if (isOwnProfile) {
-              <label class="profile__upload">
-                <input type="file" accept="image/*" (change)="onFileSelected($event)" />
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                  <path d="M12 9a3.75 3.75 0 1 0 0 7.5A3.75 3.75 0 0 0 12 9Z" />
-                  <path fill-rule="evenodd" d="M9.344 3.071a49.52 49.52 0 0 1 5.312 0c.967.052 1.83.585 2.332 1.39l.821 1.317c.24.383.645.643 1.11.71.386.054.77.113 1.152.177 1.432.239 2.429 1.493 2.429 2.909V18a3 3 0 0 1-3 3h-15a3 3 0 0 1-3-3V9.574c0-1.416.997-2.67 2.429-2.909.382-.064.766-.123 1.152-.177.465-.067.87-.327 1.11-.71l.821-1.317A3.001 3.001 0 0 1 9.344 3.07Z" clip-rule="evenodd" />
-                </svg>
-              </label>
-            }
+          <div class="profile__avatar-ring">
+            <svg class="profile__ring-svg" viewBox="0 0 180 180">
+              <circle class="profile__ring-bg" cx="90" cy="90" r="82" />
+              <circle class="profile__ring-fill" cx="90" cy="90" r="82"
+                [style.stroke-dashoffset]="ringDashOffset" />
+            </svg>
+            <div class="profile__avatar">
+              @if (avatarUrl) {
+                <img [src]="avatarUrl" [alt]="user.username" />
+              } @else {
+                <span>{{ initials }}</span>
+              }
+              @if (isOwnProfile) {
+                <label class="profile__upload">
+                  <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                    <path d="M12 9a3.75 3.75 0 1 0 0 7.5A3.75 3.75 0 0 0 12 9Z" />
+                    <path fill-rule="evenodd" d="M9.344 3.071a49.52 49.52 0 0 1 5.312 0c.967.052 1.83.585 2.332 1.39l.821 1.317c.24.383.645.643 1.11.71.386.054.77.113 1.152.177 1.432.239 2.429 1.493 2.429 2.909V18a3 3 0 0 1-3 3h-15a3 3 0 0 1-3-3V9.574c0-1.416.997-2.67 2.429-2.909.382-.064.766-.123 1.152-.177.465-.067.87-.327 1.11-.71l.821-1.317A3.001 3.001 0 0 1 9.344 3.07Z" clip-rule="evenodd" />
+                  </svg>
+                </label>
+              }
+            </div>
+            <div class="profile__level-badge">{{ levelInfo.level }}</div>
           </div>
 
           <div class="profile__identity">
             <h2>{{ user.firstName }} {{ user.lastName }}</h2>
             <studer-rich-text [text]="'@' + user.username"></studer-rich-text>
+          </div>
+
+          <div class="profile__stats">
+            <div class="stat-item">
+              <span class="stat-value">{{ levelInfo.level }}</span>
+              <span class="stat-label">{{ 'profile.level' | translate }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">{{ followerCount }}</span>
+              <span class="stat-label">{{ 'profile.followers' | translate }}</span>
+            </div>
+          </div>
+          <div class="profile__level-bar">
+            <div class="level-bar">
+              <div class="level-bar__fill" [style.width.%]="levelInfo.progress"></div>
+            </div>
+            <span class="level-bar__text">{{ levelInfo.currentPoints }}/{{ levelInfo.nextLevelPoints }}</span>
           </div>
 
           @if (canShowSocialActions) {

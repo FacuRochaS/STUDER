@@ -38,6 +38,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   currentUserId: number | null = null;
   currentUser: User | null = null;
   imagePreviewUrl: string | null = null;
+  followerCount = 0;
+  levelInfo = { level: 1, currentPoints: 0, nextLevelPoints: 20, progress: 0, ringDashOffset: 515.2 };
 
   blocks: BlockResponseDTO[] = [];
   blocksLoading = false;
@@ -92,6 +94,10 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       this.user?.profilePictureThumbnailUrl ||
       null
     );
+  }
+
+  get ringDashOffset(): number {
+    return this.levelInfo.ringDashOffset;
   }
 
   get initials(): string {
@@ -196,6 +202,11 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   private handleUserSuccess(user: UserPublic): void {
     this.user = user;
     this.loading = false;
+    this.levelInfo = this.getLevelInfo(user.points || 0);
+    this.userService.getFollowerCount(user.id).subscribe({
+      next: (res) => (this.followerCount = res.count),
+      error: () => (this.followerCount = 0),
+    });
     if (this.canShowSocialActions) {
       this.loadFriendStatus(user.id);
     }
@@ -214,6 +225,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
+      points: user.points,
+      role: user.role,
       profilePictureOriginalUrl: user.profilePictureOriginalUrl,
       profilePictureAvatarUrl: user.profilePictureAvatarUrl,
       profilePictureWebpUrl: user.profilePictureWebpUrl,
@@ -238,6 +251,29 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       next: (status) => (this.friendStatus = status),
       error: () => (this.friendStatus = null),
     });
+  }
+
+  private getLevelInfo(points: number): { level: number; currentPoints: number; nextLevelPoints: number; progress: number; ringDashOffset: number } {
+    const thresholds = this.buildThresholds(20);
+    let level = 1;
+    for (let i = thresholds.length - 1; i >= 0; i--) {
+      if (points >= thresholds[i]) { level = i + 1; break; }
+    }
+    const currentThreshold = thresholds[level - 1];
+    const nextThreshold = thresholds[level] || (thresholds[level - 1] + (thresholds[level - 1] - thresholds[level - 3]));
+    const progress = ((points - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
+    const circumference = 515.2;
+    const ringDashOffset = circumference - (circumference * Math.min(progress, 100) / 100);
+    return { level, currentPoints: points - currentThreshold, nextLevelPoints: nextThreshold - currentThreshold, progress: Math.min(progress, 100), ringDashOffset };
+  }
+
+  private buildThresholds(count: number): number[] {
+    const base = [0, 20, 40, 70, 120, 200, 330, 550, 900, 1500, 2500, 4000];
+    while (base.length < count) {
+      const len = base.length;
+      base.push(base[len - 1] + (base[len - 1] - base[len - 3]));
+    }
+    return base;
   }
 
   private loadUserBlocks(userId: number): void {

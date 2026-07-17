@@ -28,6 +28,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private router = inject(Router);
 
   @ViewChild('scrollMe') private messagesContainer!: ElementRef;
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
 
   allChats: ChatSummaryDTO[] = [];
   chats: ChatSummaryDTO[] = [];
@@ -230,6 +231,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       const reader = new FileReader();
       reader.onload = () => this.filePreview = reader.result;
       reader.readAsDataURL(this.selectedFile);
+      input.value = '';
     }
   }
 

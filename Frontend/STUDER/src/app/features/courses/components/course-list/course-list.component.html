@@ -1,0 +1,46 @@
+<div class="course-list-container">
+  @if (courses.length > 0) {
+    @for (course of courses; track trackByCourseId) {
+      <a [routerLink]="['/courses', course.slug]" class="course-card">
+        <div class="card-header">
+          <div class="owner-info">
+            <img [src]="course.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'"
+                 alt="Owner photo" class="user-photo">
+            <studer-username [username]="course.owner.username"></studer-username>
+          </div>
+          <button class="favourite-btn" (click)="toggleFavourite(course, $event)">
+            <i class="pi" [ngClass]="course.favourite ? 'pi-star-fill' : 'pi-star'"></i>
+          </button>
+        </div>
+
+        <h3 class="course-name">{{ course.name }}</h3>
+
+        <div class="tags">
+          @for (tag of course.tags; track tag) {
+            <span class="entity entity--tag">#{{ tag }}</span>
+          }
+        </div>
+
+        <div class="card-footer">
+          <div class="rating">
+            @if (course.ratingCount > 0) {
+              <i class="pi pi-star-fill"></i>
+              <span>{{ getAverageRating(course) }} ({{ course.ratingCount }})</span>
+            } @else {
+              <span class="no-rating">{{ 'course.list.no_rating' | translate }}</span>
+            }
+          </div>
+          <span class="favourite-count">
+            <i class="pi pi-heart"></i> {{ course.favouriteCount }}
+          </span>
+        </div>
+      </a>
+    }
+  } @else {
+    <div class="empty-state">
+      <i class="pi pi-book"></i>
+      <h3>{{ 'course.list.no_courses_title' | translate }}</h3>
+      <p>{{ 'course.list.no_courses_subtitle' | translate }}</p>
+    </div>
+  }
+</div>

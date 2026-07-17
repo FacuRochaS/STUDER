@@ -1,0 +1,37 @@
+<div class="video-creator-wrapper">
+  <div class="field">
+    <label class="form-label">{{ 'video.url' | translate }}</label>
+    <input type="text" class="styled-input" [(ngModel)]="data.url" (ngModelChange)="emitChange()" placeholder="https://www.youtube.com/watch?v=..." />
+  </div>
+
+  <div class="field">
+    <label class="form-label">{{ 'video.platform' | translate }}</label>
+    <div class="custom-select-wrapper">
+      <select class="styled-select" [(ngModel)]="data.platform" (ngModelChange)="emitChange()">
+        <option value="youtube">YouTube</option>
+        <option value="vimeo">Vimeo</option>
+        <option value="native">Native</option>
+      </select>
+    </div>
+  </div>
+
+  @if (data.platform === 'youtube') {
+    <div class="field">
+      <label class="form-label">{{ 'video.start_time' | translate }}</label>
+      <input type="number" class="styled-input" [(ngModel)]="data.startTime" (ngModelChange)="emitChange()" min="0" />
+    </div>
+  }
+
+  <div class="field-row">
+    <label class="toggle-switch">
+      <input type="checkbox" [(ngModel)]="data.autoplay" (ngModelChange)="emitChange()" />
+      <span class="slider"></span>
+      <span class="toggle-label">{{ 'video.autoplay' | translate }}</span>
+    </label>
+    <label class="toggle-switch">
+      <input type="checkbox" [(ngModel)]="data.controls" (ngModelChange)="emitChange()" />
+      <span class="slider"></span>
+      <span class="toggle-label">{{ 'video.controls' | translate }}</span>
+    </label>
+  </div>
+</div>

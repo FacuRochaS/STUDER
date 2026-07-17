@@ -20,6 +20,8 @@ export interface BlockCompleteResponseDTO{
   tags: string[]
   versions: BlockVersionResponseDTO[]
   parent: BlockResponseDTO
+  likedByCurrentUser?: boolean
+  likeCount?: number
 }
 
 export interface BlockCompleteTreeResponseDTO {
@@ -80,6 +82,8 @@ export interface BlockResponseDTO {
   difficulty:Difficulty
   tags: string[]
   version:BlockVersionResponseDTO
+  likedByCurrentUser?: boolean
+  likeCount?: number
 }
 
 

@@ -1,0 +1,52 @@
+import { Component, Input, Output, EventEmitter, inject, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { CourseResponseDTO } from '../../course.model';
+import { CourseService } from '../../course.service';
+import { UsernameComponent } from '../../../../shared/components/username/username.component';
+
+@Component({
+  selector: 'studer-course-list',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    TranslateModule,
+    UsernameComponent,
+  ],
+  templateUrl: './course-list.component.html',
+  styleUrls: ['./course-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class CourseListComponent {
+  @Input({ required: true }) courses: CourseResponseDTO[] = [];
+
+  @Output() favouriteToggled = new EventEmitter<{ id: number; favourite: boolean }>();
+
+  private courseService = inject(CourseService);
+
+  trackByCourseId(index: number, course: CourseResponseDTO): number {
+    return course.id;
+  }
+
+  getAverageRating(course: CourseResponseDTO): number {
+    if (course.ratingCount === 0) return 0;
+    return Math.round((course.ratingSum / course.ratingCount) * 10) / 10;
+  }
+
+  toggleFavourite(course: CourseResponseDTO, event: MouseEvent): void {
+    event.stopPropagation();
+    const newState = !course.favourite;
+
+    const action = newState
+      ? this.courseService.addFavourite(course.id)
+      : this.courseService.removeFavourite(course.id);
+
+    action.subscribe(() => {
+      course.favourite = newState;
+      course.favouriteCount += newState ? 1 : -1;
+      this.favouriteToggled.emit({ id: course.id, favourite: newState });
+    });
+  }
+}

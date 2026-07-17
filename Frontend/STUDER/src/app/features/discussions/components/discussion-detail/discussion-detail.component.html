@@ -84,35 +84,11 @@
 
       <!-- New message input -->
       @if (!discussion?.closed) {
-        <div class="detail__input-area">
-          @if (replyingTo) {
-            <div class="detail__replying">
-              <span>{{ 'discussions.replying_to' | translate }} <strong>{{'@' + replyingTo.senderUsername}}</strong></span>
-              <button type="button" class="detail__replying-cancel" (click)="cancelReply()">
-                <span class="pi pi-times"></span>
-              </button>
-            </div>
-          }
-          <div class="detail__input-row">
-            <textarea
-              class="detail__input"
-              [(ngModel)]="newMessageContent"
-              [placeholder]="'discussions.message_placeholder' | translate"
-              rows="2"
-              (keydown.enter)="$any($event).ctrlKey && sendMessage()"></textarea>
-            <button
-              type="button"
-              class="detail__send-btn"
-              [disabled]="sending || !newMessageContent.trim()"
-              (click)="sendMessage()">
-              @if (sending) {
-                <span class="pi pi-spin pi-spinner"></span>
-              } @else {
-                <span class="pi pi-send"></span>
-              }
-            </button>
-          </div>
-        </div>
+        <app-discussion-message-input
+          [replyingTo]="replyingTo"
+          (messageSent)="handleMessageSent($event)"
+          (replyCancelled)="cancelReply()">
+        </app-discussion-message-input>
       }
     </div>
   </div>

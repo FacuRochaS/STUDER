@@ -81,3 +81,8 @@
 .btn-icon:hover .pi-heart-fill {
   filter: brightness(1.2);
 }
+
+.like-btn { display: flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.6rem; border: none; background: transparent; cursor: pointer; color: var(--color-text-secu); border-radius: 4px; transition: all 0.2s; }
+.like-btn:hover { background: rgba(0,0,0,0.05); }
+.like-btn.liked { color: var(--color-error); }
+.like-btn:disabled { opacity: 0.5; cursor: not-allowed; }

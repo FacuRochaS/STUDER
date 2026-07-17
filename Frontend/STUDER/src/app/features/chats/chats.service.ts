@@ -51,7 +51,7 @@ export class ChatService {
     const formData = new FormData();
     formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
     if (file) {
-      formData.append('file', file);
+      formData.append('file', file, file.name);
     }
     return this.http.post<MessageResponseDTO>(`${this.apiUrl}/user/${targetUserId}`, formData);
   }
@@ -66,7 +66,7 @@ export class ChatService {
     const formData = new FormData();
     formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
     if (file) {
-      formData.append('file', file);
+      formData.append('file', file, file.name);
     }
     return this.http.post<MessageResponseDTO>(`${this.apiUrl}/${chatId}/messages`, formData);
   }

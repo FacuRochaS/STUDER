@@ -1,0 +1,246 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.feed {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: 100%;
+  min-height: 0;
+}
+
+.feed__sidebar {
+  overflow-y: auto;
+}
+
+.feed__content {
+  max-width: 680px;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* ===== Create Post ===== */
+.feed__create {
+  margin-bottom: 1.5rem;
+}
+
+.feed__form {
+  padding: 1rem;
+  background: var(--color-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px var(--box-shadow-color);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+:host-context(body.theme-dark) .feed__form {
+  border-color: rgba(255, 255, 255, 0.04);
+}
+
+.feed__form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  justify-content: flex-end;
+}
+
+/* ===== Post Card ===== */
+.feed__post {
+  background: var(--color-bg);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px var(--box-shadow-color);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.25s;
+  overflow: hidden;
+}
+
+:host-context(body.theme-dark) .feed__post {
+  border-color: rgba(255, 255, 255, 0.04);
+}
+
+.feed__post:hover {
+  box-shadow: 0 4px 16px var(--box-shadow-color);
+}
+
+/* ===== Post Header ===== */
+.feed__post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem 0;
+}
+
+.feed__post-author {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.feed__avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--input-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feed__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed__avatar-placeholder {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+}
+
+.feed__author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.feed__author-name {
+  font-size: 0.78rem;
+  color: var(--color-text-secu);
+  line-height: 1;
+}
+
+.feed__post-time {
+  color: var(--color-text-secu);
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ===== Post Body ===== */
+.feed__post-body {
+  padding: 0.75rem 1rem;
+}
+
+.feed__post-content {
+  color: var(--color-text-prim);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.feed__post-image {
+  max-width: 100%;
+  border-radius: 10px;
+  margin-top: 0.75rem;
+}
+
+.feed__post-tags {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+/* ===== Post Actions ===== */
+.feed__post-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+:host-context(body.theme-dark) .feed__post-actions {
+  border-top-color: rgba(255, 255, 255, 0.04);
+}
+
+.feed__action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secu);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.feed__action-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--color-error);
+}
+
+:host-context(body.theme-dark) .feed__action-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.feed__action-btn.liked {
+  color: var(--color-error);
+}
+
+.feed__action-btn.liked:hover {
+  background: rgba(255, 49, 49, 0.08);
+}
+
+/* ===== Empty State ===== */
+.feed__empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-secu);
+}
+
+.feed__empty-icon {
+  font-size: 3rem;
+  opacity: 0.3;
+  margin-bottom: 1rem;
+}
+
+.feed__empty p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-text-btn);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--color-primary-accent);
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+}
+
+.btn--secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--color-text-secu);
+}
+
+.btn--secondary:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

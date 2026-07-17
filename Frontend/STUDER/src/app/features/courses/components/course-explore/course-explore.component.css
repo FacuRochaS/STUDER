@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  height: calc(100vh - (var(--header-height) + var(--footer-height-collapsed) + 0.1rem));
+  display: flex;
+  flex-direction: column;
+}
+
+.course-container {
+  flex-grow: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  overflow: hidden;
+}
+
+.course-content {
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}

@@ -1,14 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { Subject, takeUntil } from 'rxjs';
 import { DiscussionService } from '../discussion.service';
 import { DiscussionCreateRequestDTO, DiscussionResponseDTO } from '../discussion.model';
 import { DiscussionSidebarComponent, DiscussionCategory } from './discussion-sidebar/discussion-sidebar.component';
 import { DiscussionListComponent } from './discussion-list/discussion-list.component';
 import { ExploreFiltersComponent, ExploreFilters } from './explore-filters/explore-filters.component';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
-import { ModalService } from '../../../shared/services/modal.service';
 import { DiscussionCreateFormComponent } from './discussion-create-form/discussion-create-form.component';
 
 @Component({
@@ -22,14 +22,16 @@ import { DiscussionCreateFormComponent } from './discussion-create-form/discussi
     DiscussionListComponent,
     ExploreFiltersComponent,
     LoaderComponent,
+    DiscussionCreateFormComponent,
   ],
   templateUrl: './discussion.component.html',
   styleUrls: ['./discussion.component.css']
 })
-export class DiscussionComponent implements OnInit {
+export class DiscussionComponent implements OnInit, OnDestroy {
   private discussionService = inject(DiscussionService);
-  private modalService = inject(ModalService);
+  private destroy$ = new Subject<void>();
 
+  showCreateForm = false;
   discussions: DiscussionResponseDTO[] = [];
   loading = false;
   selectedCategory: DiscussionCategory = 'recent';
@@ -46,6 +48,10 @@ export class DiscussionComponent implements OnInit {
 
   onCategorySelected(category: DiscussionCategory): void {
     this.selectedCategory = category;
+    if (category === 'create') {
+      this.showCreateForm = !this.showCreateForm;
+      return;
+    }
     this.loadDiscussionsByCategory(category);
   }
 
@@ -97,25 +103,17 @@ export class DiscussionComponent implements OnInit {
     }
   }
 
-  onNewDiscussion(): void {
-    this.modalService.open(DiscussionCreateFormComponent, {
-      title: 'discussions.create_title',
-      outputs: {
-        save: (request: DiscussionCreateRequestDTO) => {
-          this.discussionService.create(request).subscribe({
-            next: () => {
-              this.modalService.close();
-              this.onCategorySelected('yours');
-            },
-            error: () => {
-              // Handle error
-            }
-          });
-        },
-        cancel: () => {
-          this.modalService.close();
-        }
+  onCreateDiscussion(request: DiscussionCreateRequestDTO): void {
+    this.discussionService.create(request).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.showCreateForm = false;
+        this.loadDiscussionsByCategory(this.selectedCategory);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

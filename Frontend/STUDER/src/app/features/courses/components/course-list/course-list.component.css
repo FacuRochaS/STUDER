@@ -1,0 +1,136 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.course-list-container {
+  flex-grow: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+a.course-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background-color: var(--color-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+a.course-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.owner-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-photo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.favourite-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secu);
+  font-size: 1.1rem;
+  padding: 0.25rem;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.favourite-btn:hover {
+  background-color: var(--sidebar-hover-bg);
+}
+
+.favourite-btn .pi-star-fill {
+  color: var(--color-warning);
+}
+
+.course-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text-prim);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  font-size: 0.85rem;
+  color: var(--color-text-secu);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.rating .pi-star-fill {
+  color: var(--color-warning);
+}
+
+.no-rating {
+  font-style: italic;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: var(--color-text-secu);
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.2rem;
+  margin: 0 0 0.4rem;
+  color: var(--color-text-prim);
+}
+
+.empty-state p {
+  color: var(--color-text-secu);
+  margin: 0;
+}

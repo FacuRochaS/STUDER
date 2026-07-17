@@ -1,0 +1,114 @@
+<div class="course-create">
+  <h2 class="course-create__title">{{ 'course.create.title' | translate }}</h2>
+
+  <div class="course-create__form">
+    <div class="form-group">
+      <label class="form-label" for="name">{{ 'course.create.name' | translate }}</label>
+      <input id="name" class="form-input" type="text" [(ngModel)]="name" placeholder="{{ 'course.create.name_placeholder' | translate }}" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ 'course.create.image' | translate }}</label>
+      <div class="image-upload">
+        @if (imagePreviewUrl) {
+          <div class="image-upload__preview">
+            <img [src]="imagePreviewUrl" alt="Preview" />
+            <button type="button" class="image-upload__remove" (click)="imageFile = null; imagePreviewUrl = null">
+              <i class="pi pi-times"></i>
+            </button>
+          </div>
+        } @else {
+          <label class="image-upload__label">
+            <input type="file" accept="image/*" (change)="onImageSelected($event)" />
+            <i class="pi pi-camera"></i>
+            <span>{{ 'course.create.image_placeholder' | translate }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">{{ 'course.create.tags' | translate }}</label>
+      <studer-tag-input [(tags)]="tags" [placeholder]="'course.create.tags_placeholder' | translate"></studer-tag-input>
+    </div>
+  </div>
+
+  <div class="course-create__blocks-section">
+    <h3 class="section-title">{{ 'course.create.blocks_title' | translate }}</h3>
+
+    <div class="block-search">
+      <div class="block-search__input-wrapper">
+        <input class="form-input block-search__input" type="text" [(ngModel)]="searchQuery" (input)="onSearchInput()" (focus)="showSearchResults = true" (blur)="onSearchBlur()" placeholder="{{ 'course.create.search_blocks' | translate }}" />
+        @if (searchLoading) {
+          <span class="block-search__spinner pi pi-spin pi-spinner"></span>
+        }
+      </div>
+
+      @if (showSearchResults && searchResults.length > 0) {
+        <ul class="block-search__results">
+          @for (block of searchResults; track trackBySearchResult) {
+            <li class="block-search__result-item" (mousedown)="selectBlock(block)">
+              <span class="block-search__result-name">{{ block.name }}</span>
+              <span class="block-search__result-difficulty entity entity--tag">{{ block.difficulty }}</span>
+            </li>
+          }
+        </ul>
+      } @else if (showSearchResults && searchQuery.trim().length >= 2 && !searchLoading && searchResults.length === 0) {
+        <div class="block-search__empty">
+          {{ 'course.create.no_blocks_found' | translate }}
+        </div>
+      }
+
+      <button class="btn btn--secondary block-search__create-btn" type="button" (click)="openBlockEditor()">
+        <i class="pi pi-plus"></i>
+        {{ 'course.create.create_new_block' | translate }}
+      </button>
+    </div>
+
+    @if (selectedBlocks.length > 0) {
+      <div class="selected-blocks">
+        <h4 class="selected-blocks__title">{{ 'course.create.selected_blocks' | translate }} ({{ selectedBlocks.length }})</h4>
+
+        <div class="selected-blocks__list" #blockList>
+          @for (block of selectedBlocks; track trackByBlockId; let i = $index) {
+            <div class="selected-block" draggable="true" (dragstart)="onDragStart(i)" (dragover)="onDragOver($event)" (drop)="onDrop(i)" (dragend)="onDragEnd()" [class.selected-block--dragging]="dragIndex === i">
+              <div class="selected-block__drag-handle">
+                <i class="pi pi-bars"></i>
+              </div>
+
+              <span class="selected-block__order">{{ block.order }}</span>
+
+              <div class="selected-block__info">
+                <span class="selected-block__name">{{ block.blockName }}</span>
+                <select class="selected-block__version form-input form-input--small" [value]="block.versionId ?? ''" (change)="setVersion(i, $any($event.target).value)">
+                  <option value="">{{ 'course.create.latest_version' | translate }}</option>
+                  @for (v of block.versions; track v.id) {
+                    <option [value]="v.id">{{ 'course.create.version_label' | translate }} {{ v.versionNumber }}</option>
+                  }
+                </select>
+              </div>
+
+              <button class="selected-block__remove" type="button" (click)="removeBlock(i)" title="{{ 'course.create.remove_block' | translate }}">
+                <i class="pi pi-times"></i>
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="selected-blocks__empty">
+        <i class="pi pi-box"></i>
+        <p>{{ 'course.create.no_blocks_selected' | translate }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="course-create__actions">
+    <button class="btn btn--primary" type="button" (click)="onSave()" [disabled]="saving || !name.trim()">
+      @if (saving) {
+        <i class="pi pi-spin pi-spinner"></i>
+      }
+      {{ 'course.create.save' | translate }}
+    </button>
+  </div>
+</div>

@@ -2,8 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
-// Usaremos un tipo para asegurarnos de que solo se emitan valores válidos
-export type DiscussionCategory = 'yours' | 'favourites' | 'recent' | 'popular' | 'new' | 'explore';
+export type DiscussionCategory = 'yours' | 'favourites' | 'recent' | 'popular' | 'new' | 'explore' | 'create';
 
 @Component({
   selector: 'app-discussion-sidebar',
@@ -14,16 +13,11 @@ export type DiscussionCategory = 'yours' | 'favourites' | 'recent' | 'popular' |
 })
 export class DiscussionSidebarComponent {
   @Output() categorySelected = new EventEmitter<DiscussionCategory>();
-  @Output() newDiscussion = new EventEmitter<void>();
 
-  selectedCategory: DiscussionCategory = 'recent'; // Valor inicial por defecto
+  selectedCategory: DiscussionCategory = 'recent';
 
   selectCategory(category: DiscussionCategory) {
     this.selectedCategory = category;
     this.categorySelected.emit(category);
-  }
-
-  openNew() {
-    this.newDiscussion.emit();
   }
 }

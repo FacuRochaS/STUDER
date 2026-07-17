@@ -3,6 +3,9 @@ import { NgClass } from '@angular/common';
 import { EntityCacheService } from '../../../services/entity-cache.service';
 import { UserService } from '../../../../features/users/user.service';
 import { UserPublic } from '../../../../features/users/user.model';
+import { CourseService } from '../../../../features/courses/course.service';
+import { ContestService } from '../../../../features/contest/contest.service';
+import { BlockService } from '../../../../features/blocks/block.service';
 
 interface EntityPopoverData {
   name: string;
@@ -31,7 +34,10 @@ export class EntityPopoverComponent implements OnInit, OnChanges {
   constructor(
     private cacheService: EntityCacheService,
     private cdr: ChangeDetectorRef,
-    private userService: UserService
+    private userService: UserService,
+    private courseService: CourseService,
+    private contestService: ContestService,
+    private blockService: BlockService
   ) {}
 
   ngOnInit(): void {
@@ -97,22 +103,73 @@ export class EntityPopoverComponent implements OnInit, OnChanges {
       case 'course':
         data = this.cacheService.getCourse(this.value);
         if (!data) {
-          data = this.generateMockCourseData(this.value);
-          this.cacheService.setCourse(this.value, data);
+          this.courseService.getById(Number(this.value)).subscribe({
+            next: (course) => {
+              const payload: EntityPopoverData = {
+                name: course.name,
+                description: `by ${course.owner.username}`,
+                meta: `${course.ratingCount} ratings`
+              };
+              this.cacheService.setCourse(this.value, payload);
+              this.popoverData = payload;
+              this.cdr.markForCheck();
+            },
+            error: () => {
+              const fallback = { name: this.value, description: 'Course', meta: '' };
+              this.cacheService.setCourse(this.value, fallback);
+              this.popoverData = fallback;
+              this.cdr.markForCheck();
+            }
+          });
+          return;
         }
         break;
       case 'contest':
         data = this.cacheService.getContest(this.value);
         if (!data) {
-          data = this.generateMockContestData(this.value);
-          this.cacheService.setContest(this.value, data);
+          this.contestService.getById(Number(this.value)).subscribe({
+            next: (contest) => {
+              const payload: EntityPopoverData = {
+                name: contest.title,
+                description: contest.status,
+                meta: `${contest.tags?.join(', ') || ''}`
+              };
+              this.cacheService.setContest(this.value, payload);
+              this.popoverData = payload;
+              this.cdr.markForCheck();
+            },
+            error: () => {
+              const fallback = { name: this.value, description: 'Contest', meta: '' };
+              this.cacheService.setContest(this.value, fallback);
+              this.popoverData = fallback;
+              this.cdr.markForCheck();
+            }
+          });
+          return;
         }
         break;
       case 'block':
         data = this.cacheService.getBlock(this.value);
         if (!data) {
-          data = this.generateMockBlockData(this.value);
-          this.cacheService.setBlock(this.value, data);
+          this.blockService.getBlock(Number(this.value)).subscribe({
+            next: (block) => {
+              const payload: EntityPopoverData = {
+                name: block.name,
+                description: `by ${block.owner.username}`,
+                meta: block.tags?.join(', ') || ''
+              };
+              this.cacheService.setBlock(this.value, payload);
+              this.popoverData = payload;
+              this.cdr.markForCheck();
+            },
+            error: () => {
+              const fallback = { name: this.value, description: 'Block', meta: '' };
+              this.cacheService.setBlock(this.value, fallback);
+              this.popoverData = fallback;
+              this.cdr.markForCheck();
+            }
+          });
+          return;
         }
         break;
     }
@@ -120,43 +177,11 @@ export class EntityPopoverComponent implements OnInit, OnChanges {
     this.popoverData = data;
   }
 
-  private generateMockUserData(username: string): EntityPopoverData {
-    return {
-      name: username,
-      description: `Usuario de la plataforma STUDER`,
-      meta: `📊 ${Math.floor(Math.random() * 100)} problemas resueltos`
-    };
-  }
-
   private generateMockTagData(tagName: string): EntityPopoverData {
     return {
       name: tagName,
       description: `Etiqueta temática`,
       meta: `📚 ${Math.floor(Math.random() * 500)} publicaciones`
-    };
-  }
-
-  private generateMockCourseData(courseName: string): EntityPopoverData {
-    return {
-      name: courseName,
-      description: `Curso de programación`,
-      meta: `👥 ${Math.floor(Math.random() * 1000)} estudiantes`
-    };
-  }
-
-  private generateMockContestData(contestName: string): EntityPopoverData {
-    return {
-      name: contestName,
-      description: `Competencia de programación`,
-      meta: `⏱️ 45 minutos de duración`
-    };
-  }
-
-  private generateMockBlockData(blockName: string): EntityPopoverData {
-    return {
-      name: blockName,
-      description: `Bloque de aprendizaje`,
-      meta: `📖 ${Math.floor(Math.random() * 10)} lecciones`
     };
   }
 

@@ -40,7 +40,7 @@ public class CourseBlock extends BaseEntity {
     @JoinColumn(name = "block_version_id")
     private BlockVersion version;
 
-    private Integer order;
+    private Integer blockOrder;
 
 
 

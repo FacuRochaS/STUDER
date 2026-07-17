@@ -1,5 +1,6 @@
 package facu.studer.controllers;
 
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.DTOs.blocks.*;
 
 import facu.studer.DTOs.discussions.DiscussionMessagePageResponseDTO;
@@ -141,11 +142,20 @@ public class BlockController {
     }
 
 
+    // Likear, deslikear
 
-    // Likear, deslikear TODO
+    @PostMapping("/{id}/like")
+    public ResponseEntity<MessageDTO> likeBlock(@PathVariable Long id) {
+        String username = securityUtils.requireCurrentUsername();
+        MessageDTO response = blockService.likeBlock(username, id);
+        return ResponseEntity.ok(response);
+    }
 
-
-
-
+    @DeleteMapping("/{id}/like")
+    public ResponseEntity<MessageDTO> unlikeBlock(@PathVariable Long id) {
+        String username = securityUtils.requireCurrentUsername();
+        MessageDTO response = blockService.unlikeBlock(username, id);
+        return ResponseEntity.ok(response);
+    }
 
 }

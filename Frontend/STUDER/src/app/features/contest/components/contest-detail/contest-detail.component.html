@@ -1,0 +1,118 @@
+<section class="contest-detail">
+  @if (loading) {
+    <studer-loader></studer-loader>
+  } @else if (error) {
+    <div class="contest-detail__error">{{ error }}</div>
+  } @else if (contest) {
+    <div class="contest-detail__header">
+      <h1>{{ contest.title }}</h1>
+      <span class="contest-detail__status" [class]="'status--' + contest.status.toLowerCase()">
+        {{ contest.status }}
+      </span>
+    </div>
+
+    <div class="contest-detail__content">
+      <studer-rich-text [text]="contest.content?.consigna || contest.content?.text || ''"></studer-rich-text>
+    </div>
+
+    @if (contest.tags.length) {
+      <div class="contest-detail__tags">
+        @for (tag of contest.tags; track tag) {
+          <studer-tag [name]="tag"></studer-tag>
+        }
+      </div>
+    }
+
+    <div class="contest-detail__dates">
+      <div class="date-item">
+        <span class="date-label">{{ 'contest.start_date' | translate }}</span>
+        <span class="date-value">{{ contest.startDate | relativeTime }}</span>
+      </div>
+      <div class="date-item">
+        <span class="date-label">{{ 'contest.change_date' | translate }}</span>
+        <span class="date-value">{{ contest.changeDate | relativeTime }}</span>
+      </div>
+      <div class="date-item">
+        <span class="date-label">{{ 'contest.end_date' | translate }}</span>
+        <span class="date-value">{{ contest.endDate | relativeTime }}</span>
+      </div>
+    </div>
+
+    <div class="contest-detail__actions">
+      @if (contest.status === 'PREPARATION') {
+        <button class="btn btn--primary" (click)="showSubmitForm = !showSubmitForm">
+          {{ 'contest.submit_course' | translate }}
+        </button>
+        @if (showSubmitForm) {
+          <div class="contest-detail__submit-form">
+            <p>{{ 'contest.submit_hint' | translate }}</p>
+            <studer-course-create (saved)="showSubmitForm = false"></studer-course-create>
+          </div>
+        }
+      }
+
+      @if (contest.status === 'VALIDATION') {
+        <button class="btn btn--primary" (click)="getRandomCourse()" [disabled]="showValidation">
+          {{ 'contest.validate' | translate }}
+        </button>
+        @if (showValidation && validatingCourse) {
+          <div class="contest-detail__validation">
+            <div class="validation-course">
+              <h3>{{ validatingCourse.name }}</h3>
+              <div class="stars">
+                @for (star of [1,2,3,4,5]; track star) {
+                  <button class="star-btn" [class.active]="userRating >= star" (click)="userRating = star">★</button>
+                }
+              </div>
+              <button class="btn btn--primary" (click)="submitRating()" [disabled]="submittingRating || userRating === 0">
+                {{ 'contest.submit_rating' | translate }}
+              </button>
+            </div>
+          </div>
+        }
+      }
+
+      @if (contest.status === 'FINISHED') {
+        <div class="contest-detail__finished-badge">
+          {{ 'contest.finished' | translate }}
+        </div>
+      }
+
+      @if (currentUserRole === 'ADMIN' && contest.status !== 'FINISHED') {
+        <button class="btn btn--danger" (click)="finishContest()">
+          {{ 'contest.finish_contest' | translate }}
+        </button>
+      }
+    </div>
+
+    <div class="contest-detail__leaderboard">
+      <h2>{{ 'contest.leaderboard' | translate }}</h2>
+      @if (leaderboard.length > 0) {
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{{ 'contest.course_name' | translate }}</th>
+              <th>{{ 'contest.rating' | translate }}</th>
+              <th>{{ 'contest.likes' | translate }}</th>
+              <th>{{ 'contest.score' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of leaderboard; track entry.courseId; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ entry.courseName }}</td>
+                <td>{{ entry.averageRating | number:'1.1-1' }} ({{ entry.ratingCount }})</td>
+                <td>{{ entry.likeCount }}</td>
+                <td class="score">{{ entry.score | number:'1.2-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <div class="leaderboard-empty">{{ 'contest.leaderboard_empty' | translate }}</div>
+      }
+    </div>
+  }
+</section>

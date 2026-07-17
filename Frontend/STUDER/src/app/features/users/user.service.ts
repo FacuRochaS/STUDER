@@ -30,6 +30,10 @@ export class UserService {
     return this.http.get<UserSearchPageResponse>(`${this.apiUrl}/search?query=${encoded}&page=${page}&size=${size}`);
   }
 
+  getFollowerCount(userId: number): Observable<{count: number}> {
+    return this.http.get<{count: number}>(`${this.apiUrl}/${userId}/followers`);
+  }
+
   updateMe(request?: UserUpdateRequestDTO, file?: File | null): Observable<User> {
     const formData = new FormData();
     if (request) {

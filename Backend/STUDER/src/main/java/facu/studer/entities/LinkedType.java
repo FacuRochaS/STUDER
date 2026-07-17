@@ -18,5 +18,17 @@ public enum LinkedType {
     EVENT,
 
     /** for discussions. */
-    DISCUSSION
+    DISCUSSION,
+
+    /** for blocks. */
+    BLOCK,
+
+    /** for courses. */
+    COURSE,
+
+    /** for posts. */
+    POST,
+
+    /** for contests. */
+    CONTEST
 }

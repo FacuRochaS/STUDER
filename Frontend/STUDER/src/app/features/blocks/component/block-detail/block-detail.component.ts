@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { BlockService } from '../../block.service';
@@ -29,8 +29,10 @@ import {BlockViewerComponent} from '../block-viewer/block-viewer.component';
   templateUrl: './block-detail.component.html',
   styleUrls: ['./block-detail.component.css']
 })
-export class BlockDetailComponent implements OnInit {
+export class BlockDetailComponent implements OnInit, OnChanges {
   @Input() block: BlockCompleteResponseDTO | null = null;
+
+  parsedContent: BlockContentItem[] = [];
 
   loading = true;
   error = false;
@@ -48,10 +50,17 @@ export class BlockDetailComponent implements OnInit {
     private readonly blockService: BlockService
   ) {}
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['block']) {
+      const lastVersion = this.block?.versions?.[this.block.versions.length - 1];
+      this.parsedContent = this.parseContent(lastVersion?.content);
+    }
+  }
+
   ngOnInit(): void {
     if (this.block) {
-      // If block is provided via input, don't fetch from route
       this.loading = false;
+      this.parsedContent = this.parseContent(this.block.versions?.[this.block.versions.length - 1]?.content);
     } else {
       this.route.paramMap.subscribe(params => {
         const id = params.get('id');
@@ -84,7 +93,7 @@ export class BlockDetailComponent implements OnInit {
     this.activeTabId = tabId;
   }
 
-  parseContent(content: string | undefined): BlockContentItem[] {
+  private parseContent(content: string | undefined): BlockContentItem[] {
     if (!content) return [];
     try {
       return JSON.parse(content);

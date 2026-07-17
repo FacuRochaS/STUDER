@@ -1,32 +1,75 @@
-@if (!user) {
-  <studer-loader></studer-loader>
-} @else {
-<div class="home">
-  <div class="home__welcome">
-    <h1 class="home__title">
-      {{ 'home.welcome' | translate: { name: user.firstName || '' } }}
-    </h1>
-    <p class="home__subtitle">{{ 'home.subtitle' | translate }}</p>
+<section class="feed">
+  <div class="feed__sidebar">
+    <studer-feed-sidebar (categorySelected)="onCategorySelected($event)"></studer-feed-sidebar>
   </div>
 
-  <div class="home__cards">
-    <div class="home__card home__card--courses">
-      <span class="pi pi-book home__card-icon"></span>
-      <span class="home__card-label">{{ 'sidebar.courses' | translate }}</span>
-    </div>
-    <div class="home__card home__card--calendar">
-      <span class="pi pi-calendar home__card-icon"></span>
-      <span class="home__card-label">{{ 'sidebar.calendar' | translate }}</span>
-    </div>
-    <div class="home__card home__card--discussions">
-      <span class="pi pi-megaphone home__card-icon"></span>
-      <span class="home__card-label">{{ 'sidebar.discussions' | translate }}</span>
-    </div>
-    <div class="home__card home__card--messages">
-      <span class="pi pi-comments home__card-icon"></span>
-      <span class="home__card-label">{{ 'sidebar.messages' | translate }}</span>
-    </div>
-  </div>
-</div>
-}
+  <div class="feed__content">
+    @if (showCreateForm) {
+      <div class="feed__create">
+        <div class="feed__form">
+          <studer-text-creator [data]="postContentData" (dataChange)="onPostContentChange($event)"></studer-text-creator>
+          <div class="feed__form-actions">
+            <button class="btn btn--primary" (click)="createPost()">
+              {{ 'feed.publish' | translate }}
+            </button>
+            <button class="btn btn--secondary" (click)="showCreateForm = false">
+              {{ 'common.cancel' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
 
+    @if (loading) {
+      <studer-loader></studer-loader>
+    } @else {
+      @for (post of posts; track post.id) {
+        <article class="feed__post">
+          <div class="feed__post-header">
+            <div class="feed__post-author">
+              <div class="feed__avatar">
+                @if (post.user.profilePictureThumbnailUrl) {
+                  <img [src]="post.user.profilePictureThumbnailUrl" alt="" class="feed__avatar-img" />
+                } @else {
+                  <span class="feed__avatar-placeholder">{{ post.user.firstName.charAt(0) }}{{ post.user.lastName.charAt(0) }}</span>
+                }
+              </div>
+              <div class="feed__author-info">
+                <studer-username [username]="post.user.username"></studer-username>
+                <span class="feed__author-name">{{ post.user.firstName }} {{ post.user.lastName }}</span>
+              </div>
+            </div>
+            <span class="feed__post-time">{{ post.createdDatetime | relativeTime }}</span>
+          </div>
+          <div class="feed__post-body">
+            <div class="feed__post-content">
+              @if (post.content?.paragraphs) {
+                <studer-text-viewer [data]="post.content"></studer-text-viewer>
+              } @else {
+                <studer-rich-text [text]="getPostText(post)"></studer-rich-text>
+              }
+            </div>
+            @if (post.tags && post.tags.length) {
+              <div class="feed__post-tags">
+                @for (tag of post.tags; track tag) {
+                  <studer-tag [name]="tag"></studer-tag>
+                }
+              </div>
+            }
+          </div>
+          <div class="feed__post-actions">
+            <button class="feed__action-btn" [class.liked]="post.likedByCurrentUser" (click)="toggleLike(post)">
+              <i class="pi" [class.pi-heart-fill]="post.likedByCurrentUser" [class.pi-heart]="!post.likedByCurrentUser"></i>
+              <span>{{ post.likeCount }}</span>
+            </button>
+          </div>
+        </article>
+      } @empty {
+        <div class="feed__empty">
+          <i class="pi pi-inbox feed__empty-icon"></i>
+          <p>{{ 'feed.empty' | translate }}</p>
+        </div>
+      }
+    }
+  </div>
+</section>

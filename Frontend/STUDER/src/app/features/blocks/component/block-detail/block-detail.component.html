@@ -9,7 +9,7 @@
   <main class="tab-content">
     @switch (activeTabId) {
       @case ('content') {
-        <studer-block-viewer [content]="parseContent(block.versions[block.versions.length - 1].content)"></studer-block-viewer>
+        <studer-block-viewer [content]="parsedContent"></studer-block-viewer>
       }
       @case ('info') {
         <studer-info-tab [block]="block"></studer-info-tab>

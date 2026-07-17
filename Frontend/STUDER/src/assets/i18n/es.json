@@ -2,7 +2,11 @@
   "common": {
     "hello": "Hola",
     "language": "Idioma",
-    "theme": "Tema"
+    "theme": "Tema",
+    "cancel": "Cancelar",
+    "uploading": "Subiendo...",
+    "toast_success": "Operación exitosa",
+    "toast_error": "Ocurrió un error"
   },
   "home": {
     "welcome": "Bienvenido a Studer, {{name}}",
@@ -28,12 +32,14 @@
     "last_name_error": "El apellido es obligatorio.",
     "birthdate": "Fecha de nacimiento",
     "birthdate_error": "La fecha de nacimiento es obligatoria.",
+    "birthdate_age_error": "Debes tener al menos 13 años.",
     "email": "Correo electrónico",
     "email_error": "El correo debe ser válido y tener entre 5 y 50 caracteres.",
     "username": "Usuario",
     "username_error": "El usuario debe tener entre 6 y 50 caracteres.",
     "password": "Contraseña",
     "password_error": "La contraseña debe tener mínimo 8 caracteres.",
+    "password_complexity_error": "Debe tener mayúsculas, minúsculas, número y carácter especial.",
     "confirm_password": "Confirmar contraseña",
     "confirm_password_error": "Las contraseñas no coinciden.",
     "submit": "Crear cuenta",
@@ -50,13 +56,19 @@
     "slogan4": "De contenido a comprensión.",
     "slogan5": "Crea cursos. Comparte conocimiento. Mide el progreso.",
     "slogan6": "Empoderando educadores. Motivando estudiantes.",
+    "tagline": "La plataforma educativa que transforma la forma de aprender y enseñar.",
     "nav_features": "Características",
+    "nav_how": "Cómo funciona",
     "nav_about": "Acerca de",
     "hero_title": "Aprende con ",
     "hero_description": "La plataforma educativa modular que combina cursos, ejercicios reutilizables, analítica avanzada e inteligencia artificial para transformar la forma en que enseñas y aprendes.",
     "badge_free": "Gratuito",
     "badge_ai": "Potenciado por IA",
     "badge_social": "Aprendizaje social",
+    "stat_students": "Estudiantes activos",
+    "stat_courses": "Cursos creados",
+    "stat_satisfaction": "Satisfacción",
+    "stat_countries": "Países alcanzados",
     "features_title": "Todo lo que necesitas para aprender",
     "features_subtitle": "Una plataforma integral que potencia cada aspecto de la experiencia educativa.",
     "feat_courses_title": "Cursos y contenido",
@@ -71,6 +83,24 @@
     "feat_analytics_text": "Métricas por curso, ejercicio y usuario. Tasas de éxito, errores comunes, progreso y evolución temporal.",
     "feat_ai_title": "Inteligencia artificial",
     "feat_ai_text": "Asistente IA que genera ejercicios, exámenes y planes de estudio. Siempre propuesto, nunca automático.",
+    "how_title": "Cómo funciona",
+    "how_step1_title": "Crea tu cuenta",
+    "how_step1_text": "Regístrate en segundos y accede a todas las funcionalidades de la plataforma.",
+    "how_step2_title": "Explora y aprende",
+    "how_step2_text": "Descubre cursos, ejercicios y contenido creado por la comunidad. Sigue a otros usuarios y participa en discusiones.",
+    "how_step3_title": "Comparte y crece",
+    "how_step3_text": "Crea tus propios cursos, comparte ejercicios y recibe feedback. La IA te ayuda a mejorar tu contenido.",
+    "testimonials_title": "Lo que dicen nuestros usuarios",
+    "testimonials_subtitle": "Miles de estudiantes y educadores ya confían en Studer para su aprendizaje diario.",
+    "testimonial_1_text": "Studer transformó mi forma de enseñar. Ahora puedo crear cursos completos con ejercicios interactivos y mis alumnos avanzan mucho más rápido.",
+    "testimonial_1_name": "María García",
+    "testimonial_1_role": "Profesora de Matemáticas",
+    "testimonial_2_text": "La funcionalidad de reutilizar ejercicios me ahorra muchísimo tiempo. Puedo adaptar contenido existente y crear nuevas lecciones en minutos.",
+    "testimonial_2_name": "Carlos López",
+    "testimonial_2_role": "Desarrollador de Contenido",
+    "testimonial_3_text": "Como estudiante, la analítica avanzada me ayuda a ver exactamente dónde necesito mejorar. Es como tener un tutor personal disponible 24/7.",
+    "testimonial_3_name": "Ana Martínez",
+    "testimonial_3_role": "Estudiante Universitaria",
     "about_title": "¿Por qué Studer?",
     "about_text": "Studer no se trata solo de ver contenido. Se trata de crear, practicar, compartir y mejorar. Nuestra plataforma te permite construir experiencias educativas completas.",
     "about_calendar": "Planificación y calendario integrados con IA",
@@ -132,6 +162,9 @@
     "save": "Guardar cambios",
     "password_mismatch": "Las contraseñas no coinciden.",
     "save_error": "No se pudieron guardar los cambios.",
+    "level": "Nivel",
+    "points": "Pts",
+    "followers": "Seguidores",
     "blocks": {
       "title": "Sistema de bloques",
       "create": "Crear bloque",
@@ -238,8 +271,7 @@
         "name": "Nombre",
         "name_placeholder": "Ej: Introducción a...",
         "difficulty": "Dificultad",
-        "tags": "Etiquetas",
-        "published": "Publicado"
+        "tags": "Etiquetas"
       },
       "actions": {
         "save": "Guardar Bloque"
@@ -299,6 +331,7 @@
       "video": "Video",
       "gallery": "Galería"
     }
+
   },
   "difficulty": {
     "easy": "Fácil",
@@ -314,6 +347,10 @@
     "delete_option": "Eliminar opción completa"
   },
   "text_editor": {
+    "insert_link": "Insertar enlace",
+    "insert_image": "Insertar imagen",
+    "insert": "Insertar",
+    "click_to_upload": "Haz clic para subir una imagen",
     "sizes": {
       "small": "Pequeño",
       "medium": "Normal",
@@ -371,5 +408,111 @@
         "score_divider": "de"
       }
     }
+  },
+  "feed": {
+    "title": "Feed",
+    "recent": "Recientes",
+    "popular": "Populares",
+    "following": "Siguiendo",
+    "create_post": "Crear publicación",
+    "write_something": "Escribe algo...",
+    "publish": "Publicar",
+    "empty": "No hay publicaciones aún"
+  },
+  "course": {
+    "sidebar": {
+      "recent": "Recientes",
+      "popular": "Populares",
+      "yours": "Tus cursos",
+      "favourites": "Favoritos",
+      "create": "Crear"
+    },
+    "list": {
+      "title": "Cursos",
+      "empty": "No hay cursos",
+      "loading": "Cargando cursos...",
+      "by": "por",
+      "rating": "Valoración",
+      "blocks": "bloques"
+    },
+    "create": {
+      "title": "Crear Curso",
+      "name": "Nombre",
+      "name_placeholder": "Ej: Introducción a Álgebra",
+      "image": "Imagen del curso",
+      "image_placeholder": "Haz clic para subir una imagen",
+      "tags": "Tags",
+      "tags_placeholder": "Ej: matemáticas, álgebra...",
+      "blocks": "Bloques",
+      "blocks_title": "Bloques del curso",
+      "search_blocks": "Buscar bloques...",
+      "create_block": "Crear bloque",
+      "create_new_block": "Crear nuevo bloque",
+      "select_version": "Versión",
+      "remove": "Eliminar",
+      "no_blocks": "Agrega bloques a tu curso",
+      "no_blocks_found": "No se encontraron bloques",
+      "no_blocks_selected": "Aún no has seleccionado bloques",
+      "selected_blocks": "Bloques seleccionados",
+      "latest_version": "Última versión",
+      "version_label": "v",
+      "remove_block": "Eliminar bloque",
+      "save": "Guardar curso",
+      "saving": "Guardando..."
+    },
+    "detail": {
+      "title": "Detalle del Curso",
+      "blocks": "Bloques",
+      "progress": "Progreso",
+      "completed": "Completado",
+      "mark_complete": "Marcar completo",
+      "favourite": "Favorito",
+      "unfavourite": "Quitar favorito",
+      "rating": "Valoración",
+      "not_found": "Curso no encontrado"
+    }
+  },
+  "contest": {
+    "title": "Concurso",
+    "start_date": "Inicio",
+    "change_date": "Cambio a validación",
+    "end_date": "Fin",
+    "submit_course": "Enviar curso",
+    "submit_hint": "Crea un curso para participar en este concurso. No se publicará hasta que finalice.",
+    "validate": "Validar cursos",
+    "submit_rating": "Enviar valoración",
+    "finished": "Concurso finalizado",
+    "finish_contest": "Finalizar concurso",
+    "leaderboard": "Leaderboard",
+    "leaderboard_empty": "No hay cursos en el leaderboard aún",
+    "course_name": "Curso",
+    "rating": "Valoración",
+    "likes": "Likes",
+    "score": "Score",
+    "consigna": "Consigna",
+    "tags": "Tags"
+  },
+  "admin": {
+    "title": "Panel de Administración",
+    "contests": "Concursos",
+    "contests_desc": "Gestiona los concursos de la plataforma",
+    "create_contest": "Crear Concurso"
+  },
+  "video": {
+    "url": "URL del video",
+    "platform": "Plataforma",
+    "start_time": "Tiempo de inicio (segundos)",
+    "autoplay": "Auto reproducción",
+    "controls": "Controles"
+  },
+  "gallery": {
+    "image_url": "URL de la imagen",
+    "alt_text": "Texto alternativo",
+    "caption": "Pie de foto",
+    "add_image": "Agregar imagen",
+    "layout": "Disposición",
+    "carousel": "Carrusel",
+    "grid": "Cuadrícula",
+    "masonry": "Masonry"
   }
 }

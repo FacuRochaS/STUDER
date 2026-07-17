@@ -10,6 +10,7 @@ import {
     BlockResponseDTO,
     BlockVersionCreateRequestDTO
 } from './block.model';
+import {MessageResponseDTO} from '../discussions/discussion.model';
 import {API_CONFIG} from '../../config/api.config';
 
 @Injectable({
@@ -91,5 +92,13 @@ export class BlockService {
   getMyBlock(page: number): Observable<BlockPageResponseDTO> {
     const params = new HttpParams().set('page', page.toString());
     return this.http.get<BlockPageResponseDTO>(`${this.base}/me`, { params });
+  }
+
+  likeBlock(id: number): Observable<MessageResponseDTO> {
+    return this.http.post<MessageResponseDTO>(`${this.base}/${id}/like`, {});
+  }
+
+  unlikeBlock(id: number): Observable<MessageResponseDTO> {
+    return this.http.delete<MessageResponseDTO>(`${this.base}/${id}/like`);
   }
 }

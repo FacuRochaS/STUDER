@@ -1,0 +1,9 @@
+<div class="video-viewer">
+  @if (data.platform === 'youtube') {
+    <iframe [src]="embedUrl" frameborder="0" allowfullscreen></iframe>
+  } @else if (data.platform === 'vimeo') {
+    <iframe [src]="embedUrl" frameborder="0" allowfullscreen></iframe>
+  } @else if (data.platform === 'native') {
+    <video [src]="data.url" [autoplay]="data.autoplay" [controls]="data.controls" preload="auto" muted playsinline></video>
+  }
+</div>

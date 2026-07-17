@@ -1,8 +1,9 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { TextContentData, ParagraphData, TextRunData, TextAlign, TextSize, TextColor } from '../../interfaces/content.interfaces';
+import { UploadService } from '../../../../core/services/upload.service';
 
 @Component({
   selector: 'studer-text-creator',
@@ -72,18 +73,45 @@ export class TextCreatorComponent implements OnInit {
     }
   }
 
+  private readonly uploadService = inject(UploadService);
+
+  showLinkModal = false;
+  showImageModal = false;
+  linkUrl = '';
+  imageUploading = false;
+
   promptLink(): void {
-    const url = prompt('Ingrese la URL del enlace:');
-    if (url) {
-      this.execute('createLink', url);
+    this.linkUrl = '';
+    this.showLinkModal = true;
+  }
+
+  insertLink(): void {
+    if (this.linkUrl) {
+      this.execute('createLink', this.linkUrl);
     }
+    this.showLinkModal = false;
   }
 
   promptImage(): void {
-    const url = prompt('Ingrese la URL de la imagen:');
-    if (url) {
-      this.execute('insertImage', url);
-    }
+    this.showImageModal = true;
+  }
+
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.imageUploading = true;
+    this.uploadService.uploadImage(file, 'blocks').subscribe({
+      next: (res) => {
+        this.execute('insertImage', res.url);
+        this.imageUploading = false;
+        this.showImageModal = false;
+        input.value = '';
+      },
+      error: () => {
+        this.imageUploading = false;
+      }
+    });
   }
 
   // =========================================================================

@@ -3,17 +3,21 @@ package facu.studer.services.implementation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.DTOs.blocks.*;
 import facu.studer.entities.Tag;
 import facu.studer.entities.blocks.Block;
+import facu.studer.entities.blocks.BlockLike;
 import facu.studer.entities.blocks.BlockVersion;
 import facu.studer.entities.blocks.Difficulty;
 import facu.studer.entities.users.User;
 import facu.studer.exceptions.ResourceNotFoundException;
 import facu.studer.mappers.BlockMapper;
+import facu.studer.repositories.block.BlockLikeRepository;
 import facu.studer.repositories.block.BlockRepository;
 import facu.studer.repositories.block.BlockVersionRepository;
 import facu.studer.services.BlockService;
+import facu.studer.services.PointsService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -35,6 +39,8 @@ public class BlockServiceImpl implements BlockService {
 
     private final BlockRepository blockRepository;
     private final BlockVersionRepository blockVersionRepository;
+    private final BlockLikeRepository blockLikeRepository;
+    private final PointsService pointsService;
 
 
     private static final int PAGE_SIZE = 15;
@@ -42,10 +48,12 @@ public class BlockServiceImpl implements BlockService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public BlockServiceImpl(BlockRepository blockRepository, BlockVersionRepository blockVersionRepository) {
+    public BlockServiceImpl(BlockRepository blockRepository, BlockVersionRepository blockVersionRepository,
+                            BlockLikeRepository blockLikeRepository, PointsService pointsService) {
         this.blockRepository = blockRepository;
         this.blockVersionRepository = blockVersionRepository;
-
+        this.blockLikeRepository = blockLikeRepository;
+        this.pointsService = pointsService;
     }
 
     @Override
@@ -56,12 +64,21 @@ public class BlockServiceImpl implements BlockService {
 
         Set<Tag> managedTags = resolveTagsByName(request.getTags());
 
+        String slug = request.getName().toLowerCase().replaceAll("[^a-z0-9]+", "-");
+
+        Integer count = blockRepository.countBlocksByName(request.getName());
+
+        if (count != 0) {
+            slug = slug + count;
+        }
+
+
         Block block = Block.builder()
                 .owner(owner)
                 .parentBlock(null)
                 .rootBlock(null)
                 .name(request.getName())
-                .slug(request.getSlug())
+                .slug(slug)
                 .currentVersion(null)
                 .difficulty(Difficulty.valueOf(request.getDifficulty()))
                 .tags(managedTags)
@@ -91,6 +108,8 @@ public class BlockServiceImpl implements BlockService {
         blockRepository.save(createdBlock);
 
         entityManager.flush();
+
+        pointsService.addPoints(owner, 1L);
 
         return BlockMapper.toResponseDTO(createdBlock, createdVersion);
 
@@ -143,6 +162,8 @@ public class BlockServiceImpl implements BlockService {
         blockRepository.save(createdBlock);
 
         entityManager.flush();
+
+        pointsService.addPoints(owner, 1L);
 
         return BlockMapper.toResponseDTO(createdBlock, createdVersion);
 
@@ -326,6 +347,59 @@ public class BlockServiceImpl implements BlockService {
     public BlockPageResponseDTO getMyBlock(String username, int page) {
         User user = findUserByUsername(username);
         return getBlockByUser(user.getId(), username, page);
+    }
+
+    @Override
+    @Transactional
+    public MessageDTO likeBlock(String username, Long blockId) {
+        if (blockLikeRepository.existsByUserUsernameAndBlockIdAndIsActiveTrue(username, blockId)) {
+            throw new IllegalArgumentException("block.already_liked");
+        }
+
+        User user = findUserByUsername(username);
+        Block block = blockRepository.findById(blockId)
+                .orElseThrow(() -> new ResourceNotFoundException("block.not_found"));
+
+        BlockLike like = BlockLike.builder()
+                .user(user)
+                .block(block)
+                .isActive(true)
+                .createdDatetime(LocalDateTime.now())
+                .lastUpdatedDatetime(LocalDateTime.now())
+                .build();
+
+        blockLikeRepository.save(like);
+
+        pointsService.addPoints(block.getOwner(), 3L);
+
+        return MessageDTO.builder()
+                .success(true)
+                .message("block.like_added")
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public MessageDTO unlikeBlock(String username, Long blockId) {
+        var likeOpt = blockLikeRepository.findByUserUsernameAndBlockIdAndIsActiveTrue(username, blockId);
+
+        if (likeOpt.isEmpty()) {
+            throw new IllegalArgumentException("block.not_liked");
+        }
+
+        BlockLike like = likeOpt.get();
+        User blockOwner = like.getBlock().getOwner();
+
+        like.setIsActive(false);
+        like.setLastUpdatedDatetime(LocalDateTime.now());
+        blockLikeRepository.save(like);
+
+        pointsService.deductPoints(blockOwner, 3L);
+
+        return MessageDTO.builder()
+                .success(true)
+                .message("block.like_removed")
+                .build();
     }
 
 

@@ -1,0 +1,21 @@
+<div class="course-container">
+  <studer-course-sidebar
+    (categorySelected)="onCategorySelected($event)">
+  </studer-course-sidebar>
+
+  <main class="course-content">
+    @if (selectedCategory === 'explore') {
+      <app-explore-filters (filtersChanged)="onFiltersChanged($event)"></app-explore-filters>
+    }
+
+    @if (showCreateForm) {
+      <studer-course-create (saved)="showCreateForm = false; onCategorySelected('yours')"></studer-course-create>
+    } @else if (loading) {
+      <div class="loading-spinner">
+        <studer-loader></studer-loader>
+      </div>
+    } @else {
+      <studer-course-list [courses]="courses"></studer-course-list>
+    }
+  </main>
+</div>

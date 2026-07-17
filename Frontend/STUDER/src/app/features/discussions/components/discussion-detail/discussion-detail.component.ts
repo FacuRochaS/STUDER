@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DiscussionService } from '../../discussion.service';
@@ -13,11 +12,12 @@ import { RelativeTimePipe } from '../../../../shared/pipes/relative-time.pipe';
 import { TagComponent } from '../../../../shared/components/tag/tag.component';
 import { UsernameComponent } from '../../../../shared/components/username/username.component';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { DiscussionMessageInputComponent } from '../discussion-message-input/discussion-message-input.component';
 
 @Component({
   selector: 'studer-discussion-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, RelativeTimePipe, TagComponent, UsernameComponent, LoaderComponent],
+  imports: [CommonModule, TranslatePipe, RelativeTimePipe, TagComponent, UsernameComponent, LoaderComponent, DiscussionMessageInputComponent],
   templateUrl: './discussion-detail.component.html',
   styleUrls: ['./discussion-detail.component.css']
 })
@@ -32,9 +32,9 @@ export class DiscussionDetailComponent implements OnInit, OnDestroy {
   currentPage = 0;
   hasMore = false;
 
-  newMessageContent = '';
   replyingTo: DiscussionMessageResponseDTO | null = null;
-  sending = false;
+
+  @ViewChild(DiscussionMessageInputComponent) messageInput?: DiscussionMessageInputComponent;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -109,15 +109,12 @@ export class DiscussionDetailComponent implements OnInit, OnDestroy {
     this.replyingTo = null;
   }
 
-  sendMessage(): void {
-    if (!this.newMessageContent.trim() || this.sending) return;
-
-    this.sending = true;
+  handleMessageSent(event: { content: string, file?: File }): void {
     this.discussionService
       .createMessage(this.discussionId, {
-        content: this.newMessageContent,
+        content: event.content,
         parentMessageId: this.replyingTo?.id
-      })
+      }, event.file)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (msg) => {
@@ -126,12 +123,11 @@ export class DiscussionDetailComponent implements OnInit, OnDestroy {
           } else {
             this.messages = [msg, ...this.messages];
           }
-          this.newMessageContent = '';
-          this.replyingTo = null;
-          this.sending = false;
+          this.messageInput?.reset();
+          this.cancelReply();
         },
         error: () => {
-          this.sending = false;
+          if (this.messageInput) { this.messageInput.isSending = false; }
         }
       });
   }

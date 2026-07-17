@@ -20,6 +20,7 @@ import facu.studer.repositories.discussion.DiscussionRepository;
 import facu.studer.repositories.discussion.MessageLikeRepository;
 import facu.studer.repositories.discussion.UserDiscussionFavRepository;
 import facu.studer.services.DiscussionService;
+import facu.studer.services.PointsService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.slf4j.Logger;
@@ -68,6 +69,7 @@ public class DiscussionServiceImpl implements DiscussionService {
     private final MessageLikeRepository messageLikeRepository;
     private final DiscussionMessageRepository discussionMessageRepository;
     private final UserDiscussionFavRepository userDiscussionFavRepository;
+    private final PointsService pointsService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -77,13 +79,15 @@ public class DiscussionServiceImpl implements DiscussionService {
                                  DiscussionMessageRepository discussionMessageRepository,
                                  UserDiscussionFavRepository userDiscussionFavRepository,
                                  RestTemplate restTemplate,
-                                 @Value("${app.media.service.url}") String mediaServiceUrl) {
+                                 @Value("${app.media.service.url}") String mediaServiceUrl,
+                                 PointsService pointsService) {
         this.discussionRepository = discussionRepository;
         this.messageLikeRepository = messageLikeRepository;
         this.discussionMessageRepository = discussionMessageRepository;
         this.userDiscussionFavRepository = userDiscussionFavRepository;
         this.restTemplate = restTemplate;
         this.mediaServiceUrl = mediaServiceUrl;
+        this.pointsService = pointsService;
     }
 
     /**
@@ -486,6 +490,8 @@ public class DiscussionServiceImpl implements DiscussionService {
 
         messageLikeRepository.save(like);
 
+        pointsService.addPoints(message.getSender(), 1L);
+
         return MessageDTO.builder()
                 .success(true)
                 .message("discussion.message.like_added")
@@ -506,9 +512,13 @@ public class DiscussionServiceImpl implements DiscussionService {
         }
 
         MessageLike like = likeOpt.get();
+        User messageSender = like.getMessage().getSender();
+
         like.setIsActive(false);
         like.setLastUpdatedDatetime(LocalDateTime.now());
         messageLikeRepository.save(like);
+
+        pointsService.deductPoints(messageSender, 1L);
 
         return MessageDTO.builder()
                 .success(true)
@@ -542,6 +552,8 @@ public class DiscussionServiceImpl implements DiscussionService {
 
         userDiscussionFavRepository.save(fav);
 
+        pointsService.addPoints(discussion.getOwner(), 5L);
+
         return MessageDTO.builder()
                 .success(true)
                 .message("discussion.favourite_added")
@@ -562,9 +574,13 @@ public class DiscussionServiceImpl implements DiscussionService {
         }
 
         UserDiscussionFav fav = favOpt.get();
+        User discussionOwner = fav.getDiscussion().getOwner();
+
         fav.setIsActive(false);
         fav.setLastUpdatedDatetime(LocalDateTime.now());
         userDiscussionFavRepository.save(fav);
+
+        pointsService.deductPoints(discussionOwner, 5L);
 
         return MessageDTO.builder()
                 .success(true)

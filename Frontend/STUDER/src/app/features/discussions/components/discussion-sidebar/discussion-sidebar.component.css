@@ -2,8 +2,9 @@
   display: block;
   background-color: var(--sidebar-bg); /* CORREGIDO */
   padding: 1rem;
-  border-right: 1px solid var(--border); /* CORREGIDO */
+  box-shadow: 1px 0 4px var(--box-shadow-color);
   height: 100%;
+  max-width: 275px;
 }
 
 .sidebar-container {
@@ -35,7 +36,7 @@
 
 .divider {
   border: none;
-  border-top: 1px solid var(--border); /* CORREGIDO */
+  border-top: 1px solid var(--box-shadow-color);
   margin: 0.5rem 0;
 }
 

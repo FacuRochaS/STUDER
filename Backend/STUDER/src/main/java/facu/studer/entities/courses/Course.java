@@ -2,6 +2,7 @@ package facu.studer.entities.courses;
 
 import facu.studer.entities.BaseEntity;
 import facu.studer.entities.Tag;
+import facu.studer.entities.contest.Contest;
 import facu.studer.entities.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -63,5 +64,30 @@ public class Course extends BaseEntity {
      */
     @Column(nullable = false)
     private String link;
+
+    /**
+     * Contest this course belongs to (if any).
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contest_id")
+    private Contest contest;
+
+    /**
+     * Whether to hide creator/likes during contest validation.
+     */
+    @Column(nullable = false)
+    private Boolean contestHidden;
+
+    /**
+     * Sum of all ratings for quick average computation.
+     */
+    @Column(nullable = false)
+    private Long ratingSum;
+
+    /**
+     * Number of ratings received.
+     */
+    @Column(nullable = false)
+    private Integer ratingCount;
 
 }

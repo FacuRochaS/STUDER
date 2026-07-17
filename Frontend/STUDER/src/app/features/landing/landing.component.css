@@ -1,6 +1,3 @@
-/* ============================================================
-   LANDING PAGE – Studer
-   ============================================================ */
 .landing {
   width: 100%;
   overflow-x: hidden;
@@ -23,7 +20,11 @@
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  transition: background 0.3s;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.landing-nav--scrolled {
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
 }
 
 :host-context(body.theme-dark) .landing-nav {
@@ -48,6 +49,22 @@
   font-size: 0.9rem;
   font-weight: 500;
   transition: color 0.2s;
+  position: relative;
+}
+
+.landing-nav__link::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: width 0.3s;
+}
+
+.landing-nav__link:hover::after {
+  width: 100%;
 }
 
 .landing-nav__link:hover {
@@ -73,7 +90,7 @@
   box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
 }
 
-/* ======================== HERO ======================== */
+/* ======================== ANIMATED BACKGROUND ======================== */
 .landing-hero {
   min-height: 100vh;
   display: flex;
@@ -81,6 +98,28 @@
   justify-content: center;
   padding: 6rem 2.5rem 4rem;
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 40%, rgba(66, 133, 244, 0.06) 0%, transparent 50%),
+              radial-gradient(circle at 70% 60%, rgba(0, 191, 99, 0.04) 0%, transparent 50%),
+              radial-gradient(circle at 50% 80%, rgba(255, 49, 49, 0.03) 0%, transparent 50%);
+  animation: heroBgFloat 20s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes heroBgFloat {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(2%, -2%) rotate(1deg); }
+  66% { transform: translate(-1%, 1%) rotate(-0.5deg); }
 }
 
 .hero__content {
@@ -90,6 +129,8 @@
   gap: 4rem;
   max-width: 1200px;
   width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .hero__text {
@@ -103,6 +144,16 @@
 
 .hero__logo {
   margin-bottom: 0.75rem;
+  filter: drop-shadow(0 4px 20px rgba(66, 133, 244, 0.2));
+}
+
+.hero__tagline {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--color-text-secu);
+  margin: 0.5rem 0 1.5rem;
+  line-height: 1.6;
+  max-width: 440px;
 }
 
 .hero__phrases {
@@ -116,6 +167,41 @@
   max-width: 100%;
   display: flex;
   justify-content: center;
+}
+
+/* ======================== STATS BANNER ======================== */
+.landing-stats {
+  padding: 3rem 2.5rem;
+  background: var(--color-bg);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+:host-context(body.theme-dark) .landing-stats {
+  border-color: rgba(255, 255, 255, 0.04);
+}
+
+.stats__grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  text-align: center;
+}
+
+.stat-item__number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.stat-item__label {
+  font-size: 0.9rem;
+  color: var(--color-text-secu);
+  font-weight: 500;
 }
 
 /* ======================== FEATURES ======================== */
@@ -153,9 +239,28 @@
   border-radius: 1.25rem;
   padding: 2rem 1.75rem;
   box-shadow: 0 2px 12px var(--box-shadow-color);
-  transition: transform 0.25s, box-shadow 0.25s;
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1), box-shadow 0.3s;
   text-align: left;
   border: 1px solid rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+}
+
+.feature-card:hover::before {
+  transform: scaleX(1);
 }
 
 :host-context(body.theme-dark) .feature-card {
@@ -163,8 +268,8 @@
 }
 
 .feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 32px var(--box-shadow-color);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px var(--box-shadow-color);
 }
 
 .feature-card__icon {
@@ -197,6 +302,152 @@
   color: var(--color-text-secu);
   margin: 0;
   line-height: 1.55;
+}
+
+/* ======================== HOW IT WORKS ======================== */
+.landing-how {
+  padding: 5rem 2.5rem;
+  background: var(--color-bg);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+:host-context(body.theme-dark) .landing-how {
+  border-color: rgba(255, 255, 255, 0.04);
+}
+
+.how__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.how__title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 0 3rem;
+  color: var(--color-text-prim);
+}
+
+.how__steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  position: relative;
+}
+
+.how-step {
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.how-step__number {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-text-btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 auto 1.25rem;
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.25);
+}
+
+.how-step__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--color-text-prim);
+}
+
+.how-step__text {
+  font-size: 0.9rem;
+  color: var(--color-text-secu);
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* ======================== TESTIMONIALS ======================== */
+.landing-testimonials {
+  padding: 5rem 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.testimonials__title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  color: var(--color-text-prim);
+}
+
+.testimonials__subtitle {
+  text-align: center;
+  font-size: 1.05rem;
+  color: var(--color-text-secu);
+  margin: 0 auto 3rem;
+  max-width: 600px;
+}
+
+.testimonials__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.testimonial-card {
+  background: var(--color-bg);
+  border-radius: 1rem;
+  padding: 1.75rem;
+  box-shadow: 0 2px 12px var(--box-shadow-color);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+:host-context(body.theme-dark) .testimonial-card {
+  border-color: rgba(255, 255, 255, 0.04);
+}
+
+.testimonial-card__text {
+  font-size: 0.95rem;
+  color: var(--color-text-prim);
+  line-height: 1.6;
+  margin: 0 0 1.25rem;
+  font-style: italic;
+}
+
+.testimonial-card__author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.testimonial-card__avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--input-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  font-size: 1.1rem;
+}
+
+.testimonial-card__name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-prim);
+  margin: 0;
+}
+
+.testimonial-card__role {
+  font-size: 0.8rem;
+  color: var(--color-text-secu);
+  margin: 0;
 }
 
 /* ======================== ABOUT ======================== */
@@ -269,9 +520,22 @@
 /* ======================== CTA ======================== */
 .landing-cta {
   text-align: center;
-  padding: 4rem 2.5rem;
+  padding: 5rem 2.5rem;
   max-width: 700px;
   margin: 0 auto 2rem;
+  position: relative;
+}
+
+.landing-cta::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle, rgba(66, 133, 244, 0.04) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .cta__title {
@@ -299,6 +563,27 @@
   cursor: pointer;
   transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
   font-family: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta__btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: width 0.4s, height 0.4s, top 0.4s, left 0.4s;
+}
+
+.cta__btn:hover::after {
+  width: 300px;
+  height: 300px;
+  top: -100px;
+  left: -100px;
 }
 
 .cta__btn:hover {
@@ -315,10 +600,27 @@
   gap: 1rem;
   padding: 1.5rem 2rem;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
+  flex-wrap: wrap;
 }
 
 :host-context(body.theme-dark) .landing-footer {
   border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.landing-footer__links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.landing-footer__link {
+  font-size: 0.8rem;
+  color: var(--color-text-secu);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.landing-footer__link:hover {
+  color: var(--color-primary);
 }
 
 .landing-footer__copy {
@@ -355,8 +657,18 @@
     width: 100%;
     max-width: 420px;
   }
+  .stats__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .features__grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .how__steps {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .testimonials__grid {
+    grid-template-columns: 1fr;
   }
   .about__content {
     flex-direction: column;
@@ -376,6 +688,13 @@
   .landing-hero {
     padding: 5rem 1rem 3rem;
   }
+  .stats__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .stat-item__number {
+    font-size: 1.8rem;
+  }
   .features__grid {
     grid-template-columns: 1fr;
   }
@@ -383,6 +702,18 @@
     padding: 3rem 1rem;
   }
   .features__title {
+    font-size: 1.6rem;
+  }
+  .landing-how {
+    padding: 3rem 1rem;
+  }
+  .how__title {
+    font-size: 1.6rem;
+  }
+  .landing-testimonials {
+    padding: 3rem 1rem;
+  }
+  .testimonials__title {
     font-size: 1.6rem;
   }
   .landing-about {
@@ -393,5 +724,9 @@
   }
   .landing-cta {
     padding: 2.5rem 1rem;
+  }
+  .landing-footer {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }
