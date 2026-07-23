@@ -16,8 +16,6 @@ import java.util.List;
 public class CourseCreateRequestDTO {
     @NotBlank
     private String name;
-
-    @NotBlank
     private String slug;
 
     private String link;

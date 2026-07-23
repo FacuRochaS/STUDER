@@ -7,9 +7,21 @@
           [class]="'sidebar__link ' + item.colorClass"
           [routerLink]="item.route"
           routerLinkActive="sidebar__link--active"
-          [routerLinkActiveOptions]="{ exact: item.route === '/home' }">
+          [routerLinkActiveOptions]="{ exact: item.route === '/home' || item.route === '/contests' }">
           <span class="sidebar__icon"><i [class]="item.icon"></i></span>
           <span class="sidebar__label">{{ item.label | translate }}</span>
+        </a>
+      </li>
+    }
+    @if (isAdmin) {
+      <li class="sidebar__item">
+        <a
+          class="sidebar__link nav--admin"
+          routerLink="/admin"
+          routerLinkActive="sidebar__link--active"
+          [routerLinkActiveOptions]="{ exact: false }">
+          <span class="sidebar__icon"><i class="fa-solid fa-shield-halved"></i></span>
+          <span class="sidebar__label">{{ 'sidebar.admin' | translate }}</span>
         </a>
       </li>
     }

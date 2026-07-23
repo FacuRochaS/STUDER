@@ -136,3 +136,13 @@
   color: var(--nav-color-account);
 }
 
+.sidebar__link.nav--admin:hover .sidebar__icon,
+.sidebar__link.nav--admin:hover .sidebar__label {
+  color: var(--color-error, #e53935);
+}
+
+.sidebar__link--active.nav--admin .sidebar__icon,
+.sidebar__link--active.nav--admin .sidebar__label {
+  color: var(--color-error, #e53935);
+}
+

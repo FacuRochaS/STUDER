@@ -7,6 +7,12 @@
         <aside class="profile__sidebar">
           <div class="profile__avatar-ring">
             <svg class="profile__ring-svg" viewBox="0 0 180 180">
+              <defs>
+                <linearGradient id="studerRingGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#4285f4" />
+                  <stop offset="50%" stop-color="#00bf63" />
+                </linearGradient>
+              </defs>
               <circle class="profile__ring-bg" cx="90" cy="90" r="82" />
               <circle class="profile__ring-fill" cx="90" cy="90" r="82"
                 [style.stroke-dashoffset]="ringDashOffset" />
@@ -41,7 +47,7 @@
               <span class="stat-label">{{ 'profile.level' | translate }}</span>
             </div>
             <div class="stat-item">
-              <span class="stat-value">{{ followerCount }}</span>
+              <span class="stat-value">{{ user.followers }}</span>
               <span class="stat-label">{{ 'profile.followers' | translate }}</span>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { ActivityContentData, ActivityOption } from '../../interfaces/content.interfaces';
@@ -12,6 +12,7 @@ import { ActivityContentData, ActivityOption } from '../../interfaces/content.in
 })
 export class ActivityViewerComponent implements OnInit {
   @Input() data!: ActivityContentData;
+  @Output() completed = new EventEmitter<void>();
 
   // Estados locales para las respuestas del alumno
   selectedChoices: Record<string, boolean> = {}; // M.Choice
@@ -78,7 +79,6 @@ export class ActivityViewerComponent implements OnInit {
 
     if (this.data.activityType === 'multiple_choice') {
       this.data.options.forEach(opt => {
-        // Correcto si lo marcó y era correcto, o si NO lo marcó y NO era correcto
         const selected = !!this.selectedChoices[opt.id];
         const isCorrect = !!opt.isCorrect;
         this.results[opt.id] = selected === isCorrect;
@@ -86,15 +86,17 @@ export class ActivityViewerComponent implements OnInit {
     }
     else if (this.data.activityType === 'ordering') {
       this.orderedOptions.forEach((opt, index) => {
-        // Correcto si su posición actual (index+1) coincide con su orderIndex real
         this.results[opt.id] = opt.orderIndex === (index + 1);
       });
     }
     else if (this.data.activityType === 'matching') {
       this.data.options.forEach(opt => {
-        // Correcto si lo que eligió en el select es exactamente el matchText original
         this.results[opt.id] = this.matchingAnswers[opt.id] === opt.matchText;
       });
+    }
+
+    if (this.getCorrectCount() === this.data.options.length) {
+      this.completed.emit();
     }
   }
 

@@ -3,8 +3,7 @@
   z-index: 1000;
   background: var(--color-bg);
   border-radius: 0.5rem;
-  box-shadow: 0 4px 16px var(--box-shadow-color);
-  border: 1px solid var(--overlay-border);
+  box-shadow: 0 4px 16px var(--box-shadow-color), 0 0 0 1px var(--overlay-border);
   min-width: 200px;
   max-width: 300px;
   animation: popoverFadeIn 0.2s ease-in-out;

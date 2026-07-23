@@ -5,11 +5,17 @@
     </div>
 
     <div class="add-image-row">
-      <input type="text" class="styled-input" [(ngModel)]="newImageUrl" (keyup.enter)="addImage()" placeholder="{{ 'gallery.image_url_placeholder' | translate }}" />
-      <input type="text" class="styled-input alt-input" [(ngModel)]="newImageAlt" (keyup.enter)="addImage()" placeholder="{{ 'gallery.image_alt_placeholder' | translate }}" />
-      <button class="btn-add" (click)="addImage()">
-        {{ 'gallery.add_image' | translate }}
-      </button>
+      <label class="file-upload-btn" [class.uploading]="uploading">
+        @if (uploading) {
+          <i class="pi pi-spin pi-spinner"></i>
+          <span>{{ 'common.uploading' | translate }}</span>
+        } @else {
+          <i class="pi pi-upload"></i>
+          <span>{{ 'gallery.add_image' | translate }}</span>
+        }
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" [disabled]="uploading" />
+      </label>
+      <input type="text" class="styled-input alt-input" [(ngModel)]="newImageAlt" (keyup.enter)="onFileSelected($event)" placeholder="{{ 'gallery.image_alt_placeholder' | translate }}" />
     </div>
 
     <div class="image-list">

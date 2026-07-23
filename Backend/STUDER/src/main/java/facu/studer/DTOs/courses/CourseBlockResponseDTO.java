@@ -17,4 +17,5 @@ public class CourseBlockResponseDTO {
     private String blockName;
     private BlockVersionResponseDTO version;
     private Integer order;
+    private Boolean completed;
 }

@@ -27,16 +27,19 @@ public class Contest extends BaseEntity {
 
     private String title;
 
-    /**
-     * Content.
-     */
+    private String banner;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    private String difficulty;
+
+    private String theme;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private JsonNode content;
 
-    /**
-     * Tags associated with the contest.
-     */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "contest_tags",
@@ -45,14 +48,42 @@ public class Contest extends BaseEntity {
     )
     private Set<Tag> tags;
 
-
     private LocalDateTime startDate;
-
-    private LocalDateTime changeDate;
-
+    private LocalDateTime preparationEndDate;
+    private LocalDateTime buildingEndDate;
+    private LocalDateTime validationEndDate;
     private LocalDateTime endDate;
 
     @Column(nullable = false)
     private String status;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private JsonNode rewards;
+
+    @Column(columnDefinition = "TEXT")
+    private String externalLinks;
+
+    @Column(columnDefinition = "TEXT")
+    private String bibliography;
+
+    @Column(columnDefinition = "TEXT")
+    private String learningObjectives;
+
+    private Integer minLevel;
+    private Long minReputation;
+    private Integer maxParticipants;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
+    @Column(nullable = false)
+    private Integer participantCount = 0;
+
+    @Column(nullable = false)
+    private Integer courseCount = 0;
+
+    @Column(nullable = false)
+    private Integer blockCount = 0;
 }

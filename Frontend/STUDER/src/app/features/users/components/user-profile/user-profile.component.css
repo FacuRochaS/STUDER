@@ -19,7 +19,7 @@
   padding: 1.5rem;
   background-color: var(--sidebar-bg);
   border-radius: 8px;
-  border: 1px solid var(--border);
+  box-shadow: 0 0 0 1px var(--border);
   text-align: center;
 }
 
@@ -48,12 +48,12 @@
 }
 
 .profile__ring-fill {
-  stroke: var(--color-primary);
+  stroke: url(#studerRingGradient);
   stroke-width: 6;
   fill: none;
   stroke-linecap: round;
   stroke-dasharray: 515.2;
-  filter: drop-shadow(0 0 6px rgba(66, 133, 244, 0.5));
+  filter: drop-shadow(0 0 6px rgba(66, 133, 244, 0.4)) drop-shadow(0 0 12px rgba(0, 191, 99, 0.3)) drop-shadow(0 0 18px rgba(126, 87, 194, 0.2));
   animation: ring-fill-in 1s ease-out forwards;
 }
 
@@ -92,15 +92,15 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f6d365, #fda085);
-  color: #1a1a2e;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-correct));
+  color: var(--color-text-btn);
   font-size: 0.85rem;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 10px rgba(253, 160, 133, 0.6), 0 0 20px rgba(246, 211, 101, 0.4);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 8px rgba(66, 133, 244, 0.4), 0 0 16px rgba(0, 191, 99, 0.25);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
   z-index: 2;
   line-height: 1;
 }
@@ -118,7 +118,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border: 2px solid var(--sidebar-bg);
+  box-shadow: 0 0 0 2px var(--sidebar-bg);
   transition: background-color 0.2s, transform 0.2s;
 }
 
@@ -171,13 +171,13 @@
 .profile__btn--secondary {
   background-color: var(--input-background);
   color: var(--color-text-prim);
-  border: 1px solid var(--border);
+  box-shadow: 0 0 0 1px var(--border);
 }
 
 .profile__content {
   background-color: var(--sidebar-bg);
   border-radius: 8px;
-  border: 1px solid var(--border);
+  box-shadow: 0 0 0 1px var(--border);
   padding: 1.5rem;
 }
 

@@ -1,114 +1,217 @@
-<div class="course-detail">
-  @if (loading) {
-    <div class="course-detail__loading">
-      <i class="pi pi-spin pi-spinner"></i>
-      <span>{{ 'course.detail.loading' | translate }}</span>
-    </div>
-  } @else if (error) {
-    <div class="course-detail__error">
-      <i class="pi pi-exclamation-triangle"></i>
-      <h3>{{ 'course.detail.error_title' | translate }}</h3>
-      <p>{{ 'course.detail.error_message' | translate }}</p>
-    </div>
-  } @else if (course) {
+@if (backToList) {
+  <button class="back-btn" (click)="closed.emit()">
+    <i class="pi pi-arrow-left"></i>
+  </button>
+}
+
+@if (loading) {
+  <studer-loader></studer-loader>
+} @else if (error) {
+  <div class="course-detail__error">
+    <i class="pi pi-exclamation-triangle"></i>
+    <h3>{{ 'course.detail.error_title' | translate }}</h3>
+    <p>{{ 'course.detail.error_message' | translate }}</p>
+  </div>
+} @else if (course) {
+  <div class="course-detail">
     <div class="course-detail__header">
-      <div class="course-detail__header-top">
-        <div class="course-detail__owner">
-          <img [src]="course.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'" alt="Owner" class="course-detail__avatar" />
-          <studer-username [username]="course.owner.username"></studer-username>
-        </div>
+      <div class="course-detail__owner">
+        <img [src]="course.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'" alt="Owner" class="course-detail__avatar" />
+        <studer-username [username]="course.owner.username"></studer-username>
+      </div>
+      <div class="course-detail__header-actions">
+        @if (isOwner) {
+          <button class="edit-btn" (click)="onEdit()" [title]="'course.detail.edit' | translate">
+            <i class="pi pi-pencil"></i>
+          </button>
+        }
         <button class="favourite-btn" (click)="toggleFavourite()" [disabled]="favouriteLoading">
           <i class="pi" [ngClass]="course.favourite ? 'pi-star-fill' : 'pi-star'"></i>
         </button>
       </div>
-
-      <h1 class="course-detail__name">{{ course.name }}</h1>
-
-      @if (course.tags.length > 0) {
-        <div class="course-detail__tags">
-          @for (tag of course.tags; track tag) {
-            <studer-tag [name]="tag"></studer-tag>
-          }
-        </div>
-      }
-
-      @if (course.link) {
-        <a class="course-detail__link" [href]="course.link" target="_blank" rel="noopener noreferrer">
-          <i class="pi pi-external-link"></i>
-          {{ course.link }}
-        </a>
-      }
-
-      <div class="course-detail__stats">
-        <div class="course-detail__rating">
-          @if (course.ratingCount > 0) {
-            <i class="pi pi-star-fill"></i>
-            <span>{{ getAverageRating() }} ({{ course.ratingCount }})</span>
-          } @else {
-            <span class="no-rating">{{ 'course.detail.no_rating' | translate }}</span>
-          }
-        </div>
-        <div class="course-detail__favourite-count">
-          <i class="pi pi-heart"></i>
-          {{ course.favouriteCount }}
-        </div>
-        <div class="course-detail__block-count">
-          <i class="pi pi-box"></i>
-          {{ course.blocks.length }} {{ 'course.detail.blocks' | translate }}
-        </div>
-      </div>
-
-      <div class="course-detail__progress-section">
-        <div class="course-detail__progress-header">
-          <span>{{ 'course.detail.progress' | translate }}</span>
-          <span>{{ completedCount }}/{{ blockStates.length }} ({{ completionPercentage }}%)</span>
-        </div>
-        <div class="course-detail__progress-bar">
-          <div class="course-detail__progress-fill" [style.width.%]="completionPercentage"></div>
-        </div>
-      </div>
     </div>
 
-    <div class="course-detail__blocks">
-      <h2 class="course-detail__blocks-title">{{ 'course.detail.blocks_title' | translate }}</h2>
+    <h1 class="course-detail__name">{{ course.name }}</h1>
 
-      @for (state of blockStates; track trackByCourseBlockId; let i = $index) {
-        <div class="block-item">
-          <div class="block-item__row">
-            <button class="block-item__checkbox" (click)="toggleBlockComplete(i)" [disabled]="state.loading">
-              @if (state.loading) {
-                <i class="pi pi-spin pi-spinner"></i>
-              } @else {
-                <i class="pi" [ngClass]="state.completed ? 'pi-check-circle' : 'pi-circle'"></i>
-              }
-            </button>
+    @if (course.tags.length > 0) {
+      <div class="course-detail__tags">
+        @for (tag of course.tags; track tag) {
+          <studer-tag [name]="tag"></studer-tag>
+        }
+      </div>
+    }
 
-            <span class="block-item__order">#{{ state.order }}</span>
+    <studer-tabs [tabs]="tabs" [activeTabId]="activeTabId" (tabChange)="onTabChange($event)"></studer-tabs>
 
-            <button class="block-item__name" (click)="toggleBlockContent(i)">
-              {{ state.blockName }}
-            </button>
-
-            @if (state.completed) {
-              <span class="block-item__badge block-item__badge--done">
-                {{ 'course.detail.completed' | translate }}
-              </span>
-            }
+    @if (activeTabId === 'curso') {
+      <div class="course-detail__blocks">
+        @if (blockStates.length === 0) {
+          <div class="course-detail__empty">
+            <i class="pi pi-box"></i>
+            <p>{{ 'course.detail.no_blocks' | translate }}</p>
           </div>
+        }
+        @for (state of blockStates; track state.courseBlockId; let i = $index) {
+          <div class="course-block" [class.course-block--collapsed]="state.completed && !state.showContent">
+            <div class="course-block__header">
+              <span class="course-block__order">#{{ state.order }}</span>
+              <studer-block-header
+                [block]="state.fullBlock"
+                (toggleContent)="toggleBlockContent(i)"
+                (edit)="onEditBlock(i)"
+                (openTree)="onOpenTree(i)"
+              ></studer-block-header>
+            </div>
 
-          @if (state.showContent) {
-            <div class="block-item__content">
-              @if (state.contentLoading) {
-                <div class="block-item__content-loading">
-                  <i class="pi pi-spin pi-spinner"></i>
-                </div>
-              } @else {
-                <studer-block-viewer [content]="state.content"></studer-block-viewer>
+            @if (state.showContent) {
+              <studer-tabs
+                [tabs]="blockTabs"
+                [activeTabId]="state.activeTab"
+                (tabChange)="onBlockTabChange(i, $event)"
+              ></studer-tabs>
+
+              @if (state.activeTab === 'content') {
+                @if (state.hasActivity) {
+                  @for (item of state.content; track item.id) {
+                    @if (item.type === 'activity') {
+                      <studer-activity-viewer
+                        [data]="asActivityData(item.data)"
+                        (completed)="onBlockCompleted(i)"
+                      ></studer-activity-viewer>
+                    } @else {
+                      <studer-block-viewer [content]="[item]"></studer-block-viewer>
+                    }
+                  }
+                } @else {
+                  <studer-block-viewer [content]="state.content"></studer-block-viewer>
+                }
+              }
+              @if (state.activeTab === 'info') {
+                <studer-info-tab [block]="state.fullBlock"></studer-info-tab>
+              }
+            }
+
+            <div class="course-block__actions">
+              <span class="course-block__order-label">Bloque {{ state.order }} de {{ blockStates.length }}</span>
+              @if (!state.hasActivity) {
+                <button class="course-block__complete"
+                  (click)="toggleBlockComplete(i)"
+                  [disabled]="state.loading">
+                  @if (state.loading) { <i class="pi pi-spin pi-spinner"></i> }
+                  <i class="pi" [ngClass]="state.completed ? 'pi-check-circle' : 'pi-circle'"></i>
+                  <span>{{ (state.completed ? 'course.detail.completed' : 'course.detail.mark_complete') | translate }}</span>
+                </button>
+              }
+              @if (state.completed) {
+                <span class="course-block__done"><i class="pi pi-check-circle"></i> {{ 'course.detail.completed' | translate }}</span>
               }
             </div>
-          }
+          </div>
+        }
+      </div>
+    }
+
+    @if (activeTabId === 'estadisticas') {
+      <div class="course-detail__stats-tab">
+        <div class="stats-row">
+          <div class="stats-chart-card">
+            <h3 class="stats-chart-card__title">{{ 'course.detail.stats_progress' | translate }}</h3>
+            <div class="donut-chart">
+              <svg viewBox="0 0 120 120" class="donut-svg">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--input-background)" stroke-width="10"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-correct)" stroke-width="10"
+                  stroke-dasharray="326.73"
+                  [attr.stroke-dashoffset]="326.73 - (326.73 * completionPercentage / 100)"
+                  stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              </svg>
+              <div class="donut-center">
+                <span class="donut-value">{{ completionPercentage }}%</span>
+                <span class="donut-label">{{ 'course.detail.completion_rate' | translate }}</span>
+              </div>
+            </div>
+            <div class="donut-stats">
+              <div class="donut-stat">
+                <span class="donut-stat__dot donut-stat__dot--done"></span>
+                <span>{{ completedCount }} {{ 'course.detail.blocks_completed' | translate }}</span>
+              </div>
+              <div class="donut-stat">
+                <span class="donut-stat__dot"></span>
+                <span>{{ blockStates.length - completedCount }} pendientes</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-chart-card">
+            <h3 class="stats-chart-card__title">{{ 'course.detail.stats_general' | translate }}</h3>
+            <div class="general-stats">
+              <div class="general-stat">
+                <div class="general-stat__icon" style="background: rgba(255, 193, 7, 0.12); color: #ffc107;">
+                  <i class="pi pi-star-fill"></i>
+                </div>
+                <div class="general-stat__info">
+                  <span class="general-stat__value">{{ getAverageUserRating() }}</span>
+                  <span class="general-stat__label">{{ 'course.detail.avg_rating' | translate }}</span>
+                  <span class="general-stat__sub">({{ course.ratingCount }} {{ 'course.detail.total_ratings' | translate }})</span>
+                </div>
+              </div>
+              <div class="general-stat">
+                <div class="general-stat__icon" style="background: rgba(233, 30, 99, 0.12); color: #e91e63;">
+                  <i class="pi pi-heart"></i>
+                </div>
+                <div class="general-stat__info">
+                  <span class="general-stat__value">{{ course.favouriteCount }}</span>
+                  <span class="general-stat__label">{{ 'course.detail.favourites' | translate }}</span>
+                </div>
+              </div>
+              <div class="general-stat">
+                <div class="general-stat__icon" style="background: rgba(33, 150, 243, 0.12); color: #2196f3;">
+                  <i class="pi pi-box"></i>
+                </div>
+                <div class="general-stat__info">
+                  <span class="general-stat__value">{{ course.blocks.length }}</span>
+                  <span class="general-stat__label">{{ 'course.detail.total_blocks' | translate }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      }
-    </div>
-  }
-</div>
+
+        <div class="stats-chart-card">
+          <h3 class="stats-chart-card__title">{{ 'course.detail.blocks' | translate }}</h3>
+          <div class="block-progress-list">
+            @for (state of blockStates; track state.courseBlockId; let i = $index) {
+              <div class="block-progress-item">
+                <div class="block-progress-item__info">
+                  <span class="block-progress-item__order">#{{ state.order }}</span>
+                  <span class="block-progress-item__name">{{ state.blockName }}</span>
+                </div>
+                <div class="block-progress-item__bar">
+                  <div class="block-progress-item__fill"
+                    [class.block-progress-item__fill--done]="state.completed"
+                    [style.width.%]="state.completed ? 100 : 0">
+                  </div>
+                </div>
+                <span class="block-progress-item__status"
+                  [class.block-progress-item__status--done]="state.completed">
+                  <i class="pi" [ngClass]="state.completed ? 'pi-check-circle' : 'pi-circle'"></i>
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="stats-chart-card">
+          <h3 class="stats-chart-card__title">{{ 'course.detail.stats_creator' | translate }}</h3>
+          <div class="creator-info">
+            <img [src]="course.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'"
+              alt="Owner" class="creator-avatar" />
+            <div class="creator-info__text">
+              <studer-username [username]="course.owner.username"></studer-username>
+              <span class="creator-date">{{ course.createdDatetime | date:'mediumDate' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

@@ -108,8 +108,8 @@
             }
 
             <div class="message-bubble" [class.message-bubble--mine]="msg.senderId === currentUserId">
-              @if (msg.fileUrl) {
-                <img [src]="msg.fileUrl" class="message-image" alt="Attached image">
+              @if (msg.link) {
+                <img [src]="msg.link" class="message-image" alt="Attached image">
               }
               @if(msg.content) {
                 <studer-rich-text [text]="msg.content"></studer-rich-text>

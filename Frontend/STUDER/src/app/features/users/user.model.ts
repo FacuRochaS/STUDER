@@ -49,6 +49,7 @@ export interface UserPublic {
   firstName: string;
   lastName: string;
   points: number;
+  followers: number;
   role: string;
   profilePictureOriginalUrl: string;
   profilePictureAvatarUrl: string;

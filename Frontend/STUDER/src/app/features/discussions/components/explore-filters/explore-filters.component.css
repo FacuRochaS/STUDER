@@ -2,7 +2,7 @@
   display: block;
   padding: 1rem 1.25rem;
   background-color: var(--color-bg);
-  border: 1px solid var(--border);
+  box-shadow: 0 0 0 1px var(--border);
   border-radius: 8px;
   margin-bottom: 1.5rem;
 }
@@ -70,5 +70,5 @@
 .btn-secondary {
   background-color: var(--input-background);
   color: var(--color-text-prim);
-  border: 1px solid var(--border);
+  box-shadow: 0 0 0 1px var(--border);
 }

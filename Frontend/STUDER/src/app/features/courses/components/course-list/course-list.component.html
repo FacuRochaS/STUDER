@@ -1,40 +1,83 @@
 <div class="course-list-container">
   @if (courses.length > 0) {
-    @for (course of courses; track trackByCourseId) {
-      <a [routerLink]="['/courses', course.slug]" class="course-card">
-        <div class="card-header">
-          <div class="owner-info">
-            <img [src]="course.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'"
-                 alt="Owner photo" class="user-photo">
-            <studer-username [username]="course.owner.username"></studer-username>
+    @for (course of courses; track trackByCourseId; let i = $index) {
+      <div tabindex="0" role="button" class="course-card" (click)="onCourseClick(course.id)" (keydown.enter)="onCourseClick(course.id)">
+        <div class="course-card__media">
+          @if (course.link) {
+            <img [src]="course.link" alt="{{ course.name }}" loading="lazy" class="course-card__image" />
+          } @else {
+            <div class="course-card__banner course-card__banner--{{ bannerColor(i) }}">
+              <span class="course-card__initial">{{ course.name.charAt(0).toUpperCase() }}</span>
+            </div>
+          }
+          <div class="course-card__media-overlay">
+            <div class="course-card__owner">
+              <img [src]="course.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'"
+                   alt="Owner" class="course-card__avatar">
+              <studer-username [username]="course.owner.username"></studer-username>
+            </div>
+            <button class="course-card__fav" (click)="toggleFavourite(course, $event)">
+              <i class="pi" [ngClass]="course.favourite ? 'pi-star-fill' : 'pi-star'"></i>
+            </button>
           </div>
-          <button class="favourite-btn" (click)="toggleFavourite(course, $event)">
-            <i class="pi" [ngClass]="course.favourite ? 'pi-star-fill' : 'pi-star'"></i>
-          </button>
         </div>
 
-        <h3 class="course-name">{{ course.name }}</h3>
+        <div class="course-card__body">
+          <h3 class="course-card__name">{{ course.name }}</h3>
+          <span class="course-card__slug">/{{ course.slug }}</span>
 
-        <div class="tags">
-          @for (tag of course.tags; track tag) {
-            <span class="entity entity--tag">#{{ tag }}</span>
+          @if (course.tags.length > 0) {
+            <div class="course-card__tags">
+              @for (tag of course.tags | slice:0:3; track tag) {
+                <span class="course-card__tag">#{{ tag }}</span>
+              }
+              @if (course.tags.length > 3) {
+                <span class="course-card__tag-more">+{{ course.tags.length - 3 }}</span>
+              }
+            </div>
+          }
+
+          @if (course.blocks.length > 0) {
+            <div class="course-card__blocks-preview">
+              @for (b of course.blocks | slice:0:3; track b.id) {
+                <span class="course-card__block-name">{{ b.blockName }}</span>
+              }
+              @if (course.blocks.length > 3) {
+                <span class="course-card__block-more">+{{ course.blocks.length - 3 }}</span>
+              }
+            </div>
+          }
+
+          <div class="course-card__footer">
+            <div class="course-card__rating">
+              @if (course.ratingCount > 0) {
+                <i class="pi pi-star-fill"></i>
+                <span>{{ getAverageRating(course) }}</span>
+                <span class="course-card__rating-count">({{ course.ratingCount }})</span>
+              } @else {
+                <span class="course-card__no-rating">{{ 'course.list.no_rating' | translate }}</span>
+              }
+            </div>
+            <div class="course-card__meta">
+              <span class="course-card__meta-item">
+                <i class="pi pi-box"></i> {{ course.blocks.length }}
+              </span>
+              <span class="course-card__meta-item">
+                <i class="pi pi-heart"></i> {{ course.favouriteCount }}
+              </span>
+              @if (course.published) {
+                <span class="course-card__published">
+                  <i class="pi pi-globe"></i>
+                </span>
+              }
+            </div>
+          </div>
+
+          @if (course.lastUpdatedDatetime) {
+            <span class="course-card__updated">{{ getRelativeTime(course.lastUpdatedDatetime) }}</span>
           }
         </div>
-
-        <div class="card-footer">
-          <div class="rating">
-            @if (course.ratingCount > 0) {
-              <i class="pi pi-star-fill"></i>
-              <span>{{ getAverageRating(course) }} ({{ course.ratingCount }})</span>
-            } @else {
-              <span class="no-rating">{{ 'course.list.no_rating' | translate }}</span>
-            }
-          </div>
-          <span class="favourite-count">
-            <i class="pi pi-heart"></i> {{ course.favouriteCount }}
-          </span>
-        </div>
-      </a>
+      </div>
     }
   } @else {
     <div class="empty-state">

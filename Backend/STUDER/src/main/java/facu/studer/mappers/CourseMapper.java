@@ -9,17 +9,24 @@ import facu.studer.entities.courses.Course;
 import facu.studer.entities.courses.CourseBlock;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class CourseMapper {
     private CourseMapper() {}
 
     public static CourseResponseDTO toResponseDTO(Course course, boolean isFavourite, long favouriteCount) {
-        return toResponseDTO(course, isFavourite, favouriteCount, null);
+        return toResponseDTO(course, isFavourite, favouriteCount, null, Map.of());
     }
 
     public static CourseResponseDTO toResponseDTO(Course course, boolean isFavourite, long favouriteCount,
                                                    List<CourseBlock> blocks) {
+        return toResponseDTO(course, isFavourite, favouriteCount, blocks, Map.of());
+    }
+
+    public static CourseResponseDTO toResponseDTO(Course course, boolean isFavourite, long favouriteCount,
+                                                   List<CourseBlock> blocks,
+                                                   Map<Long, Boolean> blockCompletedMap) {
         if (course == null) return null;
 
         List<String> tagNames = course.getTags() != null
@@ -29,13 +36,13 @@ public final class CourseMapper {
         List<CourseBlockResponseDTO> blockDTOs = null;
         if (blocks != null) {
             blockDTOs = blocks.stream()
-                    .map(CourseMapper::toCourseBlockDTO)
+                    .map(cb -> toCourseBlockDTO(cb, blockCompletedMap.getOrDefault(cb.getId(), false)))
                     .collect(Collectors.toList());
         }
 
         return CourseResponseDTO.builder()
                 .id(course.getId())
-                .owner(UserMapper.toPublicResponseDTO(course.getOwner()))
+                .owner(UserMapper.toPublicSimpleResponseDTO(course.getOwner()))
                 .name(course.getName())
                 .slug(course.getSlug())
                 .tags(tagNames)
@@ -51,7 +58,7 @@ public final class CourseMapper {
                 .build();
     }
 
-    private static CourseBlockResponseDTO toCourseBlockDTO(CourseBlock courseBlock) {
+    private static CourseBlockResponseDTO toCourseBlockDTO(CourseBlock courseBlock, boolean completed) {
         BlockVersion version = courseBlock.getVersion() != null
                 ? courseBlock.getVersion()
                 : courseBlock.getBlock().getCurrentVersion();
@@ -70,6 +77,7 @@ public final class CourseMapper {
                 .blockName(courseBlock.getBlock().getName())
                 .version(versionDTO)
                 .order(courseBlock.getBlockOrder())
+                .completed(completed)
                 .build();
     }
 }

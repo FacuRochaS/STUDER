@@ -52,6 +52,7 @@ export class DiscussionComponent implements OnInit, OnDestroy {
       this.showCreateForm = !this.showCreateForm;
       return;
     }
+    this.showCreateForm = false;
     this.loadDiscussionsByCategory(category);
   }
 

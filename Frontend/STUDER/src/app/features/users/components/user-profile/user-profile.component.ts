@@ -38,7 +38,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   currentUserId: number | null = null;
   currentUser: User | null = null;
   imagePreviewUrl: string | null = null;
-  followerCount = 0;
+
   levelInfo = { level: 1, currentPoints: 0, nextLevelPoints: 20, progress: 0, ringDashOffset: 515.2 };
 
   blocks: BlockResponseDTO[] = [];
@@ -193,6 +193,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
           identifier.startsWith('@') ? identifier.slice(1) : identifier
         );
 
+
     request.subscribe({
       next: (user) => this.handleUserSuccess(user),
       error: () => this.handleUserError(),
@@ -203,10 +204,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.user = user;
     this.loading = false;
     this.levelInfo = this.getLevelInfo(user.points || 0);
-    this.userService.getFollowerCount(user.id).subscribe({
-      next: (res) => (this.followerCount = res.count),
-      error: () => (this.followerCount = 0),
-    });
     if (this.canShowSocialActions) {
       this.loadFriendStatus(user.id);
     }
@@ -219,31 +216,24 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
-  private mapCurrentUser(user: User): UserPublic {
-    return {
-      id: user.id,
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      points: user.points,
-      role: user.role,
-      profilePictureOriginalUrl: user.profilePictureOriginalUrl,
-      profilePictureAvatarUrl: user.profilePictureAvatarUrl,
-      profilePictureWebpUrl: user.profilePictureWebpUrl,
-      profilePictureThumbnailUrl: user.profilePictureThumbnailUrl,
-    };
-  }
-
   private setCurrentUserProfile(): void {
     if (!this.currentUser) {
       this.user = null;
       this.loading = true;
       return;
     }
-    this.user = this.mapCurrentUser(this.currentUser);
-    this.friendStatus = null;
-    this.loading = false;
-    this.loadUserBlocks(this.currentUser.id);
+    this.loading = true;
+    this.userService.getById(this.currentUser.id).subscribe({
+      next: (user) => {
+        this.user = user;
+        this.loading = false;
+        this.levelInfo = this.getLevelInfo(user.points || 0);
+        this.loadUserBlocks(user.id);
+      },
+      error: () => {
+        this.loading = false;
+      },
+    });
   }
 
   private loadFriendStatus(userId: number): void {
@@ -268,7 +258,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   private buildThresholds(count: number): number[] {
-    const base = [0, 20, 40, 70, 120, 200, 330, 550, 900, 1500, 2500, 4000];
+    const base = [0, 10, 20, 40, 80, 100, 200, 300, 500, 700, 1000, 2000, 4000];
     while (base.length < count) {
       const len = base.length;
       base.push(base[len - 1] + (base[len - 1] - base[len - 3]));

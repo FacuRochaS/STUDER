@@ -105,9 +105,12 @@
         </div>
       }
       <div class="message__header">
-        <studer-username [username]="msg.senderUsername"></studer-username>
+        <studer-username [username]="msg.sender.username"></studer-username>
         <span class="message__time">{{ msg.createdAt | relativeTime }}</span>
       </div>
+      @if (msg.imageRef) {
+        <img [src]="msg.imageRef" alt="Message image" class="message-image">
+      }
       <p class="message__content">{{ msg.content }}</p>
       <div class="message__actions">
         <button

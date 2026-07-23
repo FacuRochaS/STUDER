@@ -29,11 +29,11 @@
 }
 
 .info-metadata {
-  border-left: 1px solid var(--border);
   padding-left: 2rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  box-shadow: -1px 0 0 0 var(--border);
 }
 
 .metadata-group {

@@ -29,6 +29,8 @@ public interface MessageLikeRepository extends JpaRepository<MessageLike, Long> 
     long countByMessageIdAndIsActiveTrue(Long messageId);
 
 
+    boolean existsByUserUsernameAndMessageIdAndIsActiveFalse(String username, Long messageId);
 
+    Optional<MessageLike> findByUserUsernameAndMessageIdAndIsActiveFalse(String username, Long messageId);
 }
 

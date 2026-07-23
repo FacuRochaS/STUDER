@@ -13,7 +13,7 @@
   border: 1px solid var(--border);
   border-radius: 0.5rem;
   background: var(--input-background);
-  transition: border-color 0.2s;
+  transition: box-shadow 0.2s;
   cursor: text;
   min-height: 2.2rem;
 }

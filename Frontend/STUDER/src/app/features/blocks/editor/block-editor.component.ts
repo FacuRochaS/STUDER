@@ -24,7 +24,13 @@ export type Difficulty = 'EASY' | 'NORMAL' | 'HARD' | 'EXPERT';
   styleUrls: ['./block-editor.component.css']
 })
 export class BlockEditorComponent implements OnInit {
+  currentStep: 1 | 2 = 1;
   @Input() initialContent: BlockContentItem[] = [];
+  @Input() mode: string = 'create';
+  @Input() blockId?: number;
+  @Input() blockName?: string;
+  @Input() blockDifficulty?: string;
+  @Input() blockTags?: string[];
   @Output() save = new EventEmitter<any>();
 
   content: BlockContentItem[] = [];
@@ -35,11 +41,22 @@ export class BlockEditorComponent implements OnInit {
     published: false,
   };
 
-  // Nuestra lista estática de tipos soportados
+  changeDescription = '';
+
   availableContentTypes: string[] = ['text', 'activity', 'video', 'gallery'];
 
   ngOnInit(): void {
     this.content = JSON.parse(JSON.stringify(this.initialContent));
+    if (this.mode === 'edit') {
+      this.currentStep = 2;
+      this.metadata.name = this.blockName ?? '';
+      this.metadata.difficulty = (this.blockDifficulty as Difficulty) || 'NORMAL';
+      this.metadata.tags = this.blockTags ?? [];
+    }
+  }
+
+  goToStep(step: 1 | 2): void {
+    this.currentStep = step;
   }
 
   addComponent(type: string): void {
@@ -92,9 +109,18 @@ export class BlockEditorComponent implements OnInit {
   }
 
   onSave(): void {
-    this.save.emit({
-      ...this.metadata,
-      content: JSON.stringify(this.content)
-    });
+    if (this.mode === 'edit') {
+      this.save.emit({
+        content: JSON.stringify(this.content),
+        changeDescription: this.changeDescription || 'Edited',
+        blockId: this.blockId,
+        published: this.metadata.published,
+      });
+    } else {
+      this.save.emit({
+        ...this.metadata,
+        content: JSON.stringify(this.content)
+      });
+    }
   }
 }

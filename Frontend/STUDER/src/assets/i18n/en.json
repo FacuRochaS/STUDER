@@ -6,7 +6,16 @@
     "cancel": "Cancel",
     "uploading": "Uploading...",
     "toast_success": "Operation successful",
-    "toast_error": "An error occurred"
+    "toast_error": "An error occurred",
+    "saving": "Saving...",
+    "save": "Save",
+    "username": "Username",
+    "points": "Points",
+    "id": "ID",
+    "actions": "Actions",
+    "edit": "Edit",
+    "title": "Title",
+    "status": "Status"
   },
   "home": {
     "welcome": "Welcome to Studer, {{name}}",
@@ -115,11 +124,12 @@
   },
   "sidebar": {
     "home": "Home",
-    "contest": "Contests",
+    "contests": "Contests",
     "courses": "Courses",
     "discussions": "Discussions",
     "messages": "Messages",
-    "account": "Account"
+    "account": "Account",
+    "admin": "Admin"
   },
   "header": {
     "search_placeholder": "Search in Studer...",
@@ -274,7 +284,9 @@
         "tags": "Tags"
       },
       "actions": {
-        "save": "Save Block"
+        "save": "Save Block",
+        "edit": "Edit Block",
+        "fork": "Fork Block"
       },
       "content": {
         "title": "Content",
@@ -285,6 +297,7 @@
     },
     "empty-state": "No content.",
     "header": {
+      "edit_title": "Edit block",
       "fork_title": "Forked block",
       "like": "Like"
     },
@@ -307,6 +320,41 @@
     "versions": {
       "content_placeholder": "Selected version content (placeholder)."
     },
+    "tree": {
+      "current": "Current",
+      "parents": "Ancestors",
+      "no_parents": "Original block (no ancestors)",
+      "children": "Forks",
+      "no_children": "No forks yet",
+      "fork": "Fork",
+      "view_tree": "View tree",
+      "edit": "Edit",
+      "no_data": "No tree data available",
+      "zoom_in": "Zoom in",
+      "zoom_out": "Zoom out",
+      "reset": "Reset view",
+      "fit": "Fit to screen",
+      "center": "Center on selected",
+      "error": "Failed to load tree",
+      "retry": "Retry",
+      "tab_info": "Info",
+      "tab_content": "Content",
+      "tab_stats": "Stats",
+      "name": "Name",
+      "slug": "Slug",
+      "author": "Author",
+      "difficulty": "Difficulty",
+      "tags": "Tags",
+      "version": "Version",
+      "versions": "Versions",
+      "forks": "Forks",
+      "likes": "Likes",
+      "changes": "Changes",
+      "version_info": "Version Info",
+      "created": "Created",
+      "no_content": "No content for this version",
+      "select_node": "Select a node to view details"
+    },
     "stats": {
       "title": "Statistics (Placeholder)",
       "views": "Views: N/A",
@@ -314,6 +362,10 @@
       "forks": "Forks: N/A",
       "used_in_courses": "Used in courses: N/A",
       "avg_read_time": "Average reading time: N/A"
+    },
+    "tree": {
+      "title": "Block Tree",
+      "no_data": "No tree data available"
     },
     "detail": {
       "loading": "Loading block...",
@@ -432,19 +484,33 @@
       "loading": "Loading courses...",
       "by": "by",
       "rating": "Rating",
-      "blocks": "blocks"
+      "blocks": "blocks",
+      "no_courses_title": "No courses found",
+      "no_courses_subtitle": "Try adjusting your filters or create a new course."
     },
     "create": {
       "title": "Create Course",
+      "info": "Information",
+      "info_title": "Course Information",
+      "blocks": "Blocks",
+      "next": "Next",
+      "back": "Back",
       "name": "Name",
       "name_placeholder": "E.g., Introduction to Algebra",
       "image": "Course image",
       "image_placeholder": "Click to upload an image",
       "tags": "Tags",
       "tags_placeholder": "E.g., math, algebra...",
-      "blocks": "Blocks",
       "blocks_title": "Course blocks",
+      "browse_blocks": "Browse Blocks",
       "search_blocks": "Search blocks...",
+      "browser_title": "Block Browser",
+      "my_blocks": "My blocks",
+      "most_liked": "Most liked",
+      "difficulty_easy": "Easy",
+      "difficulty_medium": "Medium",
+      "difficulty_hard": "Hard",
+      "load_more": "Load more",
       "create_block": "Create block",
       "create_new_block": "Create new block",
       "select_version": "Version",
@@ -457,10 +523,16 @@
       "version_label": "v",
       "remove_block": "Remove block",
       "save": "Save course",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "keep_updated": "Keep updated",
+      "edit_title": "Edit Course",
+      "save_changes": "Save changes"
     },
     "detail": {
       "title": "Course Detail",
+      "loading": "Loading course...",
+      "error_title": "Course not found",
+      "error_message": "The course you are looking for does not exist or has been removed.",
       "blocks": "Blocks",
       "progress": "Progress",
       "completed": "Completed",
@@ -468,17 +540,35 @@
       "favourite": "Favorite",
       "unfavourite": "Remove favorite",
       "rating": "Rating",
-      "not_found": "Course not found"
+      "not_found": "Course not found",
+      "edit": "Edit course",
+      "tab_curso": "Course",
+      "tab_estadisticas": "Statistics",
+      "no_blocks": "This course has no blocks yet",
+      "stats_progress": "Your Progress",
+      "blocks_completed": "Blocks completed",
+      "completion_rate": "Completion rate",
+      "stats_general": "Course Information",
+      "avg_rating": "Average rating",
+      "total_ratings": "Total ratings",
+      "favourites": "Favourites",
+      "total_blocks": "Total blocks",
+      "stats_creator": "Created by",
+      "created_by": "Creator",
+      "created_date": "Created"
     }
   },
   "contest": {
     "title": "Contest",
     "start_date": "Start",
-    "change_date": "Change to validation",
+    "preparation_end": "Preparation ends",
+    "building_end": "Building ends",
+    "validation_end": "Validation ends",
     "end_date": "End",
     "submit_course": "Submit course",
     "submit_hint": "Create a course to participate in this contest. It won't be published until it ends.",
     "validate": "Validate courses",
+    "validate_random": "Validate a random course",
     "submit_rating": "Submit rating",
     "finished": "Contest finished",
     "finish_contest": "Finish contest",
@@ -489,13 +579,72 @@
     "likes": "Likes",
     "score": "Score",
     "consigna": "Brief",
-    "tags": "Tags"
+    "tags": "Tags",
+    "description": "Description",
+    "theme": "Theme",
+    "difficulty": "Difficulty",
+    "banner": "Banner URL",
+    "objectives": "Learning Objectives",
+    "bibliography": "Bibliography",
+    "resources": "Resources",
+    "external_links": "External Links",
+    "learning_objectives": "Learning Objectives",
+    "requirements": "Requirements",
+    "min_level": "Min. Level",
+    "min_reputation": "Min. Reputation",
+    "max_participants": "Max. Participants",
+    "participants": "Participants",
+    "courses": "Courses",
+    "blocks": "Blocks",
+    "days_left": "days left",
+    "rewards": "Rewards",
+    "admin_actions": "Admin Actions",
+    "finish": "Finish",
+    "achievements": "Achievements",
+    "list": {
+      "title": "Contests",
+      "subtitle": "Create, build, validate, and win. Join the community contests.",
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "finished": "Finished",
+      "empty": "No contests available yet",
+      "starts": "Starts"
+    },
+    "status": {
+      "announced": "Announced",
+      "preparation": "Preparation",
+      "building": "Building",
+      "validation": "Validation",
+      "results": "Results"
+    }
   },
   "admin": {
     "title": "Admin Panel",
     "contests": "Contests",
     "contests_desc": "Manage platform contests",
-    "create_contest": "Create Contest"
+    "create_contest": "Create Contest",
+    "edit_contest": "Edit Contest",
+    "access_denied": "You do not have admin access.",
+    "dashboard": "Dashboard",
+    "manage_contests": "Manage Contests",
+    "no_contests": "No contests yet.",
+    "metrics": {
+      "total_users": "Total Users",
+      "active_today": "Active Today",
+      "active_week": "Active This Week",
+      "new_users": "New Registrations",
+      "total_courses": "Total Courses",
+      "total_blocks": "Total Blocks",
+      "total_forks": "Total Forks",
+      "total_versions": "Total Versions",
+      "total_likes": "Total Likes",
+      "total_comments": "Total Comments",
+      "active_contests": "Active Contests",
+      "finished_contests": "Finished Contests",
+      "difficulty_distribution": "Difficulty Distribution",
+      "top_tags": "Top Tags",
+      "top_users": "Top Users"
+    }
   },
   "video": {
     "url": "Video URL",

@@ -11,22 +11,19 @@
 }
 
 .empty-state {
-  flex-grow: 1; /* Clave: El estado vacío llena el espacio restante */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 2rem;
-  background-color: transparent;
-  border-radius: 8px;
-
+  padding: 2.5rem;
 }
 
 .empty-state i {
   font-size: 3rem;
   color: var(--color-text-secu);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .empty-state h3 {

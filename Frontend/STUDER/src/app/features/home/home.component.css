@@ -1,23 +1,24 @@
 :host {
-  display: block;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - (var(--header-height) + var(--footer-height-collapsed) + 0.1rem));
 }
 
 .feed {
+  flex-grow: 1;
   display: grid;
-  grid-template-columns: 280px 1fr;
-  height: 100%;
-  min-height: 0;
-}
-
-.feed__sidebar {
-  overflow-y: auto;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .feed__content {
+  overflow-y: auto;
+  overflow-x: hidden;
   max-width: 680px;
   padding: 1.5rem;
-  overflow-y: auto;
+  min-width: 0;
 }
 
 /* ===== Create Post ===== */
@@ -30,11 +31,6 @@
   background: var(--color-bg);
   border-radius: 12px;
   box-shadow: 0 2px 12px var(--box-shadow-color);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-}
-
-:host-context(body.theme-dark) .feed__form {
-  border-color: rgba(255, 255, 255, 0.04);
 }
 
 .feed__form-actions {
@@ -50,13 +46,8 @@
   border-radius: 12px;
   margin-bottom: 1rem;
   box-shadow: 0 1px 3px var(--box-shadow-color);
-  border: 1px solid rgba(0, 0, 0, 0.04);
   transition: box-shadow 0.25s;
   overflow: hidden;
-}
-
-:host-context(body.theme-dark) .feed__post {
-  border-color: rgba(255, 255, 255, 0.04);
 }
 
 .feed__post:hover {
@@ -150,11 +141,6 @@
   display: flex;
   gap: 0.5rem;
   padding: 0.5rem 1rem 0.75rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
-}
-
-:host-context(body.theme-dark) .feed__post-actions {
-  border-top-color: rgba(255, 255, 255, 0.04);
 }
 
 .feed__action-btn {
@@ -231,12 +217,12 @@
 
 .btn--secondary {
   background: transparent;
-  border: 1px solid var(--border);
   color: var(--color-text-secu);
+  box-shadow: 0 0 0 1px var(--border);
 }
 
 .btn--secondary:hover {
-  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
   color: var(--color-primary);
 }
 

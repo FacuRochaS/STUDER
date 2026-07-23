@@ -182,7 +182,7 @@
 .detail__load-more {
   align-self: center;
   background: none;
-  border: 1px solid var(--border);
+  box-shadow: 0 0 0 1px var(--border);
   color: var(--color-primary);
   padding: 0.4rem 1.25rem;
   border-radius: 0.5rem;
@@ -325,6 +325,14 @@
   display: flex;
 }
 
+.message-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  object-fit: cover;
+}
+
 .detail__input-row {
   display: flex;
   gap: 0.5rem;
@@ -342,7 +350,7 @@
   font-family: inherit;
   resize: none;
   outline: none;
-  transition: border-color 0.2s;
+  transition: box-shadow 0.2s;
 }
 
 .detail__input:focus {

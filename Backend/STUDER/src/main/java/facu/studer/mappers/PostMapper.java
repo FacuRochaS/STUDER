@@ -19,7 +19,7 @@ public final class PostMapper {
 
         return PostResponseDTO.builder()
                 .id(post.getId())
-                .user(UserMapper.toPublicResponseDTO(post.getUser()))
+                .user(UserMapper.toPublicSimpleResponseDTO(post.getUser()))
                 .content(post.getContent())
                 .tags(tagNames)
                 .createdDatetime(post.getCreatedDatetime())

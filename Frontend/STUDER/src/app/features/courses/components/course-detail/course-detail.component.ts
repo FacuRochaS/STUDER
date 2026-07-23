@@ -1,15 +1,26 @@
-import { Component, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Subject, takeUntil, switchMap } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { CourseService } from '../../course.service';
-import { CourseResponseDTO, UserCourseBlockRequestDTO, UserCourseBlockResponseDTO } from '../../course.model';
+import { CourseResponseDTO, UserCourseBlockRequestDTO } from '../../course.model';
 import { BlockService } from '../../../blocks/block.service';
-import { BlockContentItem } from '../../../blocks/interfaces/content.interfaces';
+import { BlockResponseDTO } from '../../../blocks/block.model';
+import { BlockContentItem, ActivityContentData } from '../../../blocks/interfaces/content.interfaces';
+import { BlockHeaderComponent } from '../../../blocks/component/block-header/block-header.component';
 import { BlockViewerComponent } from '../../../blocks/component/block-viewer/block-viewer.component';
+import { ActivityViewerComponent } from '../../../blocks/activity/viewer/activity-viewer.component';
+import { InfoTabComponent } from '../../../blocks/component/tabs/info-tab/info-tab.component';
 import { TagComponent } from '../../../../shared/components/tag/tag.component';
 import { UsernameComponent } from '../../../../shared/components/username/username.component';
+import { TabsComponent, Tab } from '../../../../shared/components/tabs/tabs.component';
+import { ModalService } from '../../../../shared/services/modal.service';
+import { AuthStateService } from '../../../../core/auth/auth-state.service';
+import { User } from '../../../users/user.model';
+import { CourseCreateComponent } from '../course-create/course-create.component';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { BlockTreeComponent } from '../../../blocks/component/block-tree/block-tree.component';
+import { BlockEditorComponent } from '../../../blocks/editor/block-editor.component';
 
 interface BlockState {
   courseBlockId: number;
@@ -19,8 +30,10 @@ interface BlockState {
   completed: boolean;
   loading: boolean;
   content: BlockContentItem[];
-  contentLoading: boolean;
   showContent: boolean;
+  hasActivity: boolean;
+  fullBlock: BlockResponseDTO | null;
+  activeTab: string;
 }
 
 @Component({
@@ -28,23 +41,37 @@ interface BlockState {
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
     TranslateModule,
+    BlockHeaderComponent,
     BlockViewerComponent,
+    ActivityViewerComponent,
+    InfoTabComponent,
     TagComponent,
     UsernameComponent,
+    TabsComponent,
+    LoaderComponent,
+    BlockTreeComponent,
+    BlockEditorComponent,
   ],
   templateUrl: './course-detail.component.html',
   styleUrls: ['./course-detail.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class CourseDetailComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
-  private readonly route = inject(ActivatedRoute);
+  /** When embedded inside course-explore, pass the course via input */
+  @Input() courseId: number | null = null;
+  /** When used as child of explore, emit back to go to list */
+  @Input() backToList = false;
+  @Output() closed = new EventEmitter<void>();
+
   private readonly courseService = inject(CourseService);
   private readonly blockService = inject(BlockService);
+  private readonly modalService = inject(ModalService);
+  private readonly authState = inject(AuthStateService);
 
+  currentUser: User | null = null;
   course: CourseResponseDTO | null = null;
   loading = false;
   error = false;
@@ -52,31 +79,32 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   blockStates: BlockState[] = [];
   favouriteLoading = false;
 
+  activeTabId = 'curso';
+
+  tabs: Tab[] = [
+    { id: 'curso', label: 'course.detail.tab_curso' },
+    { id: 'estadisticas', label: 'course.detail.tab_estadisticas' },
+  ];
+
+  blockTabs: Tab[] = [
+    { id: 'content', label: 'blocks.detail.tabs.content' },
+    { id: 'info', label: 'blocks.detail.tabs.info' },
+  ];
+
   ngOnInit(): void {
-    this.route.paramMap.pipe(
-      takeUntil(this.destroy$),
-      switchMap(params => {
-        const id = Number(params.get('id'));
-        this.loading = true;
-        this.error = false;
-        return this.courseService.getById(id);
-      }),
-    ).subscribe({
-      next: (course) => {
-        this.course = course;
-        this.loading = false;
-        this.initBlockStates(course);
-      },
-      error: () => {
-        this.loading = false;
-        this.error = true;
-      },
-    });
+    this.authState.user$.pipe(takeUntil(this.destroy$)).subscribe(u => this.currentUser = u);
+    if (this.courseId) {
+      this.loadCourse(this.courseId);
+    }
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  get isOwner(): boolean {
+    return !!this.currentUser && !!this.course && this.currentUser.id === this.course.owner.id;
   }
 
   get completionPercentage(): number {
@@ -92,6 +120,53 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   getAverageRating(): number {
     if (!this.course || this.course.ratingCount === 0) return 0;
     return Math.round((this.course.ratingSum / this.course.ratingCount) * 10) / 10;
+  }
+
+  getAverageUserRating(): string {
+    if (!this.course || this.course.ratingCount === 0) return '0.0';
+    return (this.course.ratingSum / this.course.ratingCount).toFixed(1);
+  }
+
+  onTabChange(tabId: string): void {
+    this.activeTabId = tabId;
+  }
+
+  onBlockTabChange(index: number, tabId: string): void {
+    if (this.blockStates[index]) {
+      this.blockStates[index].activeTab = tabId;
+    }
+  }
+
+  onEdit(): void {
+    if (!this.course) return;
+    this.modalService.open(CourseCreateComponent, {
+      title: 'course.create.edit_title',
+      inputs: {
+        mode: 'edit',
+        editCourse: this.course,
+      },
+      outputs: {
+        saved: () => {
+          this.modalService.close();
+          this.loadCourse(this.course!.id);
+        },
+      },
+    });
+  }
+
+  private loadCourse(id: number): void {
+    this.loading = true;
+    this.courseService.getById(id).subscribe({
+      next: (course) => {
+        this.course = course;
+        this.loading = false;
+        this.initBlockStates(course);
+      },
+      error: () => {
+        this.loading = false;
+        this.error = true;
+      },
+    });
   }
 
   toggleFavourite(): void {
@@ -116,24 +191,37 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  onBlockCompleted(index: number): void {
+    const state = this.blockStates[index];
+    if (!state || state.loading || state.completed) return;
+
+    state.loading = true;
+    this.saveCompletion(state, true);
+  }
+
   toggleBlockComplete(index: number): void {
     const state = this.blockStates[index];
     if (!state || state.loading) return;
 
-    const newCompleted = !state.completed;
     state.loading = true;
+    this.saveCompletion(state, !state.completed);
+  }
 
+  private saveCompletion(state: BlockState, completed: boolean): void {
     const interaction: UserCourseBlockRequestDTO = {
       courseBlockId: state.courseBlockId,
-      completed: newCompleted,
+      completed,
       duration: 0,
       attempts: 0,
     };
 
     this.courseService.saveBlockInteraction(interaction).subscribe({
       next: () => {
-        state.completed = newCompleted;
+        state.completed = completed;
         state.loading = false;
+        if (completed) {
+          state.showContent = false;
+        }
       },
       error: () => {
         state.loading = false;
@@ -144,47 +232,99 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   toggleBlockContent(index: number): void {
     const state = this.blockStates[index];
     if (!state) return;
+    state.showContent = !state.showContent;
+  }
 
-    if (state.showContent) {
-      state.showContent = false;
-      return;
-    }
-
-    state.showContent = true;
-
-    if (state.content.length > 0 || state.contentLoading) return;
-
-    state.contentLoading = true;
-    this.blockService.getBlockByVersion(state.blockId).subscribe({
-      next: (block) => {
-        try {
-          state.content = JSON.parse(block.version.content) as BlockContentItem[];
-        } catch {
-          state.content = [];
-        }
-        state.contentLoading = false;
+  onEditBlock(index: number): void {
+    const state = this.blockStates[index];
+    if (!state || !state.fullBlock) return;
+    const isOwner = this.currentUser?.id === this.course?.owner.id;
+    const title = isOwner ? 'blocks.editor.actions.edit' : 'blocks.editor.actions.fork';
+    this.modalService.open(BlockEditorComponent, {
+      title,
+      inputs: {
+        mode: 'edit', blockId: state.blockId, blockName: state.blockName,
+        blockDifficulty: 'NORMAL', blockTags: [],
+        initialContent: state.content,
       },
-      error: () => {
-        state.contentLoading = false;
+      outputs: {
+        save: (data: any) => {
+          const obs = isOwner
+            ? this.blockService.versionBlock(data)
+            : this.blockService.forkBlock({ ...data, name: state.blockName, difficulty: 'NORMAL', tags: [], slug: '' });
+          obs.subscribe({
+            next: () => {
+              this.modalService.close();
+              if (this.course) this.loadCourse(this.course.id);
+            },
+            error: () => {},
+          });
+        },
       },
     });
   }
 
-  private initBlockStates(course: CourseResponseDTO): void {
-    this.blockStates = course.blocks.map(b => ({
-      courseBlockId: b.id,
-      blockId: b.version.id,
-      blockName: b.blockName,
-      order: b.order,
-      completed: false,
-      loading: false,
-      content: [],
-      contentLoading: false,
-      showContent: false,
-    }));
+  onOpenTree(index: number): void {
+    const state = this.blockStates[index];
+    if (!state) return;
+    this.modalService.open(BlockTreeComponent, {
+      title: 'blocks.tree.title',
+      inputs: { blockId: state.blockId },
+    });
   }
 
-  trackByCourseBlockId(index: number, state: BlockState): number {
-    return state.courseBlockId;
+  hasActivityContent(index: number): boolean {
+    return this.blockStates[index]?.hasActivity ?? false;
   }
+
+  private initBlockStates(course: CourseResponseDTO): void {
+    this.blockStates = course.blocks.map(b => {
+      const content = this.parseContent(b.version.content);
+      const hasActivity = content.some(c => c.type === 'activity');
+      const completed = b.completed ?? false;
+      const fullBlock: Partial<BlockResponseDTO> = {
+        id: b.blockId,
+        slug: b.blockName.toLowerCase().replace(/\s+/g, '-'),
+        difficulty: 'NORMAL',
+        isFork: false,
+        likedByCurrentUser: false,
+        likeCount: 0,
+      };
+      return {
+        courseBlockId: b.id,
+        blockId: b.blockId,
+        blockName: b.blockName,
+        order: b.order,
+        completed,
+        loading: false,
+        content,
+        showContent: !completed,
+        hasActivity,
+        fullBlock: fullBlock as BlockResponseDTO,
+        activeTab: 'content',
+      };
+    });
+    course.blocks.forEach((b, i) => {
+      this.blockService.getBlockByVersion(b.version.id).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (block) => {
+          if (this.blockStates[i]) this.blockStates[i].fullBlock = block;
+        },
+        error: () => {},
+      });
+    });
+  }
+
+  private parseContent(raw: string | undefined): BlockContentItem[] {
+    if (!raw) return [];
+    try {
+      return JSON.parse(raw) as BlockContentItem[];
+    } catch {
+      return [];
+    }
+  }
+
+  asActivityData(data: unknown): ActivityContentData {
+    return data as ActivityContentData;
+  }
+
 }

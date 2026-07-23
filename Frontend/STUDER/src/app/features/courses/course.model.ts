@@ -13,6 +13,7 @@ export interface CourseBlockResponseDTO {
   blockName: string;
   version: BlockVersionResponseDTO;
   order: number;
+  completed?: boolean;
 }
 
 export interface CourseResponseDTO {
@@ -42,6 +43,7 @@ export interface CoursePageResponseDTO {
 export interface CourseCreateRequestDTO {
   name: string;
   tags?: string[];
+  link?: string;
   blocks: CourseBlockRequestDTO[];
 }
 

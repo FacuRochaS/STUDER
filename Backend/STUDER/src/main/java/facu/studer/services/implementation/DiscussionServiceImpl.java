@@ -474,6 +474,17 @@ public class DiscussionServiceImpl implements DiscussionService {
             throw new IllegalArgumentException("discussion.message.already_liked");
         }
 
+        Optional<MessageLike> messageLike = messageLikeRepository.findByUserUsernameAndMessageIdAndIsActiveFalse(username, messageId);
+        if (messageLike.isPresent()) {
+            messageLikeRepository.save(messageLike.get());
+            return MessageDTO.builder()
+                    .success(true)
+                    .message("discussion.message.like_added")
+                    .build();
+        }
+
+
+
         User user = findUserByUsername(username);
         DiscussionMessage message = entityManager.find(DiscussionMessage.class, messageId);
         if (message == null || !message.getIsActive()) {

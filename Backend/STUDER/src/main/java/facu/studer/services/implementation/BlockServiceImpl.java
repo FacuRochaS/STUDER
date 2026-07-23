@@ -64,14 +64,7 @@ public class BlockServiceImpl implements BlockService {
 
         Set<Tag> managedTags = resolveTagsByName(request.getTags());
 
-        String slug = request.getName().toLowerCase().replaceAll("[^a-z0-9]+", "-");
-
-        Integer count = blockRepository.countBlocksByName(request.getName());
-
-        if (count != 0) {
-            slug = slug + count;
-        }
-
+        String slug = generateUniqueSlug(request.getName(), null);
 
         Block block = Block.builder()
                 .owner(owner)
@@ -111,7 +104,7 @@ public class BlockServiceImpl implements BlockService {
 
         pointsService.addPoints(owner, 1L);
 
-        return BlockMapper.toResponseDTO(createdBlock, createdVersion);
+        return toResponseDTOWithLikes(createdBlock, createdVersion, username);
 
     }
 
@@ -124,24 +117,26 @@ public class BlockServiceImpl implements BlockService {
         Set<Tag> managedTags = resolveTagsByName(request.getTags());
 
 
-        Block parent = blockRepository.findById(request.getBlockId())
-                .orElseThrow(() -> new ResourceNotFoundException("block_version.not_found"));
+    Block parent = blockRepository.findById(request.getBlockId())
+            .orElseThrow(() -> new ResourceNotFoundException("block_version.not_found"));
 
-        Block parentRoot = parent.getRootBlock() != null ? parent.getRootBlock() : parent;
+    Block parentRoot = parent.getRootBlock() != null ? parent.getRootBlock() : parent;
 
-        Block block = Block.builder()
-                .owner(owner)
-                .parentBlock(parent)
-                .rootBlock(parentRoot)
-                .name(request.getName())
-                .slug(request.getSlug())
-                .currentVersion(null)
-                .difficulty(Difficulty.valueOf(request.getDifficulty()))
-                .tags(managedTags)
-                .isActive(true)
-                .createdDatetime(LocalDateTime.now())
-                .lastUpdatedDatetime(LocalDateTime.now())
-                .build();
+    String slug = generateUniqueSlug(request.getName(), "-fork");
+
+    Block block = Block.builder()
+            .owner(owner)
+            .parentBlock(parent)
+            .rootBlock(parentRoot)
+            .name(request.getName())
+            .slug(slug)
+            .currentVersion(null)
+            .difficulty(Difficulty.valueOf(request.getDifficulty()))
+            .tags(managedTags)
+            .isActive(true)
+            .createdDatetime(LocalDateTime.now())
+            .lastUpdatedDatetime(LocalDateTime.now())
+            .build();
 
         Block createdBlock = blockRepository.save(block);
 
@@ -165,7 +160,7 @@ public class BlockServiceImpl implements BlockService {
 
         pointsService.addPoints(owner, 1L);
 
-        return BlockMapper.toResponseDTO(createdBlock, createdVersion);
+        return  this.toResponseDTOWithLikes(createdBlock, createdVersion,username);
 
     }
 
@@ -203,7 +198,7 @@ public class BlockServiceImpl implements BlockService {
 
         entityManager.flush();
 
-        return BlockMapper.toResponseDTO(parent, createdVersion);
+        return toResponseDTOWithLikes(parent, createdVersion, username);
 
     }
 
@@ -217,7 +212,7 @@ public class BlockServiceImpl implements BlockService {
             throw new ResourceNotFoundException("block_version.not_found");
         }
 
-        return BlockMapper.toResponseDTO(block, block.getCurrentVersion());
+        return toResponseDTOWithLikes(block, block.getCurrentVersion(), username);
     }
 
     @Override
@@ -233,7 +228,7 @@ public class BlockServiceImpl implements BlockService {
             throw new ResourceNotFoundException("block_version.not_found");
         }
 
-        return BlockMapper.toResponseDTO(block.get(), block.get().getCurrentVersion());
+        return toResponseDTOWithLikes(block.get(), block.get().getCurrentVersion(), username);
     }
 
     @Override
@@ -249,7 +244,7 @@ public class BlockServiceImpl implements BlockService {
             throw new ResourceNotFoundException("block_version.not_found");
         }
 
-        return BlockMapper.toResponseDTO(block, version);
+        return toResponseDTOWithLikes(block, version, username);
     }
 
 
@@ -268,24 +263,27 @@ public class BlockServiceImpl implements BlockService {
     @Override
     public BlockCompleteTreeResponseDTO getBlockTree(Long id, String username) {
 
-        BlockCompleteResponseDTO blockDTO = getBlockVersion(id, username);
-        BlockCompleteResponseDTO parentDTO = null;
+        List<BlockCompleteResponseDTO> parents = new ArrayList<>();
+        BlockCompleteResponseDTO current = getBlockVersion(id, username);
 
-        if(blockDTO.getParent() != null) {
-            parentDTO =  getBlockVersion(blockDTO.getParent().getId(), username);
+        Long parentId = current.getParent() != null ? current.getParent().getId() : null;
+        while (parentId != null) {
+            BlockCompleteResponseDTO parent = getBlockVersion(parentId, username);
+            parents.add(0, parent);
+            parentId = parent.getParent() != null ? parent.getParent().getId() : null;
         }
 
-        List<Block> sons = blockRepository.findByParentBlock_Id(blockDTO.getId());
+        List<Block> sons = blockRepository.findByParentBlock_Id(current.getId());
         List<BlockResponseDTO> sonsDTO = new ArrayList<>();
         for(Block son : sons) {
             if(son.getCurrentVersion().getIsActive()) {
-                sonsDTO.add(BlockMapper.toResponseDTO(son, son.getCurrentVersion()));
+                sonsDTO.add(toResponseDTOWithLikes(son, son.getCurrentVersion(), username));
             }
         }
 
         return BlockCompleteTreeResponseDTO.builder()
-                .block(blockDTO)
-                .parent(parentDTO)
+                .parents(parents)
+                .block(current)
                 .sons(sonsDTO)
                 .build();
     }
@@ -303,14 +301,23 @@ public class BlockServiceImpl implements BlockService {
         if(block.getParentBlock() != null) {
             Block parentBlock = block.getParentBlock();
 
-            BlockVersion parentVersion = blockVersionRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("block_version.not_found"));
+            BlockVersion parentVersion = blockVersionRepository
+                    .findBlockVersionsByBlockId(parentBlock.getId())
+                    .stream()
+                    .filter(v -> v.getIsActive())
+                    .findFirst()
+                    .orElse(null);
 
-            parent = BlockMapper.toResponseDTO(parentBlock, parentVersion);
+            if (parentVersion != null) {
+                parent = toResponseDTOWithLikes(parentBlock, parentVersion, username);
+            }
         }
 
 
-        return BlockMapper.toCompleteResponseDTO(block, versions, parent);
+        long likeCount = blockLikeRepository.countByBlockIdAndIsActiveTrue(block.getId());
+        boolean likedByCurrentUser = blockLikeRepository.existsByUserUsernameAndBlockIdAndIsActiveTrue(username, block.getId());
+
+        return BlockMapper.toCompleteResponseDTO(block, versions, parent, likeCount, likedByCurrentUser);
 
 
     }
@@ -331,7 +338,7 @@ public class BlockServiceImpl implements BlockService {
             BlockVersion version = blockVersionRepository.findById(block.getCurrentVersion().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("block_version.not_found"));
 
-            responseDTOS.add(BlockMapper.toResponseDTO(block, version));
+            responseDTOS.add(toResponseDTOWithLikes(block, version, username));
 
         }
 
@@ -403,6 +410,12 @@ public class BlockServiceImpl implements BlockService {
     }
 
 
+    private BlockResponseDTO toResponseDTOWithLikes(Block block, BlockVersion version, String username) {
+        long likeCount = blockLikeRepository.countByBlockIdAndIsActiveTrue(block.getId());
+        boolean likedByCurrentUser = blockLikeRepository.existsByUserUsernameAndBlockIdAndIsActiveTrue(username, block.getId());
+        return BlockMapper.toResponseDTO(block, version, likeCount, likedByCurrentUser);
+    }
+
     private User findUserByUsername(String username) {
         var query = entityManager.createQuery(
                 "SELECT u FROM User u WHERE u.username = :username AND u.isActive = true", User.class);
@@ -460,6 +473,20 @@ public class BlockServiceImpl implements BlockService {
         }
 
         return result;
+    }
+
+    private String generateUniqueSlug(String name, String suffix) {
+        String base = name.toLowerCase().replaceAll("[^a-z0-9]+", "-");
+        if (suffix != null) {
+            base = base + suffix;
+        }
+        String slug = base;
+        int counter = 0;
+        while (blockRepository.findBySlug(slug).isPresent()) {
+            counter++;
+            slug = base + "-" + counter;
+        }
+        return slug;
     }
 
     private JsonNode parseContent(String content) {

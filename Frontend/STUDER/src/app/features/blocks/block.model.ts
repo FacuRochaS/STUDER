@@ -25,9 +25,9 @@ export interface BlockCompleteResponseDTO{
 }
 
 export interface BlockCompleteTreeResponseDTO {
-  parent: BlockCompleteResponseDTO
+  parents: BlockCompleteResponseDTO[]
   block: BlockCompleteResponseDTO
-  sons:BlockResponseDTO[]
+  sons: BlockResponseDTO[]
 }
 
 export interface BlockCreateRequestDTO {

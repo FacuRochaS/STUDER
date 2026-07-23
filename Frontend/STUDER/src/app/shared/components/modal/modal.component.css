@@ -1,4 +1,3 @@
-/* 1. Contenedor principal de pantalla completa (Reemplaza al :host) */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -11,7 +10,6 @@
   justify-content: center;
 }
 
-/* 2. Fondo oscuro semitransparente */
 .modal__backdrop {
   position: absolute;
   top: 0;
@@ -21,55 +19,47 @@
   background-color: rgba(0, 0, 0, 0.6);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  z-index: -1; /* Lo enviamos al fondo para que no cubra el modal */
+  z-index: -1;
 }
 
-/* 3. La caja del modal */
 .modal__container {
   background-color: var(--sidebar-bg);
-  border-radius: 8px;
-  border: 1px solid var(--border);
+  border-radius: 12px;
   box-shadow: var(--overlay-shadow);
-
-  /* Configuracion elastica */
   width: fit-content;
-  min-width: 300px;
+  min-width: 60vw;
   max-width: 95vw;
   max-height: 90vh;
-
   display: flex;
   flex-direction: column;
 }
 
-/* 4. Cabecera y botón de cerrar */
 .modal__header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0.75rem 0 0;
   flex-shrink: 0;
+  min-height: 0;
 }
 
 .modal__title {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text-prim);
+  display: none;
 }
 
 .modal__close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   cursor: pointer;
   color: var(--color-text-secu);
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.2s, color 0.2s;
 }
 
 .modal__close-btn:hover {
@@ -77,9 +67,8 @@
   color: var(--color-text-prim);
 }
 
-/* 5. Contenedor de contenido interno */
 .modal__content {
   overflow: auto;
   flex-grow: 1;
-  padding: 1rem 1.5rem;
+  padding: 0 1.5rem 1.5rem;
 }

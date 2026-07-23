@@ -1,6 +1,5 @@
 package facu.studer.DTOs.blocks;
 
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
@@ -14,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class BlockCompleteTreeResponseDTO {
-    BlockCompleteResponseDTO parent;
+    List<BlockCompleteResponseDTO> parents;
 
     BlockCompleteResponseDTO block;
 

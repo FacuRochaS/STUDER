@@ -3,6 +3,7 @@ package facu.studer.services.implementation;
 import facu.studer.DTOs.MessageDTO;
 import facu.studer.DTOs.courses.*;
 import facu.studer.entities.Tag;
+import java.util.List;
 import facu.studer.entities.blocks.Block;
 import facu.studer.entities.blocks.BlockVersion;
 import facu.studer.entities.courses.Course;
@@ -69,8 +70,10 @@ public class CourseServiceImpl implements CourseService {
     public CourseResponseDTO create(String username, CourseCreateRequestDTO request) {
         User owner = findUserByUsername(username);
 
-        if (courseRepository.findBySlug(request.getSlug()).isPresent()) {
-            throw new IllegalArgumentException("course.slug_exists");
+        String slug = request.getName().toLowerCase().replaceAll("[^a-z0-9]+", "-");
+        Integer count = courseRepository.countCoursesByName(request.getName());
+        if (count != 0) {
+            slug = slug + count;
         }
 
         Set<Tag> managedTags = resolveTagsByName(request.getTags());
@@ -78,7 +81,7 @@ public class CourseServiceImpl implements CourseService {
         Course course = Course.builder()
                 .owner(owner)
                 .name(request.getName())
-                .slug(request.getSlug())
+                .slug(slug)
                 .tags(managedTags)
                 .link(request.getLink() != null ? request.getLink() : "")
                 .published(true)
@@ -118,10 +121,16 @@ public class CourseServiceImpl implements CourseService {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
         Page<Course> coursePage;
 
+        boolean hasTag = tag != null && !tag.isBlank();
+
         if ("popular".equalsIgnoreCase(filter)) {
-            coursePage = courseRepository.findPopularCourses(pageable);
+            coursePage = hasTag
+                    ? courseRepository.findPopularCoursesByTags(List.of(tag), pageable)
+                    : courseRepository.findPopularCourses(pageable);
         } else {
-            coursePage = courseRepository.findRecentCourses(pageable);
+            coursePage = hasTag
+                    ? courseRepository.findRecentCoursesByTags(List.of(tag), pageable)
+                    : courseRepository.findRecentCourses(pageable);
         }
 
         List<CourseResponseDTO> dtos = coursePage.getContent().stream()
@@ -312,10 +321,22 @@ public class CourseServiceImpl implements CourseService {
         long favCount = userCourseFavRepository.countByCourseIdAndIsActiveTrue(course.getId());
 
         List<CourseBlock> blocks = includeBlocks
-                ? courseBlockRepository.findByCourseIdOrderByBlockOrderAsc(course.getId())
+                ? courseBlockRepository.findActiveByCourseIdOrderByBlockOrderAsc(course.getId())
                 : null;
 
-        return CourseMapper.toResponseDTO(course, isFav, favCount, blocks);
+        Map<Long, Boolean> blockCompletedMap = new HashMap<>();
+        if (includeBlocks && blocks != null && username != null) {
+            List<Long> courseBlockIds = blocks.stream().map(CourseBlock::getId).collect(Collectors.toList());
+            if (!courseBlockIds.isEmpty()) {
+                List<UserCourseBlock> userBlocks = userCourseBlockRepository
+                        .findByUserUsernameAndCourseBlockIdInAndIsActiveTrue(username, courseBlockIds);
+                for (UserCourseBlock ub : userBlocks) {
+                    blockCompletedMap.put(ub.getCourseBlock().getId(), ub.getCompleted());
+                }
+            }
+        }
+
+        return CourseMapper.toResponseDTO(course, isFav, favCount, blocks, blockCompletedMap);
     }
 
     private void saveCourseBlocks(Course course, List<CourseBlockRequestDTO> blockRequests) {

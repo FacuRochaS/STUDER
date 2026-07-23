@@ -4,7 +4,7 @@
 
 .discussion-card {
   background-color: var(--color-bg);
-  border: 1px solid var(--border);
+  box-shadow: 4px 4px 4px var(--box-shadow-color);
   border-radius: 8px;
   margin-bottom: 1.5rem;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -26,6 +26,7 @@
   display: flex;
   align-items: center;
   width: 100%;
+
 }
 
 /* --- Fila 1: Autor, Fecha, Tags, Acciones --- */
@@ -104,7 +105,7 @@
 
 /* --- Sección de Mensajes --- */
 .messages-section {
-  border-top: 1px solid var(--border);
+  box-shadow: 1px 0 4px var(--box-shadow-color);
 }
 .message-container {
   position: relative;

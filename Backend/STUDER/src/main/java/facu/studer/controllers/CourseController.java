@@ -7,6 +7,7 @@ import facu.studer.services.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/courses")
@@ -39,8 +40,9 @@ public class CourseController {
     public ResponseEntity<CoursePageResponseDTO> getCourses(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "recent") String filter,
-            @RequestParam(required = false) String tag) {
+            @RequestParam(required = false) List<String> tags) {
         String username = securityUtils.requireCurrentUsername();
+        String tag = (tags != null && !tags.isEmpty()) ? tags.get(0) : null;
         CoursePageResponseDTO response = courseService.getCourses(username, page, filter, tag);
         return ResponseEntity.ok(response);
     }

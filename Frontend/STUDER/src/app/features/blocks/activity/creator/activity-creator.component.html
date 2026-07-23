@@ -35,7 +35,13 @@
             @if (node.type === 'text') {
               <input type="text" class="styled-input" [(ngModel)]="node.value" (ngModelChange)="updateModel()" placeholder="Escribe la consigna...">
             } @else if (node.type === 'image') {
-              <input type="text" class="styled-input" [(ngModel)]="node.value" (ngModelChange)="updateModel()" placeholder="URL de la imagen...">
+              <div class="file-inline-group">
+                <input type="text" class="styled-input" [(ngModel)]="node.value" (ngModelChange)="updateModel()" placeholder="URL de la imagen...">
+                <label class="btn-file-inline">
+                  <i class="pi pi-upload"></i>
+                  <input type="file" accept="image/*" (change)="onStatementImageSelected($event, i)" />
+                </label>
+              </div>
             } @else if (node.type === 'code') {
               <textarea class="styled-textarea" [(ngModel)]="node.value" (ngModelChange)="updateModel()" rows="2" placeholder="console.log('Hola');"></textarea>
             }
@@ -67,7 +73,22 @@
           <div class="option-content-edit">
             <span class="option-number">{{ i + 1 }}.</span>
             <input type="text" class="styled-input main-opt-input" [(ngModel)]="option.text" (ngModelChange)="updateModel()" placeholder="Texto de la opción...">
-            <input type="text" class="styled-input img-opt-input" [(ngModel)]="option.imageUrl" (ngModelChange)="updateModel()" placeholder="URL imagen (opcional)">
+            <div class="file-inline-group">
+              @if (option.imageUrl) {
+                <div class="opt-img-preview">
+                  <img [src]="option.imageUrl" alt="preview" />
+                  <button class="btn-clear-img" (click)="option.imageUrl = null; updateModel()"><i class="pi pi-times"></i></button>
+                </div>
+              }
+              @if (uploadingImageIndex === i) {
+                <i class="pi pi-spin pi-spinner"></i>
+              } @else {
+                <label class="btn-file-inline">
+                  <i class="pi pi-image"></i>
+                  <input type="file" accept="image/*" (change)="onOptionImageSelected($event, i)" />
+                </label>
+              }
+            </div>
           </div>
 
           <div class="option-rules-area">

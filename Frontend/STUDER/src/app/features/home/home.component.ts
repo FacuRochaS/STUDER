@@ -14,7 +14,9 @@ import { RelativeTimePipe } from '../../shared/pipes/relative-time.pipe';
 import { FeedSidebarComponent } from './feed-sidebar/feed-sidebar.component';
 import { TextCreatorComponent } from '../blocks/text/creator/text-creator.component';
 import { TextViewerComponent } from '../blocks/text/viewer/text-viewer.component';
-import { TextContentData } from '../blocks/interfaces/content.interfaces';
+import { GalleryCreatorComponent } from '../blocks/gallery/creator/gallery-creator.component';
+import { GalleryViewerComponent } from '../blocks/gallery/viewer/gallery-viewer.component';
+import { TextContentData, GalleryContentData } from '../blocks/interfaces/content.interfaces';
 
 @Component({
   selector: 'studer-home',
@@ -23,7 +25,8 @@ import { TextContentData } from '../blocks/interfaces/content.interfaces';
     CommonModule, FormsModule, TranslateModule,
     RichTextComponent, LoaderComponent,
     TagComponent, UsernameComponent, RelativeTimePipe,
-    FeedSidebarComponent, TextCreatorComponent, TextViewerComponent
+    FeedSidebarComponent, TextCreatorComponent, TextViewerComponent,
+    GalleryCreatorComponent, GalleryViewerComponent,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
@@ -42,6 +45,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   newPostTags: string[] = [];
   showCreateForm = false;
   postContentData: TextContentData = { paragraphs: [] };
+  postGalleryData: GalleryContentData = { images: [], layout: 'grid' };
 
   ngOnInit(): void {
     this.authState.user$.pipe(takeUntil(this.destroy$)).subscribe(u => this.currentUserId = u?.id ?? null);
@@ -78,10 +82,18 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   createPost(): void {
     const paragraphs = this.postContentData.paragraphs.filter(p => p.runs.some(r => r.text.trim() || r.imageUrl));
-    if (!paragraphs.length) return;
-    this.feedService.create({ content: { paragraphs }, tags: this.newPostTags }).pipe(takeUntil(this.destroy$)).subscribe({
+    const hasText = paragraphs.length > 0;
+    const hasGallery = this.postGalleryData.images.length > 0;
+    if (!hasText && !hasGallery) return;
+
+    const content: any = {};
+    if (hasText) content.paragraphs = paragraphs;
+    if (hasGallery) content.gallery = this.postGalleryData;
+
+    this.feedService.create({ content, tags: this.newPostTags }).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.postContentData = { paragraphs: [] };
+        this.postGalleryData = { images: [], layout: 'grid' };
         this.newPostTags = [];
         this.showCreateForm = false;
         this.loadFeed();

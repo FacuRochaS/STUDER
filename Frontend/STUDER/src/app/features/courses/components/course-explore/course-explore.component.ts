@@ -5,6 +5,7 @@ import { CourseService } from '../../course.service';
 import { CourseResponseDTO } from '../../course.model';
 import { CourseSidebarComponent, CourseCategory } from '../course-sidebar/course-sidebar.component';
 import { CourseListComponent } from '../course-list/course-list.component';
+import { CourseDetailComponent } from '../course-detail/course-detail.component';
 import { CourseCreateComponent } from '../course-create/course-create.component';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import {
@@ -20,6 +21,7 @@ import {
     TranslateModule,
     CourseSidebarComponent,
     CourseListComponent,
+    CourseDetailComponent,
     CourseCreateComponent,
     LoaderComponent,
     ExploreFiltersComponent,
@@ -34,6 +36,7 @@ export class CourseExploreComponent implements OnInit {
   loading = false;
   selectedCategory: CourseCategory = 'recent';
   showCreateForm = false;
+  selectedCourseId: number | null = null;
 
   currentExploreFilters: ExploreFilters = {
     tags: [],
@@ -45,8 +48,17 @@ export class CourseExploreComponent implements OnInit {
     this.loadCoursesByCategory('recent');
   }
 
+  onCourseSelected(courseId: number): void {
+    this.selectedCourseId = courseId;
+  }
+
+  onDetailClosed(): void {
+    this.selectedCourseId = null;
+  }
+
   onCategorySelected(category: CourseCategory): void {
     this.selectedCategory = category;
+    this.selectedCourseId = null;
     if (category === 'create') {
       this.showCreateForm = !this.showCreateForm;
       return;
@@ -82,15 +94,14 @@ export class CourseExploreComponent implements OnInit {
         return this.courseService.getCourses(0, 'recent');
       case 'popular':
         return this.courseService.getCourses(0, 'popular');
-      /*case 'explore':
-        return this.courseService.getC(
+      case 'explore':
+        return this.courseService.getCourses(
           0,
+          'recent',
           this.currentExploreFilters.tags,
-          this.currentExploreFilters.lastDays ?? undefined,
-          this.currentExploreFilters.activityHours
         );
 
-       */
+
       default:
         return this.courseService.getCourses(0, 'recent');
     }

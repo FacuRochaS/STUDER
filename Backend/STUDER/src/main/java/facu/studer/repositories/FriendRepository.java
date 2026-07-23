@@ -47,6 +47,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
            "AND f.receiverAccept = true")
     List<Friend> findConfirmedFriends(@Param("user") User user);
 
+
     /**
      * Gets the opposite user in a friend relationship.
      * @param friendId the friend relationship ID
@@ -57,5 +58,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
            "FROM Friend f " +
            "WHERE f.id = :friendId")
     Optional<User> getOtherUserInFriendship(@Param("friendId") Long friendId, @Param("userId") Long userId);
+
+    Long countAllByReceiverOrSender(User receiver, User sender);
 }
 

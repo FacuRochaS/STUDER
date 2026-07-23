@@ -1,13 +1,12 @@
 <section class="feed">
-  <div class="feed__sidebar">
-    <studer-feed-sidebar (categorySelected)="onCategorySelected($event)"></studer-feed-sidebar>
-  </div>
+  <studer-feed-sidebar (categorySelected)="onCategorySelected($event)"></studer-feed-sidebar>
 
   <div class="feed__content">
     @if (showCreateForm) {
       <div class="feed__create">
         <div class="feed__form">
           <studer-text-creator [data]="postContentData" (dataChange)="onPostContentChange($event)"></studer-text-creator>
+          <studer-gallery-creator [data]="postGalleryData" (dataChange)="postGalleryData = $event"></studer-gallery-creator>
           <div class="feed__form-actions">
             <button class="btn btn--primary" (click)="createPost()">
               {{ 'feed.publish' | translate }}
@@ -47,6 +46,11 @@
                 <studer-text-viewer [data]="post.content"></studer-text-viewer>
               } @else {
                 <studer-rich-text [text]="getPostText(post)"></studer-rich-text>
+              }
+              @if (post.content?.gallery) {
+                <div class="feed__post-gallery">
+                  <studer-gallery-viewer [data]="post.content.gallery"></studer-gallery-viewer>
+                </div>
               }
             </div>
             @if (post.tags && post.tags.length) {

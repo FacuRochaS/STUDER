@@ -18,13 +18,7 @@ export class CourseService {
 
   constructor(private readonly http: HttpClient) {}
 
-  create(data: CourseCreateRequestDTO, imageFile?: File): Observable<CourseResponseDTO> {
-    if (imageFile) {
-      const formData = new FormData();
-      formData.append('file', imageFile, imageFile.name);
-      formData.append('request', new Blob([JSON.stringify(data)], { type: 'application/json' }));
-      return this.http.post<CourseResponseDTO>(this.base, formData);
-    }
+  create(data: CourseCreateRequestDTO): Observable<CourseResponseDTO> {
     return this.http.post<CourseResponseDTO>(this.base, data);
   }
 
@@ -32,9 +26,11 @@ export class CourseService {
     return this.http.get<CourseResponseDTO>(`${this.base}/${id}`);
   }
 
-  getCourses(page = 0, filter = 'recent', tag?: string): Observable<CoursePageResponseDTO> {
+  getCourses(page = 0, filter = 'recent', tags?: string[]): Observable<CoursePageResponseDTO> {
     let params = new HttpParams().set('page', page.toString()).set('filter', filter);
-    if (tag) params = params.set('tag', tag);
+    if (tags && tags.length > 0) {
+      tags.forEach(t => { params = params.append('tags', t); });
+    }
     return this.http.get<CoursePageResponseDTO>(this.base, { params });
   }
 

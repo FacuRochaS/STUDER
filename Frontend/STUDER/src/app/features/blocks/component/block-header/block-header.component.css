@@ -1,8 +1,6 @@
 :host {
   display: block;
-  height: 60px;
-  background-color: transparent; /* Hereda el fondo del padre */
-  border-bottom: 1px solid var(--border);
+  background-color: transparent;
 }
 
 .block-header {
@@ -10,8 +8,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  height: 100%;
+  height: 60px;
   font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
 }
 
 .block-header__left,
@@ -47,42 +47,55 @@
   padding: 2px 8px;
   border-radius: 12px;
   text-transform: uppercase;
-  border: 1px solid;
+  box-shadow: 0 0 0 1px currentColor;
 }
 
-.block-header__difficulty--easy { border-color: var(--color-correct); color: var(--color-correct); }
-.block-header__difficulty--normal { border-color: var(--color-primary); color: var(--color-primary); }
-.block-header__difficulty--hard { border-color: var(--color-error); color: var(--color-error); }
-.block-header__difficulty--expert { border-color: var(--color-info); color: var(--color-info); }
-
-.btn-icon {
-  background: none;
-  border: 1px solid transparent;
-  color: var(--color-text-secu);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.btn-icon:hover {
-  background-color: var(--sidebar-hover-bg);
-  color: var(--color-text-prim);
-}
-
-.btn-icon .pi-heart-fill {
-  color: var(--color-error);
-}
-
-.btn-icon:hover .pi-heart-fill {
-  filter: brightness(1.2);
-}
+.block-header__difficulty--easy { color: var(--color-correct); }
+.block-header__difficulty--normal { color: var(--color-primary); }
+.block-header__difficulty--hard { color: var(--color-error); }
+.block-header__difficulty--expert { color: var(--color-info); }
 
 .like-btn { display: flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.6rem; border: none; background: transparent; cursor: pointer; color: var(--color-text-secu); border-radius: 4px; transition: all 0.2s; }
 .like-btn:hover { background: rgba(0,0,0,0.05); }
 .like-btn.liked { color: var(--color-error); }
 .like-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.fork-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secu);
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-size: 1.1rem;
+}
+
+.fork-btn:hover {
+  background: var(--sidebar-hover-bg);
+  color: var(--color-primary);
+}
+
+.edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secu);
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-size: 1.1rem;
+}
+
+.edit-btn:hover {
+  background: var(--sidebar-hover-bg);
+  color: var(--color-warning);
+}

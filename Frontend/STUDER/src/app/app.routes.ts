@@ -12,10 +12,11 @@ import { DiscussionsTestComponent } from './features/test/discussions-test.compo
 import {authGuard} from './core/auth/auth.guard';
 import { CourseExploreComponent } from './features/courses/components/course-explore/course-explore.component';
 import { CourseCreateComponent } from './features/courses/components/course-create/course-create.component';
-import { CourseDetailComponent } from './features/courses/components/course-detail/course-detail.component';
+import { ContestListComponent } from './features/contest/components/contest-list/contest-list.component';
 import { ContestDetailComponent } from './features/contest/components/contest-detail/contest-detail.component';
 import { AdminComponent } from './features/admin/admin.component';
 import { AdminContestCreateComponent } from './features/admin/contest-create/admin-contest-create.component';
+import { AdminGuard } from './features/admin/admin.guard';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -30,12 +31,13 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'courses', component: CourseExploreComponent },
       { path: 'courses/create', component: CourseCreateComponent },
-      { path: 'courses/:id', component: CourseDetailComponent },
+      { path: 'courses/:id', redirectTo: '/courses' },
       { path: 'feed', component: HomeComponent },
-      { path: 'contest', redirectTo: 'contest/1', pathMatch: 'full' },
+      { path: 'contests', component: ContestListComponent },
       { path: 'contest/:id', component: ContestDetailComponent },
-      { path: 'admin', component: AdminComponent },
-      { path: 'admin/contests/create', component: AdminContestCreateComponent },
+      { path: 'admin', component: AdminComponent, canActivate: [AdminGuard] },
+      { path: 'admin/contests/create', component: AdminContestCreateComponent, canActivate: [AdminGuard] },
+      { path: 'admin/contests/:id/edit', component: AdminContestCreateComponent, canActivate: [AdminGuard] },
       { path: 'discussions', component: DiscussionComponent },
       { path: 'discussions/:id', component: DiscussionComponent },
       { path: 'calendar', component: HomeComponent },

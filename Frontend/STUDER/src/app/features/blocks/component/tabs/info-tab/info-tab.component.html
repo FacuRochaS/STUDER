@@ -13,7 +13,7 @@
       <div class="metadata-group">
         <label>{{ 'blocks.info.author' | translate }}</label>
         <div class="author-info">
-          <img [src]="block.owner.profilePictureAvatarUrl" [alt]="block.owner.username" class="author-avatar">
+          <img [src]="block.owner.profilePictureAvatarUrl || block.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'" [alt]="block.owner.username" class="author-avatar">
           <studer-rich-text [text]="authorAsText"></studer-rich-text>
         </div>
       </div>

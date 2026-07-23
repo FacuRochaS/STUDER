@@ -61,17 +61,16 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  border: 1px solid var(--overlay-border);
+  box-shadow: 0 0 0 1px var(--overlay-border);
   background: var(--color-bg);
   border-radius: 0.35rem;
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: box-shadow 0.2s;
 }
 
 .search-card:hover {
-  border-color: var(--color-primary);
-  box-shadow: 0 6px 16px var(--box-shadow-color);
+  box-shadow: 0 0 0 1px var(--color-primary), 0 6px 16px var(--box-shadow-color);
 }
 
 .search-card__avatar {
@@ -105,7 +104,7 @@
 
 .search-page__load {
   align-self: center;
-  border: 1px solid var(--search-border);
+  box-shadow: 0 0 0 1px var(--search-border);
   background: var(--color-bg);
   color: var(--color-text-prim);
   padding: 0.5rem 1rem;
