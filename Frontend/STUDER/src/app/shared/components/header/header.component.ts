@@ -12,9 +12,15 @@ import { LanguageService, Language } from '../../../core/i18n/language.service';
 import { NotificationService } from '../../../features/notifications/notification.service';
 import { NewNotificationService } from '../../../core/notifications/new-notification.service';
 import { AuthStateService } from '../../../core/auth/auth-state.service';
-import { UserPublic } from '../../../features/users/user.model';
-import { UserService } from '../../../features/users/user.service';
-import { RichTextComponent } from '../rich-text/rich-text.component';
+import { SearchService, UnifiedSearchResults } from '../../../features/search/search.service';
+
+interface QuickResult {
+  type: 'user' | 'block' | 'course' | 'contest';
+  label: string;
+  sublabel: string;
+  link: string;
+  icon: string;
+}
 
 @Component({
   selector: 'studer-header',
@@ -27,7 +33,6 @@ import { RichTextComponent } from '../rich-text/rich-text.component';
     LogoComponent,
     OverlayComponent,
     NotificationPanelComponent,
-    RichTextComponent
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
@@ -38,7 +43,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   searchQuery = '';
   unreadCount = 0;
-  searchResults: UserPublic[] = [];
+  searchResults: QuickResult[] = [];
   searchLoading = false;
   isSearchOpen = false;
 
@@ -52,7 +57,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private readonly notificationService: NotificationService,
     private readonly newNotificationService: NewNotificationService,
     private readonly authState: AuthStateService,
-    private readonly userService: UserService
+    private readonly searchService: SearchService
   ) {}
 
   ngOnInit(): void {
@@ -88,14 +93,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
           }
           this.searchLoading = true;
           this.isSearchOpen = true;
-          return this.userService.searchUsers(trimmed, 0, 5).pipe(
+          return this.searchService.searchQuick(trimmed).pipe(
             catchError(() => of(null))
           );
         })
       )
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
-        this.searchResults = result?.users ?? [];
+        if (!result) { this.searchResults = []; this.searchLoading = false; return; }
+        this.searchResults = this.mapToQuickResults(result);
         this.searchLoading = false;
       });
   }
@@ -157,16 +163,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isSearchOpen = false;
   }
 
-  trackByUserId(_: number, user: UserPublic): number {
-    return user.id;
-  }
+  trackByResult(_: number, r: QuickResult): string { return r.type + '-' + r.link; }
 
-  getUserInitials(user: UserPublic): string {
-    const first = user.firstName?.[0] ?? '';
-    const last = user.lastName?.[0] ?? '';
-    const fallback = user.username?.[0] ?? '';
-    const initials = `${first}${last}`.trim();
-    return (initials || fallback).toUpperCase();
+  private mapToQuickResults(r: UnifiedSearchResults): QuickResult[] {
+    const results: QuickResult[] = [];
+    r.users.forEach(u => results.push({ type: 'user', label: `${u.firstName} ${u.lastName}`, sublabel: '@' + u.username, link: '/user/@' + u.username, icon: 'pi pi-user' }));
+    r.blocks.forEach(b => results.push({ type: 'block', label: b.name, sublabel: b.tags?.join(', ') || '', link: '', icon: 'pi pi-cube' }));
+    r.courses.forEach(c => results.push({ type: 'course', label: c.name, sublabel: '', link: '/courses/' + c.id, icon: 'pi pi-book' }));
+    r.contests.forEach(c => results.push({ type: 'contest', label: c.title, sublabel: c.status, link: '/contest/' + c.id, icon: 'pi pi-list-check' }));
+    return results.slice(0, 10);
   }
 
   @HostListener('document:click', ['$event'])

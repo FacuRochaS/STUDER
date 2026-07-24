@@ -1,6 +1,5 @@
 package facu.studer.DTOs.feed;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import facu.studer.DTOs.user.UserPublicResponseDTO;
@@ -18,7 +17,7 @@ import java.util.List;
 public class PostResponseDTO {
     private Long id;
     private UserPublicResponseDTO user;
-    private JsonNode content;
+    private String content;
     private List<String> tags;
     private LocalDateTime createdDatetime;
     private long likeCount;

@@ -5,7 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 export type DiscussionCategory = 'yours' | 'favourites' | 'recent' | 'popular' | 'new' | 'explore' | 'create';
 
 @Component({
-  selector: 'app-discussion-sidebar',
+  selector: 'studer-discussion-sidebar',
   templateUrl: './discussion-sidebar.component.html',
   styleUrls: ['./discussion-sidebar.component.css'],
   standalone: true,

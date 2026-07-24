@@ -3,236 +3,130 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { Subject, switchMap, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ContestService } from '../../contest/contest.service';
 import { ContestResponseDTO } from '../../contest/contest.model';
+import { TextCreatorComponent } from '../../blocks/text/creator/text-creator.component';
+import { TextContentData } from '../../blocks/interfaces/content.interfaces';
+import { TagInputComponent } from '../../../shared/components/tag-input/tag-input.component';
 
 @Component({
   selector: 'studer-admin-contest-create',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule, TextCreatorComponent, TagInputComponent],
   template: `
-    <section class="admin-contest-form">
+    <section class="cf">
       <h1>{{ isEdit ? ('admin.edit_contest' | translate) : ('admin.create_contest' | translate) }}</h1>
-
-      <form (ngSubmit)="onSubmit()" class="form">
-        <div class="form-grid">
-          <div class="field">
-            <label>{{ 'contest.title' | translate }} *</label>
-            <input type="text" [(ngModel)]="title" name="title" required />
+      <div class="stepper-inline">
+        <button class="step" [class.active]="step === 1" [class.done]="step > 1" (click)="step = 1">
+          <span class="step__badge">{{ step > 1 ? '✓' : '1' }}</span>
+          <span class="step__label">{{ 'contest.step_info' | translate }}</span>
+        </button>
+        <div class="step__line" [class.done]="step > 1"></div>
+        <button class="step" [class.active]="step === 2" (click)="step = 2">
+          <span class="step__badge">2</span>
+          <span class="step__label">{{ 'contest.step_content' | translate }}</span>
+        </button>
+      </div>
+      <form (ngSubmit)="submit()" class="form">
+        @if (step === 1) {
+          <div class="fg">
+            <div class="f f--full"><label>{{ 'contest.title' | translate }} *</label><input [(ngModel)]="title" name="title" required class="inp" /></div>
+            <div class="f f--full"><label>{{ 'contest.description' | translate }}</label><textarea [(ngModel)]="desc" name="desc" rows="2" class="inp"></textarea></div>
+            <div class="f f--full"><label>{{ 'contest.tags' | translate }}</label><studer-tag-input [(tags)]="tags"></studer-tag-input></div>
+            <div class="f"><label>{{ 'contest.start_date' | translate }} *</label><input type="datetime-local" [(ngModel)]="startDate" name="sd" required class="inp" /></div>
+            <div class="f"><label>{{ 'admin.preparation_hours' | translate }}</label><input type="number" [(ngModel)]="prepH" name="ph" min="0" class="inp" placeholder="72" /></div>
+            <div class="f"><label>{{ 'admin.validation_hours' | translate }}</label><input type="number" [(ngModel)]="valH" name="vh" min="0" class="inp" placeholder="120" /></div>
+            <div class="f"><label>{{ 'contest.min_points' | translate }}</label><input type="number" [(ngModel)]="minPts" name="mp" min="0" class="inp" placeholder="0" /></div>
           </div>
-
-          <div class="field">
-            <label>{{ 'contest.banner' | translate }}</label>
-            <input type="text" [(ngModel)]="banner" name="banner" placeholder="https://..." />
-          </div>
-
-          <div class="field field--full">
-            <label>{{ 'contest.description' | translate }}</label>
-            <textarea [(ngModel)]="description" name="description" rows="3"></textarea>
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.theme' | translate }}</label>
-            <input type="text" [(ngModel)]="theme" name="theme" />
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.difficulty' | translate }}</label>
-            <select [(ngModel)]="difficulty" name="difficulty">
-              <option value="">--</option>
-              <option value="BEGINNER">BEGINNER</option>
-              <option value="INTERMEDIATE">INTERMEDIATE</option>
-              <option value="ADVANCED">ADVANCED</option>
-              <option value="EXPERT">EXPERT</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.tags' | translate }}</label>
-            <input type="text" [(ngModel)]="tagsInput" name="tags" placeholder="tag1, tag2, tag3" />
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.start_date' | translate }} *</label>
-            <input type="datetime-local" [(ngModel)]="startDate" name="startDate" required />
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.preparation_end' | translate }}</label>
-            <input type="datetime-local" [(ngModel)]="preparationEndDate" name="preparationEndDate" />
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.building_end' | translate }}</label>
-            <input type="datetime-local" [(ngModel)]="buildingEndDate" name="buildingEndDate" />
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.validation_end' | translate }}</label>
-            <input type="datetime-local" [(ngModel)]="validationEndDate" name="validationEndDate" />
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.end_date' | translate }} *</label>
-            <input type="datetime-local" [(ngModel)]="endDate" name="endDate" required />
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.min_level' | translate }}</label>
-            <input type="number" [(ngModel)]="minLevel" name="minLevel" min="0" />
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.min_reputation' | translate }}</label>
-            <input type="number" [(ngModel)]="minReputation" name="minReputation" min="0" />
-          </div>
-
-          <div class="field">
-            <label>{{ 'contest.max_participants' | translate }}</label>
-            <input type="number" [(ngModel)]="maxParticipants" name="maxParticipants" min="0" />
-          </div>
-
-          <div class="field field--full">
-            <label>{{ 'contest.external_links' | translate }}</label>
-            <textarea [(ngModel)]="externalLinks" name="externalLinks" rows="2" placeholder="https://..."></textarea>
-          </div>
-
-          <div class="field field--full">
-            <label>{{ 'contest.bibliography' | translate }}</label>
-            <textarea [(ngModel)]="bibliography" name="bibliography" rows="2"></textarea>
-          </div>
-
-          <div class="field field--full">
-            <label>{{ 'contest.learning_objectives' | translate }}</label>
-            <textarea [(ngModel)]="learningObjectives" name="learningObjectives" rows="2"></textarea>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn btn--primary" [disabled]="submitting">
-            {{ submitting ? ('common.saving' | translate) : (isEdit ? ('common.save' | translate) : ('common.create' | translate)) }}
-          </button>
-          <a routerLink="/admin" class="btn btn--secondary">{{ 'common.cancel' | translate }}</a>
+        }
+        @if (step === 2) {
+          <div class="f f--full"><label>{{ 'contest.content' | translate }}</label><studer-text-creator [data]="contentData" (dataChange)="contentData = $event"></studer-text-creator></div>
+        }
+        <div class="fa">
+          @if (step === 1) { <button type="button" class="btn btn--primary" (click)="step = 2" [disabled]="!title || !startDate">{{ 'course.create.next' | translate }} <i class="pi pi-arrow-right"></i></button> }
+          @else { <button type="button" class="btn btn--secondary" (click)="step = 1"><i class="pi pi-arrow-left"></i> {{ 'course.create.back' | translate }}</button>
+            <button type="submit" class="btn btn--primary" [disabled]="saving || !title || !startDate">{{ saving ? ('common.saving' | translate) : (isEdit ? ('common.save' | translate) : ('common.create' | translate)) }}</button> }
+          <a routerLink="/admin" class="btn btn--cancel">{{ 'common.cancel' | translate }}</a>
         </div>
       </form>
     </section>
   `,
   styles: [`
-    .admin-contest-form { max-width: 700px; margin: 0 auto; padding: 1.5rem; }
-    .admin-contest-form h1 { color: var(--color-text-prim); margin-bottom: 1.5rem; }
-    .form { display: flex; flex-direction: column; gap: 1.25rem; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .field--full { grid-column: 1 / -1; }
-    .field { display: flex; flex-direction: column; gap: 0.3rem; }
-    .field label { color: var(--color-text-secu); font-size: 0.85rem; font-weight: 500; }
-    .field input, .field textarea, .field select { padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--input-background); color: var(--color-text-prim); font-family: inherit; font-size: 0.9rem; }
-    .field input:focus, .field textarea:focus, .field select:focus { outline: none; box-shadow: 0 0 0 2px rgba(66,133,244,0.2); }
-    .form-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-    .btn { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; text-decoration: none; text-align: center; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .cf { max-width: 700px; margin: 0 auto; padding: 1.5rem; }
+    .cf h1 { margin-bottom: 1rem; color: var(--color-text-prim); }
+    .stepper-inline { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 1rem; padding: 0.25rem 0; }
+    .step { display: flex; align-items: center; gap: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.4rem 0.75rem; border-radius: 6px; transition: background 0.2s; font-family: inherit; }
+    .step:hover { background: var(--sidebar-hover-bg); }
+    .step__badge { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; background: var(--input-background); color: var(--color-text-secu); border: 2px solid var(--border); transition: all 0.3s; flex-shrink: 0; }
+    .step.active .step__badge { background: var(--color-primary); color: var(--color-text-btn); border-color: var(--color-primary); }
+    .step.done .step__badge { background: var(--color-correct); color: #fff; border-color: var(--color-correct); }
+    .step__label { font-weight: 600; font-size: 0.85rem; color: var(--color-text-secu); }
+    .step.active .step__label { color: var(--color-primary); }
+    .step.done .step__label { color: var(--color-correct); }
+    .step__line { width: 32px; height: 2px; background: var(--border); transition: background 0.3s; }
+    .step__line.done { background: var(--color-correct); }
+    .form { display: flex; flex-direction: column; gap: 1rem; }
+    .fg { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .f--full { grid-column: 1/-1; }
+    .f { display: flex; flex-direction: column; gap: 0.3rem; }
+    .f label { color: var(--color-text-secu); font-size: 0.8rem; font-weight: 600; }
+    .inp { padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--input-background); color: var(--color-text-prim); font-family: inherit; font-size: 0.88rem; }
+    .inp:focus { outline: none; border-color: var(--color-primary); }
+    .up { display: flex; align-items: center; }
+    .ub { display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.9rem; border: 1px dashed var(--border); border-radius: 6px; cursor: pointer; color: var(--color-text-secu); font-size: 0.85rem; }
+    .ub:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .ip { position: relative; width: 120px; height: 68px; border-radius: 6px; overflow: hidden; }
+    .ip img { width: 100%; height: 100%; object-fit: cover; }
+    .ir { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .fa { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.1rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; font-family: inherit; transition: opacity 0.2s; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn--primary { background: var(--color-primary); color: var(--color-text-btn); }
-    .btn--secondary { background: transparent; border: 1px solid var(--border); color: var(--color-text-secu); }
+    .btn--primary:hover:not(:disabled) { opacity: 0.9; }
+    .btn--secondary { background: var(--input-background); color: var(--color-text-prim); }
+    .btn--secondary:hover:not(:disabled) { color: var(--color-primary); }
+    .btn--cancel { background: none; color: var(--color-text-secu); }
   `]
 })
 export class AdminContestCreateComponent implements OnInit {
-  private readonly destroy$ = new Subject<void>();
-  private contestService = inject(ContestService);
+  private destroy$ = new Subject<void>();
+  private cs = inject(ContestService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  isEdit = false;
-  editId: number | null = null;
-  submitting = false;
-
-  title = '';
-  banner = '';
-  description = '';
-  theme = '';
-  difficulty = '';
-  tagsInput = '';
-  startDate = '';
-  preparationEndDate = '';
-  buildingEndDate = '';
-  validationEndDate = '';
-  endDate = '';
-  externalLinks = '';
-  bibliography = '';
-  learningObjectives = '';
-  minLevel: number | null = null;
-  minReputation: number | null = null;
-  maxParticipants: number | null = null;
+  isEdit = false; editId: number | null = null; saving = false; step = 1;
+  title = ''; desc = ''; tags: string[] = []; startDate = ''; prepH = 72; valH = 120; minPts: number | null = null;
+  contentData: TextContentData = { paragraphs: [] };
 
   ngOnInit(): void {
-    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.isEdit = true;
-        this.editId = +id;
-        this.contestService.getById(this.editId).pipe(takeUntil(this.destroy$)).subscribe(c => this.populateForm(c));
-      }
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(p => {
+      const id = p.get('id');
+      if (id) { this.isEdit = true; this.editId = +id; this.cs.getById(this.editId).pipe(takeUntil(this.destroy$)).subscribe(c => this.pop(c)); }
     });
   }
 
-  private populateForm(c: ContestResponseDTO): void {
-    this.title = c.title;
-    this.banner = c.banner || '';
-    this.description = c.description || '';
-    this.theme = c.theme || '';
-    this.difficulty = c.difficulty || '';
-    this.tagsInput = c.tags?.join(', ') || '';
-    this.startDate = toDatetimeLocal(c.startDate);
-    this.preparationEndDate = c.preparationEndDate ? toDatetimeLocal(c.preparationEndDate) : '';
-    this.buildingEndDate = c.buildingEndDate ? toDatetimeLocal(c.buildingEndDate) : '';
-    this.validationEndDate = c.validationEndDate ? toDatetimeLocal(c.validationEndDate) : '';
-    this.endDate = toDatetimeLocal(c.endDate);
-    this.externalLinks = c.externalLinks || '';
-    this.bibliography = c.bibliography || '';
-    this.learningObjectives = c.learningObjectives || '';
-    this.minLevel = c.minLevel ?? null;
-    this.minReputation = c.minReputation ?? null;
-    this.maxParticipants = c.maxParticipants ?? null;
+  pop(c: ContestResponseDTO): void {
+    this.title = c.title; this.desc = c.description || ''; this.minPts = c.minPoints || null;
+    this.tags = c.tags || []; this.prepH = c.preparationDurationHours || 72; this.valH = c.validationDurationHours || 120;
+    if (c.startDate) this.startDate = toLocal(c.startDate);
+    if (c.content?.paragraphs) this.contentData = c.content as TextContentData;
   }
 
-  onSubmit(): void {
-    if (!this.title || !this.startDate || !this.endDate) return;
-    this.submitting = true;
-    const tags = this.tagsInput.split(',').map(t => t.trim()).filter(Boolean);
-    const payload = {
-      title: this.title,
-      banner: this.banner || undefined,
-      description: this.description || undefined,
-      theme: this.theme || undefined,
-      difficulty: this.difficulty || undefined,
-      content: { consigna: this.description || '' },
-      tags: tags.length > 0 ? tags : undefined,
-      externalLinks: this.externalLinks || undefined,
-      bibliography: this.bibliography || undefined,
-      learningObjectives: this.learningObjectives || undefined,
-      minLevel: this.minLevel ?? undefined,
-      minReputation: this.minReputation ?? undefined,
-      maxParticipants: this.maxParticipants ?? undefined,
+  submit(): void {
+    if (!this.title || !this.startDate) return;
+    this.saving = true;
+    const p: any = {
+      title: this.title, description: this.desc || undefined,
+      tags: this.tags.length > 0 ? this.tags : undefined,
+      content: this.contentData.paragraphs.length > 0 ? JSON.stringify(this.contentData) : undefined,
       startDate: new Date(this.startDate).toISOString(),
-      preparationEndDate: this.preparationEndDate ? new Date(this.preparationEndDate).toISOString() : undefined,
-      buildingEndDate: this.buildingEndDate ? new Date(this.buildingEndDate).toISOString() : undefined,
-      validationEndDate: this.validationEndDate ? new Date(this.validationEndDate).toISOString() : undefined,
-      endDate: new Date(this.endDate).toISOString(),
+      preparationDurationHours: this.prepH,
+      validationDurationHours: this.valH,
+      minPoints: this.minPts ?? undefined,
     };
-
-    const obs = this.isEdit && this.editId
-      ? this.contestService.updateContest(this.editId, payload)
-      : this.contestService.createContest(payload);
-
-    obs.subscribe({
-      next: () => this.router.navigate(['/admin']),
-      error: () => this.submitting = false,
-    });
+    const obs = this.isEdit && this.editId ? this.cs.updateContest(this.editId, p) : this.cs.createContest(p);
+    obs.subscribe({ next: () => this.router.navigate(['/admin']), error: () => this.saving = false });
   }
 }
-
-function toDatetimeLocal(iso: string): string {
-  if (!iso) return '';
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
+function toLocal(iso: string): string { if (!iso) return ''; const d = new Date(iso); const p = (n: number) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }

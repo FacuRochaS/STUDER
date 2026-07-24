@@ -1,0 +1,14 @@
+<section class="cards">
+  <div class="c c--purple"><span class="cv">{{ ck('totalDiscussions') }}</span><span class="cl">{{ 'admin.cards.total_discussions' | translate }}</span></div>
+  <div class="c c--blue"><span class="cv">{{ ck('openDiscussions') }}</span><span class="cl">{{ 'admin.cards.open_discussions' | translate }}</span></div>
+  <div class="c c--teal"><span class="cv">{{ ck('totalReplies') }}</span><span class="cl">{{ 'admin.cards.total_replies' | translate }}</span></div>
+  <div class="c c--orange"><span class="cv">{{ cs('avgReplies') }}</span><span class="cl">{{ 'admin.cards.avg_replies' | translate }}</span></div>
+</section>
+
+<div class="charts-grid">
+  @if (chartsData.discussionsCreated?.length) { <div class="chart-box"><h3>{{ 'admin.charts.discussions_created' | translate }}</h3><div class="ch-wrap"><canvas id="d1"></canvas></div></div> }
+  @if (chartsData.repliesOverTime?.length) { <div class="chart-box"><h3>{{ 'admin.charts.replies_over_time' | translate }}</h3><div class="ch-wrap"><canvas id="d2"></canvas></div></div> }
+  @if (chartsData.topDiscussionTags?.length) { <div class="chart-box"><h3>{{ 'admin.charts.top_discussion_tags' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="d3"></canvas></div></div> }
+  @if (chartsData.mostActiveUsers?.length) { <div class="chart-box"><h3>{{ 'admin.charts.most_active_discussers' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="d4"></canvas></div></div> }
+  @if (chartsData.resolutionTime?.length) { <div class="chart-box"><h3>{{ 'admin.charts.resolution_time' | translate }}</h3><div class="ch-wrap"><canvas id="d5"></canvas></div></div> }
+</div>

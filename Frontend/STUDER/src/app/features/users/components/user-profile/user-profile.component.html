@@ -76,32 +76,133 @@
         </aside>
 
         <div class="profile__content">
-          <div class="block-system">
-            <div class="block-system__header">
-              <h3>{{ 'profile.blocks.title' | translate }}</h3>
-              @if (isOwnProfile) {
-                <button class="block-system__add-btn" (click)="openBlockEditor()">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                    <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-                  </svg>
-                  <span>{{ 'profile.blocks.create' | translate }}</span>
-                </button>
-              }
-            </div>
-            <div class="blocks__list">
-              @if (blocksLoading) {
-                <div class="blocks__loading">{{ 'profile.blocks.loading' | translate }}</div>
-              } @else {
-                @if (blocks.length > 0) {
-                  @for (block of blocks; track block.id) {
-                    <studer-block-card [block]="block"></studer-block-card>
-                  }
-                } @else {
-                  <div class="blocks__empty">{{ 'profile.blocks.empty' | translate }}</div>
-                }
-              }
-            </div>
+          <div class="profile__tabs">
+            @for (tab of profileTabs; track tab.id) {
+              <button class="profile-tab" [class.active]="activeTab === tab.id" (click)="setActiveTab(tab.id)">
+                <i [class]="tab.icon"></i>
+                <span>{{ tab.label | translate }}</span>
+              </button>
+            }
           </div>
+
+          @switch (activeTab) {
+            @case ('feed') {
+              <div class="profile-posts">
+                @if (isOwnProfile) {
+                  <button class="btn btn--primary btn--sm" (click)="goToFeed()">
+                    <i class="pi pi-plus"></i> {{ 'profile.posts.create' | translate }}
+                  </button>
+                }
+                @if (postsLoading) {
+                  <div class="blocks__loading">{{ 'profile.blocks.loading' | translate }}</div>
+                } @else {
+                  @if (userPosts.length > 0) {
+                    @for (post of userPosts; track post.id) {
+                      <article class="profile-post-card">
+                        <div class="profile-post-header">
+                          <studer-username [username]="post.user.username"></studer-username>
+                          <span class="profile-post-time">{{ post.createdDatetime | date:'short' }}</span>
+                        </div>
+                        <div class="profile-post-body">
+                          <studer-rich-text [text]="'post content'"></studer-rich-text>
+                        </div>
+                        <div class="profile-post-footer">
+                          <span><i class="pi pi-heart"></i> {{ post.likeCount }}</span>
+                          @if (post.tags.length) {
+                            <span class="profile-post-tags">{{ post.tags.join(', ') }}</span>
+                          }
+                        </div>
+                      </article>
+                    }
+                  } @else {
+                    <div class="blocks__empty">{{ 'profile.posts.empty' | translate }}</div>
+                  }
+                }
+              </div>
+            }
+
+            @case ('blocks') {
+              <div class="block-system">
+                @if (isOwnProfile) {
+                  <button class="btn btn--primary btn--sm" (click)="openBlockEditor()">
+                    <i class="pi pi-plus"></i> {{ 'profile.blocks.create' | translate }}
+                  </button>
+                }
+                <div class="blocks__list">
+                  @if (blocksLoading) {
+                    <div class="blocks__loading">{{ 'profile.blocks.loading' | translate }}</div>
+                  } @else {
+                    @if (blocks.length > 0) {
+                      @for (block of blocks; track block.id) {
+                        <studer-block-card [block]="block"></studer-block-card>
+                      }
+                    } @else {
+                      <div class="blocks__empty">{{ 'profile.blocks.empty' | translate }}</div>
+                    }
+                  }
+                </div>
+              </div>
+            }
+
+            @case ('courses') {
+              <div class="courses__list">
+                @if (isOwnProfile) {
+                  <button class="btn btn--primary btn--sm" routerLink="/courses/create">
+                    <i class="pi pi-plus"></i> {{ 'profile.courses.create' | translate }}
+                  </button>
+                }
+                @if (coursesLoading) {
+                  <div class="blocks__loading">{{ 'profile.blocks.loading' | translate }}</div>
+                } @else {
+                  @if (userCourses.length > 0) {
+                    @for (c of userCourses; track c.id) {
+                      <div class="profile-course-card">
+                        <a [routerLink]="['/courses', c.id]">{{ c.name }}</a>
+                        <span>{{ c.blocks.length || 0 }} {{ 'course.list.blocks' | translate }}</span>
+                      </div>
+                    }
+                  } @else {
+                    <div class="blocks__empty">{{ 'profile.courses.empty' | translate }}</div>
+                  }
+                }
+              </div>
+            }
+
+            @case ('stats') {
+              <div class="profile-stats-grid">
+                <div class="stat-card">
+                  <i class="pi pi-star stat-icon"></i>
+                  <span class="stat-value">{{ levelInfo.level }}</span>
+                  <span class="stat-label">{{ 'profile.level' | translate }}</span>
+                </div>
+                <div class="stat-card">
+                  <i class="pi pi-bolt stat-icon"></i>
+                  <span class="stat-value">{{ user.points || 0 }}</span>
+                  <span class="stat-label">{{ 'profile.points' | translate }}</span>
+                </div>
+                <div class="stat-card">
+                  <i class="pi pi-users stat-icon"></i>
+                  <span class="stat-value">{{ user.followers || 0 }}</span>
+                  <span class="stat-label">{{ 'profile.followers' | translate }}</span>
+                </div>
+                <div class="stat-card">
+                  <i class="pi pi-box stat-icon"></i>
+                  <span class="stat-value">{{ blocks.length }}</span>
+                  <span class="stat-label">{{ 'search.tabs.blocks' | translate }}</span>
+                </div>
+                <div class="stat-card">
+                  <i class="pi pi-book stat-icon"></i>
+                  <span class="stat-value">{{ userCourses.length }}</span>
+                  <span class="stat-label">{{ 'search.tabs.courses' | translate }}</span>
+                </div>
+                <div class="stat-card">
+                  <i class="pi pi-send stat-icon"></i>
+                  <span class="stat-value">{{ userPosts.length }}</span>
+                  <span class="stat-label">{{ 'feed.title' | translate }}</span>
+                </div>
+              </div>
+            }
+          }
         </div>
       </div>
     } @else {

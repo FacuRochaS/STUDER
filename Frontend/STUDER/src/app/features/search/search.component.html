@@ -3,49 +3,108 @@
     <h1 class="search-page__title">{{ 'search.title' | translate }}</h1>
     <div class="search-page__input">
       <span class="pi pi-search"></span>
-      <input
-        type="text"
-        [(ngModel)]="query"
-        (keydown.enter)="submitSearch()"
-        [placeholder]="'search.placeholder' | translate" />
-      <button type="button" (click)="submitSearch()">{{ 'search.action' | translate }}</button>
+      <input type="text" [(ngModel)]="query" (keydown.enter)="makeSearch()" [placeholder]="'search.placeholder' | translate" />
+      <button type="button" (click)="makeSearch()">{{ 'search.action' | translate }}</button>
     </div>
   </header>
+
+  <div class="search-page__tabs">
+    <button class="search-tab" [class.active]="activeTab === 'users'" (click)="setTabById('users')">
+      <i class="pi pi-users"></i><span>{{ 'search.tabs.users' | translate }}</span>
+    </button>
+    <button class="search-tab" [class.active]="activeTab === 'blocks'" (click)="setTabById('blocks')">
+      <i class="pi pi-cube"></i><span>{{ 'search.tabs.blocks' | translate }}</span>
+    </button>
+    <button class="search-tab" [class.active]="activeTab === 'courses'" (click)="setTabById('courses')">
+      <i class="pi pi-book"></i><span>{{ 'search.tabs.courses' | translate }}</span>
+    </button>
+    <button class="search-tab" [class.active]="activeTab === 'contests'" (click)="setTabById('contests')">
+      <i class="pi pi-list-check"></i><span>{{ 'search.tabs.contests' | translate }}</span>
+    </button>
+  </div>
 
   <div class="search-page__results">
     @if (loading) {
       <div class="search-page__loading">{{ 'system.loading' | translate }}</div>
-    } @else {
-      @if (results.length === 0) {
+    }
+    @if (!loading && activeTab === 'users') {
+      @if (users.length === 0) {
         <div class="search-page__empty">{{ 'search.empty' | translate }}</div>
-      } @else {
-        <div class="search-page__grid">
-          @for (user of results; track trackByUserId($index, user)) {
-            <a class="search-card" [routerLink]="['/user', '@' + user.username]">
-              <div class="search-card__avatar">
-                @if (user.profilePictureThumbnailUrl) {
-                  <img [src]="user.profilePictureThumbnailUrl" [alt]="user.username" />
-                } @else {
-                  <span>{{ getUserInitials(user) }}</span>
-                }
-              </div>
-              <div class="search-card__info">
-                <div class="search-card__name">{{ user.firstName }} {{ user.lastName }}</div>
-                <div class="search-card__username">
-                  <studer-rich-text [text]="'@' + user.username"></studer-rich-text>
-                </div>
-              </div>
-            </a>
-          }
-        </div>
-
-        @if (hasMore) {
-          <button class="search-page__load" type="button" (click)="loadMore()">
-            {{ 'search.load_more' | translate }}
-          </button>
-        }
       }
+      <div class="search-page__grid">
+        @for (user of users; track trackById($index, user)) {
+          <a class="search-card" [routerLink]="['/user', '@' + user.username]">
+            <div class="search-card__avatar">
+              @if (user.profilePictureThumbnailUrl) {
+                <img [src]="user.profilePictureThumbnailUrl" [alt]="user.username" />
+              } @else {
+                <span>{{ (user.firstName[0] || '') + (user.lastName[0] || '') || user.username[0].toUpperCase() }}</span>
+              }
+            </div>
+            <div class="search-card__info">
+              <div class="search-card__name">{{ user.firstName }} {{ user.lastName }}</div>
+              <div class="search-card__username">@{{ user.username }}</div>
+            </div>
+          </a>
+        }
+      </div>
+    }
+    @if (!loading && activeTab === 'blocks') {
+      @if (blocks.length === 0) {
+        <div class="search-page__empty">{{ 'search.empty' | translate }}</div>
+      }
+      <div class="search-page__grid">
+        @for (block of blocks; track trackById($index, block)) {
+          <div class="search-card">
+            <div class="search-card__icon cube"><i class="pi pi-cube"></i></div>
+            <div class="search-card__info">
+              <div class="search-card__name">{{ block.name }}</div>
+              <div class="search-card__meta">
+                <span [class]="getBlockDifficultyClass(block.difficulty)">{{ block.difficulty }}</span>
+                <span>{{ getBlockOwnerName(block) }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+    @if (!loading && activeTab === 'courses') {
+      @if (courses.length === 0) {
+        <div class="search-page__empty">{{ 'search.empty' | translate }}</div>
+      }
+      <div class="search-page__grid">
+        @for (course of courses; track trackById($index, course)) {
+          <a class="search-card" [routerLink]="['/courses', course.id]">
+            <div class="search-card__icon book"><i class="pi pi-book"></i></div>
+            <div class="search-card__info">
+              <div class="search-card__name">{{ course.name }}</div>
+              <div class="search-card__meta">
+                <span>{{ course.owner.firstName }} {{ course.owner.lastName }}</span>
+                <span>{{ course.blocks.length || 0 }} {{ 'course.list.blocks' | translate }}</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+    }
+    @if (!loading && activeTab === 'contests') {
+      @if (contests.length === 0) {
+        <div class="search-page__empty">{{ 'search.empty' | translate }}</div>
+      }
+      <div class="search-page__grid">
+        @for (contest of contests; track trackById($index, contest)) {
+          <a class="search-card" [routerLink]="['/contest', contest.id]">
+            <div class="search-card__icon contest"><i class="pi pi-list-check"></i></div>
+            <div class="search-card__info">
+              <div class="search-card__name">{{ contest.title }}</div>
+              <div class="search-card__meta">
+                <span>{{ contest.status }}</span>
+                <span>{{ contest.participantCount }} {{ 'contest.participants' | translate }}</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
     }
   </div>
 </section>
-

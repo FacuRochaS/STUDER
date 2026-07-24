@@ -16,7 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p WHERE p.isActive = true ORDER BY p.createdDatetime DESC")
     Page<Post> findRecentPosts(Pageable pageable);
 
-    @Query("SELECT p FROM Post p LEFT JOIN PostLike pl ON pl.post = p WHERE p.isActive = true GROUP BY p ORDER BY COUNT(pl) DESC, p.createdDatetime DESC")
+    @Query("SELECT p FROM Post p LEFT JOIN PostLike pl ON pl.post = p AND pl.isActive = true WHERE p.isActive = true GROUP BY p ORDER BY COUNT(pl) DESC, p.createdDatetime DESC")
     Page<Post> findPopularPosts(Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.isActive = true AND p.user.username IN :usernames ORDER BY p.createdDatetime DESC")

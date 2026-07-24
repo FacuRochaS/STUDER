@@ -17,16 +17,18 @@ import { ContestDetailComponent } from './features/contest/components/contest-de
 import { AdminComponent } from './features/admin/admin.component';
 import { AdminContestCreateComponent } from './features/admin/contest-create/admin-contest-create.component';
 import { AdminGuard } from './features/admin/admin.guard';
+import { FaqComponent } from './features/landing/faq/faq.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
+  { path: 'faq', component: FaqComponent },
   { path: 'login', component: LoginRegisterComponent},
   { path: 'test', component: TestComponent },
 
   {
     path: '',
     component: LayoutComponent,
-    //canActivate: [authGuard],
+    canActivate: [authGuard],
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'courses', component: CourseExploreComponent },
@@ -35,9 +37,9 @@ export const routes: Routes = [
       { path: 'feed', component: HomeComponent },
       { path: 'contests', component: ContestListComponent },
       { path: 'contest/:id', component: ContestDetailComponent },
-      { path: 'admin', component: AdminComponent, canActivate: [AdminGuard] },
-      { path: 'admin/contests/create', component: AdminContestCreateComponent, canActivate: [AdminGuard] },
-      { path: 'admin/contests/:id/edit', component: AdminContestCreateComponent, canActivate: [AdminGuard] },
+      { path: 'admin', component: AdminComponent, canActivate: [AdminGuard]  },
+      { path: 'admin/contests/create', component: AdminContestCreateComponent, canActivate: [AdminGuard]  },
+      { path: 'admin/contests/:id/edit', component: AdminContestCreateComponent, canActivate: [AdminGuard]   },
       { path: 'discussions', component: DiscussionComponent },
       { path: 'discussions/:id', component: DiscussionComponent },
       { path: 'calendar', component: HomeComponent },
@@ -48,8 +50,6 @@ export const routes: Routes = [
       { path: 'user/me', component: UserProfileComponent },
       { path: 'user/:identifier', component: UserProfileComponent },
 
-      // --- RUTA DE PRUEBA AÑADIDA ---
-      { path: 'test/discussions', component: DiscussionsTestComponent }
     ]
   },
   { path: '**', redirectTo: '' }

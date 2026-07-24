@@ -471,7 +471,10 @@ public class DiscussionServiceImpl implements DiscussionService {
     @Transactional
     public MessageDTO like(String username, Long messageId) {
         if (messageLikeRepository.existsByUserUsernameAndMessageIdAndIsActiveTrue(username, messageId)) {
-            throw new IllegalArgumentException("discussion.message.already_liked");
+            return MessageDTO.builder()
+                    .success(true)
+                    .message("discussion.message.like_added")
+                    .build();
         }
 
         Optional<MessageLike> messageLike = messageLikeRepository.findByUserUsernameAndMessageIdAndIsActiveFalse(username, messageId);

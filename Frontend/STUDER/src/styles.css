@@ -72,7 +72,7 @@ body {
   --footer-height-expanded: 10rem;
 
   --content-bg: transparent;
-  --content-max-width: 1900px;
+  --content-max-width: 2400px;
   --layout-body-bg: transparent;
 
   /* Sidebar nav colors (matching logo: S=primary, t=correct, u=error, d=warning, e=info, r=restriction) */

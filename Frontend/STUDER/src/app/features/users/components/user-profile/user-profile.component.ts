@@ -1,27 +1,40 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { TranslatePipe, TranslateModule } from '@ngx-translate/core';
-import {User, UserPublic, UserUpdateRequestDTO} from '../../user.model';
+import { TranslateModule } from '@ngx-translate/core';
+import { UserPublic, UserUpdateRequestDTO, User } from '../../user.model';
 import { UserService } from '../../user.service';
 import { FriendService } from '../../../friends/friend.service';
 import { FriendStatusResponseDTO } from '../../../friends/friend.model';
 import { AuthStateService } from '../../../../core/auth/auth-state.service';
 import { RichTextComponent } from '../../../../shared/components/rich-text/rich-text.component';
+import { UsernameComponent } from '../../../../shared/components/username/username.component';
 import { BlockService } from '../../../blocks/block.service';
-import { BlockCreateRequestDTO, BlockResponseDTO } from '../../../blocks/block.model';
+import { BlockResponseDTO, BlockCreateRequestDTO } from '../../../blocks/block.model';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { BlockEditorComponent } from '../../../blocks/editor/block-editor.component';
 import { BlockCardComponent } from '../../../blocks/component/block-card/block-card.component';
+import { CourseService } from '../../../courses/course.service';
+import { CourseResponseDTO } from '../../../courses/course.model';
+import { FeedService } from '../../../feed/feed.service';
+import { Router } from '@angular/router';
+
+interface ProfileTab {
+  id: string;
+  label: string;
+  icon: string;
+}
 
 @Component({
   selector: 'studer-user-profile',
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     TranslateModule,
     RichTextComponent,
+    UsernameComponent,
     BlockCardComponent,
   ],
   templateUrl: './user-profile.component.html',
@@ -33,6 +46,23 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   user: UserPublic | null = null;
   loading = false;
+
+  profileTabs: ProfileTab[] = [
+    { id: 'feed', label: 'feed.title', icon: 'pi pi-send' },
+    { id: 'blocks', label: 'search.tabs.blocks', icon: 'pi pi-cube' },
+    { id: 'courses', label: 'search.tabs.courses', icon: 'pi pi-book' },
+    { id: 'stats', label: 'blocks.tree.tab_stats', icon: 'pi pi-chart-bar' },
+  ];
+  activeTab = 'feed';
+
+  blocks: BlockResponseDTO[] = [];
+  blocksLoading = false;
+
+  userCourses: CourseResponseDTO[] = [];
+  coursesLoading = false;
+
+  userPosts: any[] = [];
+  postsLoading = false;
   followLoading = false;
   friendStatus: FriendStatusResponseDTO | null = null;
   currentUserId: number | null = null;
@@ -41,17 +71,25 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   levelInfo = { level: 1, currentPoints: 0, nextLevelPoints: 20, progress: 0, ringDashOffset: 515.2 };
 
-  blocks: BlockResponseDTO[] = [];
-  blocksLoading = false;
-
   constructor(
     private readonly route: ActivatedRoute,
     private readonly userService: UserService,
     private readonly friendService: FriendService,
     private readonly authState: AuthStateService,
     private readonly blockService: BlockService,
-    private readonly modalService: ModalService
+    private readonly modalService: ModalService,
+    private readonly courseService: CourseService,
+    private readonly feedService: FeedService,
+    private readonly router: Router,
   ) {}
+
+  setActiveTab(tabId: string): void {
+    this.activeTab = tabId;
+    if (tabId === 'feed' && this.user && this.userPosts.length === 0) this.loadUserPosts(this.user.id);
+    if (tabId === 'courses' && this.user && this.userCourses.length === 0) this.loadUserCourses(this.user.username);
+  }
+
+  goToFeed(): void { this.router.navigate(['/feed']); }
 
   ngOnInit(): void {
     this.authState.user$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
@@ -269,14 +307,24 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   private loadUserBlocks(userId: number): void {
     this.blocksLoading = true;
     this.blockService.getBlockByUser(userId, 0).subscribe({
-      next: (page) => {
-        this.blocks = page.blocks;
-        this.blocksLoading = false;
-      },
-      error: () => {
-        this.blocks = [];
-        this.blocksLoading = false;
-      },
+      next: (page) => { this.blocks = page.blocks; this.blocksLoading = false; },
+      error: () => { this.blocks = []; this.blocksLoading = false; },
+    });
+  }
+
+  private loadUserCourses(username: string): void {
+    this.coursesLoading = true;
+    this.courseService.getCoursesByUsername(username, 0).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (page) => { this.userCourses = page.courses; this.coursesLoading = false; },
+      error: () => { this.userCourses = []; this.coursesLoading = false; },
+    });
+  }
+
+  private loadUserPosts(userId: number): void {
+    this.postsLoading = true;
+    this.feedService.getUserPosts(userId, 0).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (page) => { this.userPosts = page.posts; this.postsLoading = false; },
+      error: () => { this.userPosts = []; this.postsLoading = false; },
     });
   }
 }

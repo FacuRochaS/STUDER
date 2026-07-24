@@ -90,23 +90,35 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (hasText) content.paragraphs = paragraphs;
     if (hasGallery) content.gallery = this.postGalleryData;
 
-    this.feedService.create({ content, tags: this.newPostTags }).pipe(takeUntil(this.destroy$)).subscribe({
+    this.feedService.create({ content: JSON.stringify(content), tags: this.newPostTags }).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.postContentData = { paragraphs: [] };
         this.postGalleryData = { images: [], layout: 'grid' };
         this.newPostTags = [];
         this.showCreateForm = false;
         this.loadFeed();
+      },
+      error: (err) => {
+        console.error('Failed to create post', err);
+        alert('Failed to publish post. Check console for details.');
       }
     });
   }
 
-  getPostText(post: PostResponseDTO): string {
-    if (post.content?.text) {
-      return post.content.text;
+  getPostContent(post: PostResponseDTO): any {
+    if (!post.content) return null;
+    if (typeof post.content === 'string') {
+      try { return JSON.parse(post.content as string); } catch { return null; }
     }
-    if (post.content?.paragraphs) {
-      return post.content.paragraphs
+    return post.content;
+  }
+
+  getPostText(post: PostResponseDTO): string {
+    const content = this.getPostContent(post);
+    if (!content) return '';
+    if (content.text) return content.text;
+    if (content.paragraphs) {
+      return content.paragraphs
         .map((p: any) => (p.runs || []).map((r: any) => r.text || '').join(''))
         .join('\n');
     }

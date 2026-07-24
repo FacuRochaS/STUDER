@@ -14,13 +14,12 @@ import { InfoTabComponent } from '../../../blocks/component/tabs/info-tab/info-t
 import { TagComponent } from '../../../../shared/components/tag/tag.component';
 import { UsernameComponent } from '../../../../shared/components/username/username.component';
 import { TabsComponent, Tab } from '../../../../shared/components/tabs/tabs.component';
+import { StatsTabComponent } from '../../../blocks/component/tabs/stats-tab/stats-tab.component';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { AuthStateService } from '../../../../core/auth/auth-state.service';
 import { User } from '../../../users/user.model';
 import { CourseCreateComponent } from '../course-create/course-create.component';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
-import { BlockTreeComponent } from '../../../blocks/component/block-tree/block-tree.component';
-import { BlockEditorComponent } from '../../../blocks/editor/block-editor.component';
 
 interface BlockState {
   courseBlockId: number;
@@ -49,9 +48,8 @@ interface BlockState {
     TagComponent,
     UsernameComponent,
     TabsComponent,
+    StatsTabComponent,
     LoaderComponent,
-    BlockTreeComponent,
-    BlockEditorComponent,
   ],
   templateUrl: './course-detail.component.html',
   styleUrls: ['./course-detail.component.css'],
@@ -89,6 +87,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   blockTabs: Tab[] = [
     { id: 'content', label: 'blocks.detail.tabs.content' },
     { id: 'info', label: 'blocks.detail.tabs.info' },
+    { id: 'stats', label: 'blocks.tree.tab_stats' },
   ];
 
   ngOnInit(): void {
@@ -240,37 +239,13 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
     if (!state || !state.fullBlock) return;
     const isOwner = this.currentUser?.id === this.course?.owner.id;
     const title = isOwner ? 'blocks.editor.actions.edit' : 'blocks.editor.actions.fork';
-    this.modalService.open(BlockEditorComponent, {
-      title,
-      inputs: {
-        mode: 'edit', blockId: state.blockId, blockName: state.blockName,
-        blockDifficulty: 'NORMAL', blockTags: [],
-        initialContent: state.content,
-      },
-      outputs: {
-        save: (data: any) => {
-          const obs = isOwner
-            ? this.blockService.versionBlock(data)
-            : this.blockService.forkBlock({ ...data, name: state.blockName, difficulty: 'NORMAL', tags: [], slug: '' });
-          obs.subscribe({
-            next: () => {
-              this.modalService.close();
-              if (this.course) this.loadCourse(this.course.id);
-            },
-            error: () => {},
-          });
-        },
-      },
-    });
+
   }
 
   onOpenTree(index: number): void {
     const state = this.blockStates[index];
     if (!state) return;
-    this.modalService.open(BlockTreeComponent, {
-      title: 'blocks.tree.title',
-      inputs: { blockId: state.blockId },
-    });
+
   }
 
   hasActivityContent(index: number): boolean {
@@ -282,14 +257,20 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
       const content = this.parseContent(b.version.content);
       const hasActivity = content.some(c => c.type === 'activity');
       const completed = b.completed ?? false;
-      const fullBlock: Partial<BlockResponseDTO> = {
+      const initialBlock: BlockResponseDTO = {
         id: b.blockId,
+        createdDatetime: course.createdDatetime,
+        lastUpdatedDatetime: course.lastUpdatedDatetime,
         slug: b.blockName.toLowerCase().replace(/\s+/g, '-'),
+        name: b.blockName,
         difficulty: 'NORMAL',
         isFork: false,
         likedByCurrentUser: false,
         likeCount: 0,
-      };
+        tags: [],
+        version: null,
+        owner: course.owner,
+      } as unknown as BlockResponseDTO;
       return {
         courseBlockId: b.id,
         blockId: b.blockId,
@@ -300,7 +281,7 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
         content,
         showContent: !completed,
         hasActivity,
-        fullBlock: fullBlock as BlockResponseDTO,
+        fullBlock: initialBlock,
         activeTab: 'content',
       };
     });
@@ -309,7 +290,9 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
         next: (block) => {
           if (this.blockStates[i]) this.blockStates[i].fullBlock = block;
         },
-        error: () => {},
+        error: (err) => {
+          console.error('Failed to load block details', err);
+        },
       });
     });
   }

@@ -52,6 +52,8 @@ public final class UserMapper {
                 .profilePictureAvatarUrl(user.getProfilePictureAvatarUrl())
                 .profilePictureWebpUrl(user.getProfilePictureWebpUrl())
                 .profilePictureThumbnailUrl(user.getProfilePictureThumbnailUrl())
+                .role(user.getRole())
+                .points(user.getPoints())
                 .build();
     }
 

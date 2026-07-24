@@ -29,4 +29,5 @@ public class DashboardMetricsDTO {
     private List<DifficultyDistributionDTO> difficultyDistribution;
     private List<TagDistributionDTO> topTags;
     private List<UserReputationDTO> topUsers;
+    private List<DifficultyDistributionDTO> blockTypeDistribution;
 }

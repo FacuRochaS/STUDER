@@ -30,4 +30,8 @@ public interface BlockService {
     MessageDTO likeBlock(String username, Long blockId);
 
     MessageDTO unlikeBlock(String username, Long blockId);
+
+    BlockStatsDTO getBlockStats(Long blockId);
+
+    BlockPageResponseDTO exploreBlocks(String username, int page, String query, List<String> tags, String difficulty, Boolean mine, Boolean following, Boolean liked);
 }

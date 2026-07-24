@@ -13,6 +13,7 @@ public interface ContestService {
     // Public
     ContestResponseDTO getContest(Long contestId);
     Page<ContestResponseDTO> listContests(String status, Pageable pageable);
+    Page<ContestResponseDTO> searchContests(String query, Pageable pageable);
     List<ContestResponseDTO> getActiveContests();
     List<ContestResponseDTO> getUpcomingContests();
 

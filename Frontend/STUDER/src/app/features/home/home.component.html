@@ -19,10 +19,11 @@
       </div>
     }
 
-    @if (loading) {
-      <studer-loader></studer-loader>
-    } @else {
-      @for (post of posts; track post.id) {
+    @if (!showCreateForm) {
+      @if (loading) {
+        <studer-loader></studer-loader>
+      } @else {
+        @for (post of posts; track post.id) {
         <article class="feed__post">
           <div class="feed__post-header">
             <div class="feed__post-author">
@@ -42,14 +43,16 @@
           </div>
           <div class="feed__post-body">
             <div class="feed__post-content">
-              @if (post.content?.paragraphs) {
-                <studer-text-viewer [data]="post.content"></studer-text-viewer>
+              @if (getPostContent(post)?.paragraphs) {
+                <studer-text-viewer [data]="getPostContent(post)"></studer-text-viewer>
+              } @else if (getPostContent(post)?.text) {
+                <studer-rich-text [text]="getPostContent(post).text"></studer-rich-text>
               } @else {
-                <studer-rich-text [text]="getPostText(post)"></studer-rich-text>
+                <p>{{ getPostText(post) }}</p>
               }
-              @if (post.content?.gallery) {
+              @if (getPostContent(post)?.gallery) {
                 <div class="feed__post-gallery">
-                  <studer-gallery-viewer [data]="post.content.gallery"></studer-gallery-viewer>
+                  <studer-gallery-viewer [data]="getPostContent(post).gallery"></studer-gallery-viewer>
                 </div>
               }
             </div>
@@ -73,6 +76,7 @@
           <i class="pi pi-inbox feed__empty-icon"></i>
           <p>{{ 'feed.empty' | translate }}</p>
         </div>
+      }
       }
     }
   </div>

@@ -18,30 +18,13 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ContestCreateRequestDTO {
 
-    @NotBlank
-    private String title;
-
-    private String banner;
+    @NotBlank private String title;
     private String description;
-    private String theme;
-    private String difficulty;
-    private JsonNode content;
+    private String content;
     private List<String> tags;
-    private String externalLinks;
-    private String bibliography;
-    private String learningObjectives;
-    private Integer minLevel;
-    private Long minReputation;
-    private Integer maxParticipants;
-    private JsonNode rewards;
 
-    @NotNull
-    private LocalDateTime startDate;
-
-    private LocalDateTime preparationEndDate;
-    private LocalDateTime buildingEndDate;
-    private LocalDateTime validationEndDate;
-
-    @NotNull
-    private LocalDateTime endDate;
+    @NotNull private LocalDateTime startDate;
+    @NotNull private Integer preparationDurationHours;
+    @NotNull private Integer validationDurationHours;
+    private Long minPoints;
 }

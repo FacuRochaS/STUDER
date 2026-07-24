@@ -12,7 +12,7 @@ export interface ExploreFilters {
 }
 
 @Component({
-  selector: 'app-explore-filters',
+  selector: 'studer-explore-filters',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule, TagInputComponent],
   templateUrl: './explore-filters.component.html',

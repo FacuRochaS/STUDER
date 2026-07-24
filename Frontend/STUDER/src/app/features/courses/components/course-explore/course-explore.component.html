@@ -12,7 +12,7 @@
       ></studer-course-detail>
     } @else {
       @if (selectedCategory === 'explore') {
-        <app-explore-filters (filtersChanged)="onFiltersChanged($event)"></app-explore-filters>
+        <studer-explore-filters (filtersChanged)="onFiltersChanged($event)"></studer-explore-filters>
       }
 
       @if (showCreateForm) {

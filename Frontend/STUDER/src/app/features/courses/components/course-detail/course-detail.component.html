@@ -89,6 +89,9 @@
               @if (state.activeTab === 'info') {
                 <studer-info-tab [block]="state.fullBlock"></studer-info-tab>
               }
+              @if (state.activeTab === 'stats') {
+                <studer-stats-tab [blockId]="state.blockId"></studer-stats-tab>
+              }
             }
 
             <div class="course-block__actions">

@@ -8,6 +8,7 @@ import {
     BlockForkCreateRequestDTO,
     BlockPageResponseDTO,
     BlockResponseDTO,
+    BlockStatsDTO,
     BlockVersionCreateRequestDTO
 } from './block.model';
 import {MessageResponseDTO} from '../discussions/discussion.model';
@@ -100,5 +101,23 @@ export class BlockService {
 
   unlikeBlock(id: number): Observable<MessageResponseDTO> {
     return this.http.delete<MessageResponseDTO>(`${this.base}/${id}/like`);
+  }
+
+  getBlockStats(id: number): Observable<BlockStatsDTO> {
+    return this.http.get<BlockStatsDTO>(`${this.base}/stats/${id}`);
+  }
+
+  exploreBlocks(page: number, filters: {
+    query?: string; tags?: string[]; difficulty?: string;
+    mine?: boolean; following?: boolean; liked?: boolean;
+  }): Observable<BlockPageResponseDTO> {
+    let params = new HttpParams().set('page', page.toString());
+    if (filters.query) params = params.set('query', filters.query);
+    if (filters.tags?.length) filters.tags.forEach(t => params = params.append('tags', t));
+    if (filters.difficulty) params = params.set('difficulty', filters.difficulty);
+    if (filters.mine) params = params.set('mine', 'true');
+    if (filters.following) params = params.set('following', 'true');
+    if (filters.liked) params = params.set('liked', 'true');
+    return this.http.get<BlockPageResponseDTO>(`${this.base}/explore`, { params });
   }
 }

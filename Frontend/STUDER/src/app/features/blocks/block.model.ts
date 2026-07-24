@@ -71,6 +71,13 @@ export interface BlockVersionResponseDTO {
   versionNumber:number
   changeDescription:string
 }
+export interface BlockStatsDTO {
+  likeCount: number;
+  forkCount: number;
+  versionCount: number;
+  usedInCourses: number;
+}
+
 export interface BlockResponseDTO {
   id:number
   createdDatetime:string

@@ -20,7 +20,7 @@ public final class PostMapper {
         return PostResponseDTO.builder()
                 .id(post.getId())
                 .user(UserMapper.toPublicSimpleResponseDTO(post.getUser()))
-                .content(post.getContent())
+                .content(post.getContent() != null ? post.getContent().toString() : null)
                 .tags(tagNames)
                 .createdDatetime(post.getCreatedDatetime())
                 .likeCount(likeCount)

@@ -33,17 +33,17 @@
           <div class="node-type-badge">{{ 'activity.nodes.' + node.type | translate }}</div>
           <div class="node-input-wrapper">
             @if (node.type === 'text') {
-              <input type="text" class="styled-input" [(ngModel)]="node.value" (ngModelChange)="updateModel()" placeholder="Escribe la consigna...">
+              <input type="text" class="styled-input" [(ngModel)]="node.value" (ngModelChange)="updateModel()"
+                placeholder="{{ 'activity.creator.placeholders.statement_text' | translate }}">
             } @else if (node.type === 'image') {
               <div class="file-inline-group">
-                <input type="text" class="styled-input" [(ngModel)]="node.value" (ngModelChange)="updateModel()" placeholder="URL de la imagen...">
+                <input type="text" class="styled-input" [(ngModel)]="node.value" (ngModelChange)="updateModel()"
+                  placeholder="{{ 'activity.creator.placeholders.image_url' | translate }}">
                 <label class="btn-file-inline">
                   <i class="pi pi-upload"></i>
                   <input type="file" accept="image/*" (change)="onStatementImageSelected($event, i)" />
                 </label>
               </div>
-            } @else if (node.type === 'code') {
-              <textarea class="styled-textarea" [(ngModel)]="node.value" (ngModelChange)="updateModel()" rows="2" placeholder="console.log('Hola');"></textarea>
             }
           </div>
           <button class="btn-icon-danger" (click)="removeStatementNode(i)"><i class="pi pi-trash"></i></button>
@@ -52,9 +52,8 @@
     </div>
 
     <div class="action-bar">
-      <button class="btn-chip" (click)="addStatementNode('text')"><i class="pi pi-text-border"></i> Texto</button>
-      <button class="btn-chip" (click)="addStatementNode('image')"><i class="pi pi-image"></i> Imagen</button>
-      <button class="btn-chip" (click)="addStatementNode('code')"><i class="pi pi-code"></i> Código</button>
+      <button class="btn-chip" (click)="addStatementNode('text')"><i class="pi pi-font"></i> {{ 'activity.nodes.text' | translate }}</button>
+      <button class="btn-chip" (click)="addStatementNode('image')"><i class="pi pi-image"></i> {{ 'activity.nodes.image' | translate }}</button>
     </div>
   </div>
 
@@ -69,10 +68,10 @@
     <div class="options-grid">
       @for (option of data.options; track option.id; let i = $index) {
         <div class="option-card simple-card">
-
           <div class="option-content-edit">
             <span class="option-number">{{ i + 1 }}.</span>
-            <input type="text" class="styled-input main-opt-input" [(ngModel)]="option.text" (ngModelChange)="updateModel()" placeholder="Texto de la opción...">
+            <input type="text" class="styled-input main-opt-input" [(ngModel)]="option.text" (ngModelChange)="updateModel()"
+              placeholder="{{ 'activity.creator.placeholders.option_text' | translate }}">
             <div class="file-inline-group">
               @if (option.imageUrl) {
                 <div class="opt-img-preview">
@@ -92,26 +91,22 @@
           </div>
 
           <div class="option-rules-area">
-
             @if (data.activityType === 'multiple_choice') {
               <button class="btn-truth" [class.is-true]="option.isCorrect" (click)="toggleCorrect(option)">
                 <i class="pi" [ngClass]="option.isCorrect ? 'pi-check-circle' : 'pi-circle'"></i>
-                {{ option.isCorrect ? 'Correcta' : 'Marcar como correcta' }}
+                {{ (option.isCorrect ? 'activity.creator.correct' : 'activity.creator.incorrect') | translate }}
               </button>
             }
-
             @else if (data.activityType === 'matching') {
               <div class="matching-arrow"><i class="pi pi-arrow-right"></i></div>
-              <input type="text" class="styled-input match-input" [(ngModel)]="option.matchText" (ngModelChange)="updateModel()" placeholder="Definición o pareja...">
+              <input type="text" class="styled-input match-input" [(ngModel)]="option.matchText" (ngModelChange)="updateModel()"
+                placeholder="{{ 'activity.creator.placeholders.match_key' | translate }}">
             }
-
             @else if (data.activityType === 'ordering') {
-              <span class="order-badge"><i class="pi pi-sort"></i> Posición {{ option.orderIndex }}</span>
+              <span class="order-badge"><i class="pi pi-sort"></i> {{ 'activity.creator.position' | translate }} {{ option.orderIndex }}</span>
             }
-
             <button class="btn-icon-danger ml-2" (click)="removeOption(i)"><i class="pi pi-times"></i></button>
           </div>
-
         </div>
       }
     </div>

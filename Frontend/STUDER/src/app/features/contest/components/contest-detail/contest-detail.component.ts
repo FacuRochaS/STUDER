@@ -8,17 +8,18 @@ import { ContestService } from '../../contest.service';
 import { ContestResponseDTO, LeaderboardEntryDTO, AchievementResponseDTO } from '../../contest.model';
 import { AuthStateService } from '../../../../core/auth/auth-state.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
-import { RichTextComponent } from '../../../../shared/components/rich-text/rich-text.component';
 import { TagComponent } from '../../../../shared/components/tag/tag.component';
-import { RelativeTimePipe } from '../../../../shared/pipes/relative-time.pipe';
 import { CourseCreateComponent } from '../../../courses/components/course-create/course-create.component';
+import { BlockViewerComponent } from '../../../blocks/component/block-viewer/block-viewer.component';
+import { TextViewerComponent } from '../../../blocks/text/viewer/text-viewer.component';
+import { BlockContentItem, TextContentData } from '../../../blocks/interfaces/content.interfaces';
 
 @Component({
   selector: 'studer-contest-detail',
   standalone: true,
   imports: [
     CommonModule, FormsModule, RouterModule, TranslateModule,
-    LoaderComponent, RichTextComponent, TagComponent, RelativeTimePipe, CourseCreateComponent
+    LoaderComponent, TagComponent, CourseCreateComponent, BlockViewerComponent, TextViewerComponent
   ],
   templateUrl: './contest-detail.component.html',
   styleUrls: ['./contest-detail.component.css']
@@ -43,13 +44,33 @@ export class ContestDetailComponent implements OnInit, OnDestroy {
   submittingRating = false;
 
   showSubmitForm = false;
+  activeTab = 'info';
 
   get isAdmin(): boolean { return this.currentUserRole === 'ADMIN'; }
-  get canSubmit(): boolean { return this.contest?.status === 'BUILDING'; }
+  get canSubmit(): boolean { return this.contest?.status === 'PREPARATION'; }
   get canValidate(): boolean { return this.contest?.status === 'VALIDATION'; }
-  get showResults(): boolean { return this.contest?.status === 'RESULTS'; }
-  get isAnnounced(): boolean { return this.contest?.status === 'ANNOUNCED'; }
-  get isPreparation(): boolean { return this.contest?.status === 'PREPARATION'; }
+
+  phases = ['ANNOUNCED', 'PREPARATION', 'VALIDATION', 'RESULTS'];
+
+  get phaseIndex(): number {
+    return this.phases.indexOf(this.contest?.status ?? '');
+  }
+
+  get parsedContent(): any {
+    if (!this.contest?.content) return null;
+    if (typeof this.contest.content === 'string') {
+      try { return JSON.parse(this.contest.content); } catch { return null; }
+    }
+    return this.contest.content;
+  }
+
+  get textContent(): TextContentData | null {
+    const pc = this.parsedContent;
+    if (!pc) return null;
+    if (pc.paragraphs) return pc as TextContentData;
+    if (pc.text) return { paragraphs: [{ align: 'left' as const, runs: [{ text: pc.text, imageUrl: null, link: null, bold: false, italic: false, underline: false, strikethrough: false, size: 'medium' as const, color: 'primary' as const }] }] };
+    return null;
+  }
 
   ngOnInit(): void {
     this.authState.user$.pipe(takeUntil(this.destroy$)).subscribe((u: any) => {
@@ -82,9 +103,12 @@ export class ContestDetailComponent implements OnInit, OnDestroy {
 
   loadLeaderboard(): void {
     if (!this.contest) return;
-    this.contestService.getLeaderboard(this.contest.id).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (lb) => this.leaderboard = lb
-    });
+    this.contestService.getLeaderboard(this.contest.id).pipe(takeUntil(this.destroy$)).subscribe({ next: (lb) => this.leaderboard = lb });
+  }
+
+  loadContest(): void {
+    if (!this.contest) return;
+    this.contestService.getById(this.contest.id).pipe(takeUntil(this.destroy$)).subscribe({ next: (c) => { this.contest = c; this.loadLeaderboard(); } });
   }
 
   loadAchievements(): void {
@@ -127,11 +151,44 @@ export class ContestDetailComponent implements OnInit, OnDestroy {
     }
   }
 
+  changeStatus(newStatus: string): void {
+    if (!this.contest || !this.isAdmin) return;
+    this.contestService.changeStatus(this.contest.id, newStatus).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => { this.contest!.status = newStatus; }
+    });
+  }
+
+  getNextStatuses(): string[] {
+    if (!this.contest) return [];
+    const map: Record<string, string[]> = {
+      ANNOUNCED: ['PREPARATION', 'CANCELLED'],
+      PREPARATION: ['VALIDATION', 'CANCELLED'],
+      VALIDATION: ['RESULTS', 'CANCELLED'],
+      RESULTS: [],
+      CANCELLED: ['ANNOUNCED'],
+    };
+    return map[this.contest.status] || [];
+  }
+
   getPhaseProgress(): number {
     if (!this.contest) return 0;
-    const phases = ['ANNOUNCED', 'PREPARATION', 'BUILDING', 'VALIDATION', 'RESULTS'];
-    const idx = phases.indexOf(this.contest.status);
-    return idx >= 0 ? ((idx + 1) / phases.length) * 100 : 0;
+    const idx = this.phases.indexOf(this.contest.status);
+    return idx >= 0 ? ((idx + 1) / this.phases.length) * 100 : 0;
+  }
+
+getStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      ANNOUNCED: 'contest.status.announced',
+      PREPARATION: 'contest.status.preparation',
+      VALIDATION: 'contest.status.validation',
+      RESULTS: 'contest.status.results',
+    };
+    return labels[status] || status;
+  }
+
+  parseBlockContent(content: string): BlockContentItem[] {
+    if (!content) return [];
+    try { return JSON.parse(content); } catch { return []; }
   }
 
   getStatusBadgeClass(): string {

@@ -1,0 +1,22 @@
+<section class="cards">
+  <div class="c c--blue"><span class="cv">{{ ck('totalUsers') }}</span><span class="cl">{{ 'admin.cards.total_users' | translate }}</span></div>
+  <div class="c c--green"><span class="cv">{{ ck('activeUsers') }}</span><span class="cl">{{ 'admin.cards.active_users' | translate }}</span></div>
+  <div class="c c--red"><span class="cv">{{ ck('inactiveUsers') }}</span><span class="cl">{{ 'admin.cards.inactive_users' | translate }}</span></div>
+  <div class="c c--purple"><span class="cv">{{ ck('admins') }}</span><span class="cl">{{ 'admin.cards.admins' | translate }}</span></div>
+</section>
+
+<section class="cards">
+  <div class="c c--teal"><span class="cv">{{ cs('averageAge') }}</span><span class="cl">{{ 'admin.cards.avg_age' | translate }}</span></div>
+  <div class="c c--orange"><span class="cv">{{ cs('averageFollowers') }}</span><span class="cl">{{ 'admin.cards.avg_followers' | translate }}</span></div>
+  <div class="c c--purple"><span class="cv">{{ cs('averageBlocks') }}</span><span class="cl">{{ 'admin.cards.avg_blocks' | translate }}</span></div>
+  <div class="c c--green"><span class="cv">{{ cs('averageCourses') }}</span><span class="cl">{{ 'admin.cards.avg_courses' | translate }}</span></div>
+</section>
+
+<div class="charts-grid">
+  @if (chartsData.usersRegistered?.length) { <div class="chart-box"><h3>{{ 'admin.charts.users_registered' | translate }}</h3><div class="ch-wrap"><canvas id="u1"></canvas></div></div> }
+  @if (chartsData.ageDistribution?.length) { <div class="chart-box"><h3>{{ 'admin.charts.age_distribution' | translate }}</h3><div class="ch-wrap"><canvas id="u2"></canvas></div></div> }
+  @if (chartsData.usersByRole) { <div class="chart-box"><h3>{{ 'admin.charts.users_by_role' | translate }}</h3><div class="ch-wrap ch-wrap--sq"><canvas id="u3"></canvas></div></div> }
+  @if (chartsData.mostActiveUsers?.length) { <div class="chart-box"><h3>{{ 'admin.charts.most_active_users' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="u4"></canvas></div></div> }
+  @if (chartsData.followersDistribution?.length) { <div class="chart-box"><h3>{{ 'admin.charts.followers_distribution' | translate }}</h3><div class="ch-wrap"><canvas id="u5"></canvas></div></div> }
+  @if (chartsData.profileCompletion) { <div class="chart-box"><h3>{{ 'admin.charts.profile_completion' | translate }}</h3><div class="ch-wrap ch-wrap--sq"><canvas id="u6"></canvas></div></div> }
+</div>

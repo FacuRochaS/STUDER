@@ -44,4 +44,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("SELECT COUNT(c) FROM Course c WHERE c.isActive = true AND c.contest.id = :contestId")
     long countByContestId(@Param("contestId") Long contestId);
+
+    @Query("SELECT c FROM Course c WHERE c.isActive = true AND c.published = true AND LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) ORDER BY c.createdDatetime DESC")
+    Page<Course> searchByName(@Param("query") String query, Pageable pageable);
 }

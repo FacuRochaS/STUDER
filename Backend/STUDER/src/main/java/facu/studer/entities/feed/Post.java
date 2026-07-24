@@ -1,5 +1,6 @@
 package facu.studer.entities.feed;
 
+
 import com.fasterxml.jackson.databind.JsonNode;
 import facu.studer.entities.BaseEntity;
 import facu.studer.entities.Tag;
@@ -40,6 +41,7 @@ public class Post extends BaseEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private JsonNode content;
+
 
     /**
      * Tags associated with the post.

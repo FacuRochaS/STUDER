@@ -11,11 +11,14 @@ import facu.studer.entities.blocks.BlockLike;
 import facu.studer.entities.blocks.BlockVersion;
 import facu.studer.entities.blocks.Difficulty;
 import facu.studer.entities.users.User;
+import facu.studer.entities.users.Friend;
 import facu.studer.exceptions.ResourceNotFoundException;
 import facu.studer.mappers.BlockMapper;
 import facu.studer.repositories.block.BlockLikeRepository;
 import facu.studer.repositories.block.BlockRepository;
 import facu.studer.repositories.block.BlockVersionRepository;
+import facu.studer.repositories.courses.CourseBlockRepository;
+import facu.studer.repositories.FriendRepository;
 import facu.studer.services.BlockService;
 import facu.studer.services.PointsService;
 import jakarta.persistence.EntityManager;
@@ -41,6 +44,8 @@ public class BlockServiceImpl implements BlockService {
     private final BlockVersionRepository blockVersionRepository;
     private final BlockLikeRepository blockLikeRepository;
     private final PointsService pointsService;
+    private final CourseBlockRepository courseBlockRepository;
+    private final FriendRepository friendRepository;
 
 
     private static final int PAGE_SIZE = 15;
@@ -48,12 +53,12 @@ public class BlockServiceImpl implements BlockService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public BlockServiceImpl(BlockRepository blockRepository, BlockVersionRepository blockVersionRepository,
-                            BlockLikeRepository blockLikeRepository, PointsService pointsService) {
-        this.blockRepository = blockRepository;
-        this.blockVersionRepository = blockVersionRepository;
-        this.blockLikeRepository = blockLikeRepository;
-        this.pointsService = pointsService;
+    public BlockServiceImpl(BlockRepository br, BlockVersionRepository bvr,
+                            BlockLikeRepository blr, PointsService ps,
+                            CourseBlockRepository cbr, FriendRepository fr) {
+        this.blockRepository = br; this.blockVersionRepository = bvr;
+        this.blockLikeRepository = blr; this.pointsService = ps;
+        this.courseBlockRepository = cbr; this.friendRepository = fr;
     }
 
     @Override
@@ -240,7 +245,7 @@ public class BlockServiceImpl implements BlockService {
         BlockVersion version = blockVersionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("block_version.not_found"));
 
-        if(version.getIsActive()) {
+        if(!version.getIsActive()) {
             throw new ResourceNotFoundException("block_version.not_found");
         }
 
@@ -360,7 +365,10 @@ public class BlockServiceImpl implements BlockService {
     @Transactional
     public MessageDTO likeBlock(String username, Long blockId) {
         if (blockLikeRepository.existsByUserUsernameAndBlockIdAndIsActiveTrue(username, blockId)) {
-            throw new IllegalArgumentException("block.already_liked");
+            return MessageDTO.builder()
+                    .success(true)
+                    .message("discussion.message.like_added")
+                    .build();
         }
 
         User user = findUserByUsername(username);
@@ -409,6 +417,67 @@ public class BlockServiceImpl implements BlockService {
                 .build();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public BlockStatsDTO getBlockStats(Long blockId) {
+        long likeCount = blockLikeRepository.countByBlockIdAndIsActiveTrue(blockId);
+        long forkCount = blockRepository.countForksByParentId(blockId);
+        long versionCount = blockRepository.countVersionsByBlockId(blockId);
+        long usedInCourses = courseBlockRepository.countByBlockId(blockId);
+        return BlockStatsDTO.builder()
+                .likeCount(likeCount).forkCount(forkCount)
+                .versionCount(versionCount).usedInCourses(usedInCourses).build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BlockPageResponseDTO exploreBlocks(String username, int page, String query, List<String> tags, String difficulty, Boolean mine, Boolean following, Boolean liked) {
+        StringBuilder jpql = new StringBuilder("SELECT DISTINCT b FROM Block b WHERE b.isActive = true");
+        Map<String, Object> params = new java.util.HashMap<>();
+
+        if (query != null && !query.isBlank()) {
+            jpql.append(" AND (LOWER(b.name) LIKE :q OR LOWER(b.slug) LIKE :q)");
+            params.put("q", "%" + query.toLowerCase() + "%");
+        }
+        if (tags != null && !tags.isEmpty()) {
+            jpql.append(" AND EXISTS (SELECT 1 FROM b.tags t WHERE LOWER(t.name) IN :tags)");
+            params.put("tags", tags.stream().map(String::toLowerCase).collect(Collectors.toList()));
+        }
+        if (difficulty != null && !difficulty.isBlank()) {
+            jpql.append(" AND b.difficulty = :diff");
+            params.put("diff", Difficulty.valueOf(difficulty.toUpperCase()));
+        }
+
+        User currentUser = findUserByUsername(username);
+        if (Boolean.TRUE.equals(mine)) {
+            jpql.append(" AND b.owner.id = :ownerId");
+            params.put("ownerId", currentUser.getId());
+        }
+        if (Boolean.TRUE.equals(following)) {
+            List<Friend> friends = friendRepository.findConfirmedFriends(currentUser);
+            Set<Long> friendIds = friends.stream().map(f ->
+                f.getSender().getId().equals(currentUser.getId()) ? f.getReceiver().getId() : f.getSender().getId()
+            ).collect(Collectors.toSet());
+            friendIds.add(currentUser.getId());
+            jpql.append(" AND b.owner.id IN :friendIds");
+            params.put("friendIds", new ArrayList<>(friendIds));
+        }
+        if (Boolean.TRUE.equals(liked)) {
+            jpql.append(" AND EXISTS (SELECT 1 FROM BlockLike bl WHERE bl.block = b AND bl.user.id = :uid AND bl.isActive = true)");
+            params.put("uid", currentUser.getId());
+        }
+
+        jpql.append(" ORDER BY b.createdDatetime DESC");
+        var q = entityManager.createQuery(jpql.toString(), Block.class);
+        params.forEach(q::setParameter);
+        q.setFirstResult(page * PAGE_SIZE);
+        q.setMaxResults(PAGE_SIZE);
+
+        List<Block> blocks = q.getResultList();
+        List<BlockResponseDTO> dtos = blocks.stream().map(b -> toResponseDTOWithLikes(b, b.getCurrentVersion(), username)).collect(Collectors.toList());
+        long total = blocks.size();
+        return BlockPageResponseDTO.builder().blocks(dtos).totalElements(total).hasMore(total == PAGE_SIZE).currentPage(page).build();
+    }
 
     private BlockResponseDTO toResponseDTOWithLikes(Block block, BlockVersion version, String username) {
         long likeCount = blockLikeRepository.countByBlockIdAndIsActiveTrue(block.getId());

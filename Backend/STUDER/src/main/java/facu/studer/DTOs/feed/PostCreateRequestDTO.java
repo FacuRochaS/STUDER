@@ -1,6 +1,5 @@
 package facu.studer.DTOs.feed;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +16,7 @@ import java.util.List;
 public class PostCreateRequestDTO {
 
     @NotNull
-    private JsonNode content;
+    private String content;
 
     private List<String> tags;
 }

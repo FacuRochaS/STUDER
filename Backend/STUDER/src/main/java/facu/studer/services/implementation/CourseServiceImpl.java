@@ -147,6 +147,21 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional(readOnly = true)
+    public CoursePageResponseDTO searchCourses(String username, String query, Pageable pageable) {
+        Page<Course> coursePage = courseRepository.searchByName(query, pageable);
+        List<CourseResponseDTO> dtos = coursePage.getContent().stream()
+                .map(c -> mapToDTO(c, username, false))
+                .collect(Collectors.toList());
+        return CoursePageResponseDTO.builder()
+                .courses(dtos)
+                .totalElements(coursePage.getTotalElements())
+                .hasMore(coursePage.hasNext())
+                .currentPage(pageable.getPageNumber())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public CoursePageResponseDTO getUserCourses(String username, int page) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
         Page<Course> coursePage = courseRepository.findByOwnerUsername(username, pageable);
@@ -155,6 +170,22 @@ public class CourseServiceImpl implements CourseService {
                 .map(c -> mapToDTO(c, username, false))
                 .collect(Collectors.toList());
 
+        return CoursePageResponseDTO.builder()
+                .courses(dtos)
+                .totalElements(coursePage.getTotalElements())
+                .hasMore(coursePage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CoursePageResponseDTO getCoursesByUsername(String requestingUser, String targetUsername, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<Course> coursePage = courseRepository.findByOwnerUsername(targetUsername, pageable);
+        List<CourseResponseDTO> dtos = coursePage.getContent().stream()
+                .map(c -> mapToDTO(c, requestingUser, false))
+                .collect(Collectors.toList());
         return CoursePageResponseDTO.builder()
                 .courses(dtos)
                 .totalElements(coursePage.getTotalElements())

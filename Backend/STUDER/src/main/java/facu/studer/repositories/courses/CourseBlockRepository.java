@@ -19,4 +19,7 @@ public interface CourseBlockRepository extends JpaRepository<CourseBlock, Long> 
     void deleteByCourseId(@Param("courseId") Long courseId);
 
     List<CourseBlock> findByCourseIdOrderByBlockOrderAsc(Long id);
+
+    @Query("SELECT COUNT(cb) FROM CourseBlock cb WHERE cb.block.id = :blockId AND cb.isActive = true")
+    long countByBlockId(@Param("blockId") Long blockId);
 }

@@ -1,0 +1,20 @@
+<section class="adm">
+  <header class="ah"><h1>{{ 'admin.title' | translate }}</h1><a routerLink="/admin/contests/create" class="btn btn--p">+ {{ 'admin.create_contest' | translate }}</a></header>
+  @if (!isAdmin) { <div class="deny"><i class="pi pi-lock"></i><p>{{ 'admin.access_denied' | translate }}</p></div> }
+  @else if (loading) { <studer-loader></studer-loader> }
+  @else {
+    <nav class="at">
+      @for (t of tabs; track t.id) { <button class="atb" [class.active]="activeTab === t.id" (click)="switchTab(t.id)"><i [class]="t.icon"></i> {{ t.label | translate }}</button> }
+    </nav>
+    @switch (activeTab) {
+      @case ('dashboard') { <studer-admin-dashboard [data]="d"></studer-admin-dashboard> }
+      @case ('users') { <studer-admin-users [data]="userData"></studer-admin-users> }
+      @case ('blocks') { <studer-admin-blocks [data]="blockData"></studer-admin-blocks> }
+      @case ('courses') { <studer-admin-courses [data]="courseData"></studer-admin-courses> }
+      @case ('feed') { <studer-admin-feed [data]="feedData"></studer-admin-feed> }
+      @case ('discussions') { <studer-admin-discussions [data]="discData"></studer-admin-discussions> }
+      @case ('contests') { <studer-admin-contests [data]="contestData"></studer-admin-contests> }
+      @case ('tags') { <studer-admin-tags [data]="tagData"></studer-admin-tags> }
+    }
+  }
+</section>

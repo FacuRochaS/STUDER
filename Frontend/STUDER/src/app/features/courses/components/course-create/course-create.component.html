@@ -15,9 +15,6 @@
             </button>
           </div>
 
-          <div class="form-section__header">
-            <h3>{{ 'course.create.info_title' | translate }}</h3>
-          </div>
 
           <div class="form-group">
             <label class="form-label">{{ 'course.create.name' | translate }}</label>
@@ -160,13 +157,21 @@
             <input type="checkbox" [checked]="blockFilterOwnOnly" (change)="toggleFilterOwnOnly()" />
             <span>{{ 'course.create.my_blocks' | translate }}</span>
           </label>
+          <label class="filter-chip" [class.active]="blockFilterFollowing">
+            <input type="checkbox" [checked]="blockFilterFollowing" (change)="toggleFilterFollowing()" />
+            <span>{{ 'course.create.following_blocks' | translate }}</span>
+          </label>
+          <label class="filter-chip" [class.active]="blockFilterLiked">
+            <input type="checkbox" [checked]="blockFilterLiked" (change)="toggleFilterLiked()" />
+            <span>{{ 'course.create.liked_blocks' | translate }}</span>
+          </label>
           <label class="filter-chip" [class.active]="blockFilterMostLiked">
             <input type="checkbox" [checked]="blockFilterMostLiked" (change)="toggleFilterMostLiked()" />
             <span>{{ 'course.create.most_liked' | translate }}</span>
           </label>
-          @for (diff of ['easy', 'medium', 'hard']; track diff) {
+          @for (diff of ['EASY', 'NORMAL', 'HARD', 'EXPERT']; track diff) {
             <button class="filter-chip" [class.active]="blockFilterDifficulty === diff" (click)="setBlockFilterDifficulty(diff)">
-              {{ 'course.create.difficulty_' + diff | translate }}
+              {{ 'course.create.difficulty_' + diff.toLowerCase() | translate }}
             </button>
           }
         </div>

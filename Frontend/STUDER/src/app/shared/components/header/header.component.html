@@ -30,20 +30,14 @@
           @if (searchResults.length === 0) {
             <div class="header__search-empty">{{ 'search.empty_preview' | translate }}</div>
           } @else {
-            @for (user of searchResults; track trackByUserId($index, user)) {
-              <a class="header__search-item" [routerLink]="['/user', '@' + user.username]" (click)="closeSearchPanel()">
-                <div class="header__search-avatar">
-                  @if (user.profilePictureThumbnailUrl) {
-                    <img [src]="user.profilePictureThumbnailUrl" [alt]="user.username" />
-                  } @else {
-                    <span>{{ getUserInitials(user) }}</span>
-                  }
+            @for (r of searchResults; track trackByResult($index, r)) {
+              <a class="header__search-item" [routerLink]="[r.link]" (click)="closeSearchPanel()">
+                <div class="header__search-avatar" [class]="'header__search-avatar--' + r.type">
+                  <i [class]="r.icon"></i>
                 </div>
                 <div class="header__search-info">
-                  <div class="header__search-name">{{ user.firstName }} {{ user.lastName }}</div>
-                  <div class="header__search-username">
-                    <studer-rich-text [text]="'@' + user.username"></studer-rich-text>
-                  </div>
+                  <div class="header__search-name">{{ r.label }}</div>
+                  <div class="header__search-username">{{ r.sublabel }}</div>
                 </div>
               </a>
             }

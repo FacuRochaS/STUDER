@@ -52,10 +52,39 @@ public class BlockController {
     }
 
 
+    @GetMapping("/stats/{id}")
+    public ResponseEntity<BlockStatsDTO> getBlockStats(@PathVariable Long id) {
+        return ResponseEntity.ok(blockService.getBlockStats(id));
+    }
+
+@GetMapping("/search")
+    public ResponseEntity<BlockPageResponseDTO> getBlocksBySearch(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(required = false) Boolean orderByLikes,
+            @RequestParam(required = false) String difficulty,
+            @RequestParam(required = false) String user,
+            @RequestParam(required = false) String name) {
+        String username = securityUtils.requireCurrentUsername();
+        return ResponseEntity.ok(blockService.getBlocksBySearch(username, page, tags, orderByLikes, difficulty, user, name));
+    }
+
+    @GetMapping("/explore")
+    public ResponseEntity<BlockPageResponseDTO> exploreBlocks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(required = false) String difficulty,
+            @RequestParam(required = false) Boolean mine,
+            @RequestParam(required = false) Boolean following,
+            @RequestParam(required = false) Boolean liked) {
+        String username = securityUtils.requireCurrentUsername();
+        return ResponseEntity.ok(blockService.exploreBlocks(username, page, query, tags, difficulty, mine, following, liked));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<BlockResponseDTO> getBlock(
             @PathVariable Long id){
-
         String username = securityUtils.requireCurrentUsername();
         BlockResponseDTO response = blockService
                 .getBlock(id, username);
@@ -75,26 +104,9 @@ public class BlockController {
     @GetMapping("/version/{id}")
     public ResponseEntity<BlockResponseDTO> getBlockByVersion(
             @PathVariable Long id){
-
         String username = securityUtils.requireCurrentUsername();
         BlockResponseDTO response = blockService
                 .getBlockByVersion(id, username);
-        return ResponseEntity.ok(response);
-    }
-
-
-    @GetMapping("/search")
-    public ResponseEntity<BlockPageResponseDTO> getBlocksBySearch(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(required = false) List<String> tags,
-            @RequestParam(required = false) Boolean orderByLikes,
-            @RequestParam(required = false) String difficulty,
-            @RequestParam(required = false) String user,
-            @RequestParam(required = false) String name) {
-
-        String username = securityUtils.requireCurrentUsername();
-        BlockPageResponseDTO response = blockService
-                .getBlocksBySearch(username, page,tags,orderByLikes,difficulty,user,name);
         return ResponseEntity.ok(response);
     }
 

@@ -1,5 +1,8 @@
 package facu.studer.services.implementation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import facu.studer.DTOs.MessageDTO;
 import facu.studer.DTOs.feed.PostCreateRequestDTO;
 import facu.studer.DTOs.feed.PostPageResponseDTO;
@@ -21,8 +24,10 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -59,7 +64,7 @@ public class FeedServiceImpl implements FeedService {
 
         Post post = Post.builder()
                 .user(user)
-                .content(request.getContent())
+                .content(parseContent(request.getContent()))
                 .tags(managedTags)
                 .isActive(true)
                 .createdDatetime(LocalDateTime.now())
@@ -232,5 +237,17 @@ public class FeedServiceImpl implements FeedService {
         }
 
         return result;
+    }
+
+    private JsonNode parseContent(String content) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readTree(content);
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid post content."
+            );
+        }
     }
 }

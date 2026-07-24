@@ -44,6 +44,15 @@ export class TokenStorageService {
     return exp <= (nowSec + leewaySeconds);
   }
 
+  /** Milliseconds remaining until the access token expires (0 if expired/unknown). */
+  getExpiresInMs(): number {
+    const payload = this.getPayload();
+    const exp = payload?.exp;
+    if (!exp) return 0;
+    const remainingMs = exp * 1000 - Date.now();
+    return Math.max(0, remainingMs);
+  }
+
   hasValidToken(): boolean {
     const token = this.getAccessToken();
     return !!token && !this.isExpired();

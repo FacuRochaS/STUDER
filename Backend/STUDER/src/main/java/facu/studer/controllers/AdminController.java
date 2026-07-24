@@ -3,123 +3,99 @@ package facu.studer.controllers;
 import facu.studer.DTOs.MessageDTO;
 import facu.studer.DTOs.contest.*;
 import facu.studer.security.SecurityUtils;
+import facu.studer.services.AdminService;
 import facu.studer.services.ContestService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admin")
 public class AdminController {
-
     private final ContestService contestService;
+    private final AdminService adminService;
     private final SecurityUtils securityUtils;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    public AdminController(ContestService contestService, SecurityUtils securityUtils) {
-        this.contestService = contestService;
-        this.securityUtils = securityUtils;
-    }
-
-    // ===== DASHBOARD =====
+    public AdminController(ContestService cs, AdminService as, SecurityUtils su) { this.contestService = cs; this.adminService = as; this.securityUtils = su; }
 
     @GetMapping("/dashboard")
-    public ResponseEntity<DashboardMetricsDTO> getDashboard() {
+    public ResponseEntity<Map<String, Object>> dashboard(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) Integer limit) {
         securityUtils.requireCurrentUsername();
-
-        long totalUsers = count("SELECT COUNT(u) FROM User u WHERE u.isActive = true");
-        long activeToday = count("SELECT COUNT(u) FROM User u WHERE u.lastConnectionTime >= :since AND u.isActive = true",
-                LocalDateTime.now().minusHours(24));
-        long activeThisWeek = count("SELECT COUNT(u) FROM User u WHERE u.lastConnectionTime >= :since AND u.isActive = true",
-                LocalDateTime.now().minusDays(7));
-        long newRegistrations = count("SELECT COUNT(u) FROM User u WHERE u.createdDatetime >= :since AND u.isActive = true",
-                LocalDateTime.now().minusDays(7));
-        long totalBlocks = count("SELECT COUNT(b) FROM Block b WHERE b.isActive = true");
-        long totalCourses = count("SELECT COUNT(c) FROM Course c WHERE c.isActive = true");
-        long totalForks = count("SELECT COUNT(b) FROM Block b WHERE b.isFork = true AND b.isActive = true");
-        long totalVersions = count("SELECT COUNT(bv) FROM BlockVersion bv WHERE bv.isActive = true");
-        long totalLikes = count("SELECT COUNT(l) FROM BlockLike l WHERE l.isActive = true");
-        long totalComments = count("SELECT COUNT(m) FROM DiscussionMessage m WHERE m.isActive = true");
-        long activeContests = count("SELECT COUNT(c) FROM Contest c WHERE c.status NOT IN ('RESULTS','CANCELLED') AND c.isActive = true");
-        long finishedContests = count("SELECT COUNT(c) FROM Contest c WHERE c.status = 'RESULTS' AND c.isActive = true");
-
-        List<DifficultyDistributionDTO> difficultyDist = List.of();
-        List<TagDistributionDTO> topTags = List.of();
-        List<UserReputationDTO> topUsers = List.of();
-
-        try {
-            difficultyDist = entityManager.createQuery(
-                    "SELECT new facu.studer.DTOs.contest.DifficultyDistributionDTO(CAST(b.difficulty AS string), COUNT(b)) " +
-                            "FROM Block b WHERE b.isActive = true GROUP BY b.difficulty ORDER BY COUNT(b) DESC",
-                    DifficultyDistributionDTO.class).getResultList();
-
-            topTags = entityManager.createQuery(
-                            "SELECT new facu.studer.DTOs.contest.TagDistributionDTO(t.name, COUNT(bt)) " +
-                                    "FROM Block b JOIN b.tags t WHERE b.isActive = true GROUP BY t.name ORDER BY COUNT(bt) DESC",
-                            TagDistributionDTO.class)
-                    .setMaxResults(10).getResultList();
-
-            topUsers = entityManager.createQuery(
-                            "SELECT new facu.studer.DTOs.contest.UserReputationDTO(u.id, u.username, u.firstName, u.lastName, u.profilePictureThumbnailUrl, u.points) " +
-                                    "FROM User u WHERE u.isActive = true ORDER BY u.points DESC",
-                            UserReputationDTO.class)
-                    .setMaxResults(10).getResultList();
-        } catch (Exception ignored) {}
-
-        return ResponseEntity.ok(DashboardMetricsDTO.builder()
-                .totalUsers(totalUsers).activeToday(activeToday).activeThisWeek(activeThisWeek)
-                .newRegistrations(newRegistrations).totalBlocks(totalBlocks).totalCourses(totalCourses)
-                .totalForks(totalForks).totalVersions(totalVersions).totalLikes(totalLikes)
-                .totalComments(totalComments).activeContests(activeContests).finishedContests(finishedContests)
-                .difficultyDistribution(difficultyDist).topTags(topTags).topUsers(topUsers)
-                .build());
+        return ResponseEntity.ok(adminService.getDashboard(startDate, endDate, date, limit));
     }
 
-    // ===== CONTEST MANAGEMENT =====
-
-    @PostMapping("/contests")
-    public ResponseEntity<ContestResponseDTO> createContest(@Valid @RequestBody ContestCreateRequestDTO request) {
-        String username = securityUtils.requireCurrentUsername();
-        return ResponseEntity.ok(contestService.createContest(username, request));
+    @GetMapping("/dashboard/users")
+    public ResponseEntity<Map<String, Object>> usersDashboard(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer limit) {
+        securityUtils.requireCurrentUsername();
+        return ResponseEntity.ok(adminService.getUsersDashboard(startDate, endDate, limit));
     }
 
-    @PutMapping("/contests/{id}")
-    public ResponseEntity<ContestResponseDTO> updateContest(@PathVariable Long id, @Valid @RequestBody ContestCreateRequestDTO request) {
-        String username = securityUtils.requireCurrentUsername();
-        return ResponseEntity.ok(contestService.updateContest(username, id, request));
+    @GetMapping("/dashboard/blocks")
+    public ResponseEntity<Map<String, Object>> blocksDashboard(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer limit) {
+        securityUtils.requireCurrentUsername();
+        return ResponseEntity.ok(adminService.getBlocksDashboard(startDate, endDate, limit));
     }
 
-    @DeleteMapping("/contests/{id}")
-    public ResponseEntity<MessageDTO> deleteContest(@PathVariable Long id) {
-        String username = securityUtils.requireCurrentUsername();
-        return ResponseEntity.ok(contestService.deleteContest(username, id));
+    @GetMapping("/dashboard/courses")
+    public ResponseEntity<Map<String, Object>> coursesDashboard(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer limit) {
+        securityUtils.requireCurrentUsername();
+        return ResponseEntity.ok(adminService.getCoursesDashboard(startDate, endDate, limit));
     }
 
-    @PatchMapping("/contests/{id}/status")
-    public ResponseEntity<MessageDTO> changeContestStatus(@PathVariable Long id, @RequestBody StatusChangeRequest request) {
-        String username = securityUtils.requireCurrentUsername();
-        return ResponseEntity.ok(contestService.changeContestStatus(username, id, request.getStatus()));
+    @GetMapping("/dashboard/feed")
+    public ResponseEntity<Map<String, Object>> feedDashboard(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer limit) {
+        securityUtils.requireCurrentUsername();
+        return ResponseEntity.ok(adminService.getFeedDashboard(startDate, endDate, limit));
     }
 
-    @PostMapping("/contests/{id}/finish")
-    public ResponseEntity<MessageDTO> finishContest(@PathVariable Long id) {
-        String username = securityUtils.requireCurrentUsername();
-        return ResponseEntity.ok(contestService.finishContest(username, id));
+    @GetMapping("/dashboard/discussions")
+    public ResponseEntity<Map<String, Object>> discussionsDashboard(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer limit) {
+        securityUtils.requireCurrentUsername();
+        return ResponseEntity.ok(adminService.getDiscussionsDashboard(startDate, endDate, limit));
     }
 
-    private long count(String jpql, Object... params) {
-        var q = entityManager.createQuery(jpql, Long.class);
-        if (params.length > 0 && params[0] instanceof LocalDateTime since) {
-            q.setParameter("since", since);
-        }
-        return q.getSingleResult();
+    @GetMapping("/dashboard/contests")
+    public ResponseEntity<Map<String, Object>> contestsDashboard(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer limit) {
+        securityUtils.requireCurrentUsername();
+        return ResponseEntity.ok(adminService.getContestsDashboard(startDate, endDate, limit));
     }
+
+    @GetMapping("/dashboard/tags")
+    public ResponseEntity<Map<String, Object>> tagsDashboard(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer limit) {
+        securityUtils.requireCurrentUsername();
+        return ResponseEntity.ok(adminService.getTagsDashboard(startDate, endDate, limit));
+    }
+
+    @PostMapping("/contests") public ResponseEntity<ContestResponseDTO> create(@Valid @RequestBody ContestCreateRequestDTO r) { return ResponseEntity.ok(contestService.createContest(securityUtils.requireCurrentUsername(), r)); }
+    @PutMapping("/contests/{id}") public ResponseEntity<ContestResponseDTO> update(@PathVariable Long id, @Valid @RequestBody ContestCreateRequestDTO r) { return ResponseEntity.ok(contestService.updateContest(securityUtils.requireCurrentUsername(), id, r)); }
+    @DeleteMapping("/contests/{id}") public ResponseEntity<MessageDTO> delete(@PathVariable Long id) { return ResponseEntity.ok(contestService.deleteContest(securityUtils.requireCurrentUsername(), id)); }
+    @PatchMapping("/contests/{id}/status") public ResponseEntity<MessageDTO> status(@PathVariable Long id, @RequestBody StatusChangeRequest r) { return ResponseEntity.ok(contestService.changeContestStatus(securityUtils.requireCurrentUsername(), id, r.getStatus())); }
+    @PostMapping("/contests/{id}/finish") public ResponseEntity<MessageDTO> finish(@PathVariable Long id) { return ResponseEntity.ok(contestService.finishContest(securityUtils.requireCurrentUsername(), id)); }
 }

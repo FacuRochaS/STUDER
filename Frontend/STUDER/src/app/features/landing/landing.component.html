@@ -8,6 +8,13 @@
       <a class="landing-nav__link" href="#features">{{ 'landing.nav_features' | translate }}</a>
       <a class="landing-nav__link" href="#how">{{ 'landing.nav_how' | translate }}</a>
       <a class="landing-nav__link" href="#about">{{ 'landing.nav_about' | translate }}</a>
+      <a class="landing-nav__link" routerLink="/faq">{{ 'landing.nav_faq' | translate }}</a>
+      <button class="landing-nav__icon-btn" (click)="toggleTheme($event)" [title]="'header.toggle_theme' | translate">
+        <span [class]="themeIcon"></span>
+      </button>
+      <button class="landing-nav__icon-btn landing-nav__lang-btn" (click)="toggleLanguage()" [title]="'header.toggle_language' | translate">
+        {{ langLabel }}
+      </button>
       <button class="landing-nav__cta" (click)="scrollToLogin()">{{ 'login.submit' | translate }}</button>
     </div>
   </nav>
@@ -202,3 +209,4 @@
     <span class="landing-footer__copy">&copy; 2026 Studer &mdash; {{ 'landing.footer_rights' | translate }}</span>
   </footer>
 </div>
+<studer-chatbot></studer-chatbot>

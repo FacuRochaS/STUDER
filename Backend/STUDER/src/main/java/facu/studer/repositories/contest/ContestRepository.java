@@ -18,9 +18,12 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
     List<Contest> findByStatusOrderByStartDateDesc(String status);
     long countByStatus(String status);
 
-    @Query("SELECT c FROM Contest c WHERE c.startDate <= :now AND c.endDate >= :now AND c.isActive = true ORDER BY c.startDate ASC")
+    @Query("SELECT c FROM Contest c WHERE c.startDate <= :now AND c.validationEndDate >= :now AND c.isActive = true ORDER BY c.startDate ASC")
     List<Contest> findActiveContests(@Param("now") LocalDateTime now);
 
     @Query("SELECT c FROM Contest c WHERE c.startDate > :now AND c.isActive = true ORDER BY c.startDate ASC")
     List<Contest> findUpcomingContests(@Param("now") LocalDateTime now);
+
+    @Query("SELECT c FROM Contest c WHERE c.isActive = true AND LOWER(c.title) LIKE LOWER(CONCAT('%', :query, '%')) ORDER BY c.startDate DESC")
+    Page<Contest> searchByTitle(@Param("query") String query, Pageable pageable);
 }

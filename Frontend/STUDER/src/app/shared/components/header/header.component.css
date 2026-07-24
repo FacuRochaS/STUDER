@@ -135,6 +135,11 @@
   object-fit: cover;
 }
 
+.header__search-avatar--user { background: rgba(66,133,244,0.1); color: var(--color-primary); }
+.header__search-avatar--block { background: rgba(255,193,7,0.12); color: #f57c00; }
+.header__search-avatar--course { background: rgba(0,191,99,0.1); color: var(--color-correct); }
+.header__search-avatar--contest { background: rgba(156,39,176,0.1); color: #9c27b0; }
+
 .header__search-name {
   font-size: 0.9rem;
   font-weight: 600;

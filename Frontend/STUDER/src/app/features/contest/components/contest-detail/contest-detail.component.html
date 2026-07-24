@@ -1,252 +1,81 @@
-<section class="contest-detail">
-  @if (loading) {
-    <studer-loader></studer-loader>
-  } @else if (error) {
-    <div class="contest-detail__error">{{ error }}</div>
-  } @else if (contest) {
-    <div class="contest-detail__header">
-      <div class="contest-detail__header-info">
-        <h1>{{ contest.title }}</h1>
-        @if (contest.theme) {
-          <span class="contest-theme">{{ contest.theme }}</span>
-        }
-        @if (contest.difficulty) {
-          <span class="contest-difficulty">{{ contest.difficulty }}</span>
-        }
-      </div>
-      <span class="contest-detail__status" [class.contest-badge--announced]="contest.status === 'ANNOUNCED'"
-            [class.contest-badge--preparation]="contest.status === 'PREPARATION'"
-            [class.contest-badge--building]="contest.status === 'BUILDING'"
-            [class.contest-badge--validation]="contest.status === 'VALIDATION'"
-            [class.contest-badge--results]="contest.status === 'RESULTS'">
-        {{ getStatusLabel(contest.status) | translate }}
-      </span>
-    </div>
-
-    <div class="contest-phase-bar">
-      <div class="contest-phase-bar__fill" [style.width.%]="getPhaseProgress()"></div>
-      <div class="contest-phase-bar__labels">
-        <span [class.active]="isAnnounced || isPreparation || canSubmit || canValidate || showResults">📋</span>
-        <span [class.active]="isPreparation || canSubmit || canValidate || showResults">📝</span>
-        <span [class.active]="canSubmit || canValidate || showResults">⚙️</span>
-        <span [class.active]="canValidate || showResults">🔍</span>
-        <span [class.active]="showResults">🏆</span>
-      </div>
-    </div>
-
-    @if (contest.banner) {
-      <div class="contest-detail__banner">
-        <img [src]="contest.banner" alt="{{ contest.title }}">
-      </div>
-    }
-
-    @if (contest.description) {
-      <div class="contest-detail__description">{{ contest.description }}</div>
-    }
-
-    <div class="contest-stats-row">
-      <div class="stat-chip"><i class="pi pi-users"></i> {{ contest.participantCount }} {{ 'contest.participants' | translate }}</div>
-      <div class="stat-chip"><i class="pi pi-book"></i> {{ contest.courseCount }} {{ 'contest.courses' | translate }}</div>
-      <div class="stat-chip"><i class="pi pi-cube"></i> {{ contest.blockCount }} {{ 'contest.blocks' | translate }}</div>
-      @if (contest.maxParticipants) {
-        <div class="stat-chip"><i class="pi pi-users"></i> {{ 'contest.max_participants' | translate }} {{ contest.maxParticipants }}</div>
-      }
-    </div>
-
-    <div class="contest-requirements">
-      <h3>{{ 'contest.requirements' | translate }}</h3>
-      <div class="requirements-list">
-        @if (contest.minLevel) {
-          <span class="req-badge">{{ 'contest.min_level' | translate }} {{ contest.minLevel }}</span>
-        }
-        @if (contest.minReputation) {
-          <span class="req-badge">{{ 'contest.min_reputation' | translate }} {{ contest.minReputation }}</span>
-        }
-      </div>
-    </div>
-
-    @if (contest.learningObjectives) {
-      <div class="contest-objectives">
-        <h3>{{ 'contest.objectives' | translate }}</h3>
-        <p>{{ contest.learningObjectives }}</p>
-      </div>
-    }
-
-    @if (contest.bibliography) {
-      <div class="contest-bibliography">
-        <h3>{{ 'contest.bibliography' | translate }}</h3>
-        <p>{{ contest.bibliography }}</p>
-      </div>
-    }
-
-    @if (contest.externalLinks) {
-      <div class="contest-links">
-        <h3>{{ 'contest.resources' | translate }}</h3>
-        <p>{{ contest.externalLinks }}</p>
-      </div>
-    }
-
-    @if (contest.content) {
-      <div class="contest-detail__content">
-        <studer-rich-text [text]="contest.content?.consigna || contest.content?.text || ''"></studer-rich-text>
-      </div>
-    }
-
-    @if (contest.tags?.length) {
-      <div class="contest-detail__tags">
-        @for (tag of contest.tags; track tag) {
-          <studer-tag [name]="tag"></studer-tag>
-        }
-      </div>
-    }
-
-    <div class="contest-detail__dates">
-      <div class="date-item">
-        <span class="date-label">{{ 'contest.start_date' | translate }}</span>
-        <span class="date-value">{{ contest.startDate | date:'mediumDate' }}</span>
-      </div>
-      @if (contest.preparationEndDate) {
-        <div class="date-item">
-          <span class="date-label">{{ 'contest.preparation_end' | translate }}</span>
-          <span class="date-value">{{ contest.preparationEndDate | date:'mediumDate' }}</span>
-          @if (isBefore(contest.preparationEndDate)) {
-            <span class="days-remaining">{{ daysRemaining(contest.preparationEndDate) }} {{ 'contest.days_left' | translate }}</span>
-          }
+<section class="cd">
+  @if (loading) { <studer-loader></studer-loader> }
+  @else if (error) { <div class="cd-err">{{ error }}</div> }
+  @else if (contest) {
+    <div class="cd-card">
+      <div class="cd-head">
+        <div class="cd-head-top">
+          <h1>{{ contest.title }}</h1>
+          <span class="cd-badge cd-badge--{{ contest.status.toLowerCase() }}">{{ getStatusLabel(contest.status) | translate }}</span>
         </div>
-      }
-      @if (contest.buildingEndDate) {
-        <div class="date-item">
-          <span class="date-label">{{ 'contest.building_end' | translate }}</span>
-          <span class="date-value">{{ contest.buildingEndDate | date:'mediumDate' }}</span>
-          @if (isBefore(contest.buildingEndDate)) {
-            <span class="days-remaining">{{ daysRemaining(contest.buildingEndDate) }} {{ 'contest.days_left' | translate }}</span>
-          }
-        </div>
-      }
-      @if (contest.validationEndDate) {
-        <div class="date-item">
-          <span class="date-label">{{ 'contest.validation_end' | translate }}</span>
-          <span class="date-value">{{ contest.validationEndDate | date:'mediumDate' }}</span>
-          @if (isBefore(contest.validationEndDate)) {
-            <span class="days-remaining">{{ daysRemaining(contest.validationEndDate) }} {{ 'contest.days_left' | translate }}</span>
-          }
-        </div>
-      }
-      <div class="date-item">
-        <span class="date-label">{{ 'contest.end_date' | translate }}</span>
-        <span class="date-value">{{ contest.endDate | date:'mediumDate' }}</span>
+        @if (contest.description) { <p class="cd-desc">{{ contest.description }}</p> }
       </div>
-    </div>
 
-    @if (contest.rewards) {
-      <div class="contest-rewards">
-        <h3>{{ 'contest.rewards' | translate }}</h3>
-        <pre>{{ contest.rewards | json }}</pre>
+      <div class="cd-numbers">
+        <div class="cd-num"><i class="pi pi-users"></i><strong>{{ contest.participantCount }}</strong><span>{{ 'contest.participants' | translate }}</span></div>
+        <div class="cd-num"><i class="pi pi-book"></i><strong>{{ contest.courseCount }}</strong><span>{{ 'contest.courses' | translate }}</span></div>
+        <div class="cd-num"><i class="pi pi-box"></i><strong>{{ contest.blockCount }}</strong><span>{{ 'contest.blocks' | translate }}</span></div>
+        @if (contest.minPoints) { <div class="cd-num"><i class="pi pi-star"></i><strong>{{ contest.minPoints }}</strong><span>{{ 'contest.min_points' | translate }}</span></div> }
       </div>
-    }
 
-    <div class="contest-detail__actions">
-      @if (canSubmit) {
-        <section class="action-section">
-          <button class="btn btn--primary" (click)="showSubmitForm = !showSubmitForm">
-            {{ showSubmitForm ? ('common.cancel' | translate) : ('contest.submit_course' | translate) }}
-          </button>
-          @if (showSubmitForm) {
-            <div class="contest-detail__submit-form">
-              <p class="hint">{{ 'contest.submit_hint' | translate }}</p>
-              <studer-course-create (saved)="showSubmitForm = false"></studer-course-create>
+      <div class="cd-phase">
+        <div class="cd-phase-bar"><div class="cd-phase-fill" [style.width.%]="getPhaseProgress()"></div></div>
+        <div class="cd-phase-steps">
+          @for (p of phases; track p; let i = $index) {
+            <div class="cd-ps" [class.active]="phaseIndex >= i" [class.current]="contest.status === p">
+              <span class="cd-ps-dot">{{ contest.status === p ? '●' : (phaseIndex > i ? '✓' : (i + 1)) }}</span>
+              <span class="cd-ps-label">{{ getStatusLabel(p) | translate }}</span>
             </div>
           }
-        </section>
-      }
+        </div>
+      </div>
 
-      @if (canValidate) {
-        <section class="action-section">
-          <button class="btn btn--primary" (click)="getRandomCourse()" [disabled]="showValidation">
-            {{ 'contest.validate_random' | translate }}
-          </button>
-          @if (showValidation && validatingCourse) {
-            <div class="contest-detail__validation">
-              <div class="validation-course">
+      <div class="cd-dates">
+        <div class="cd-dt"><label>{{ 'contest.start_date' | translate }}</label><span>{{ contest.startDate | date:'medium' }}</span></div>
+        @if (contest.preparationEndDate) { <div class="cd-dt"><label>{{ 'contest.preparation_end' | translate }}</label><span>{{ contest.preparationEndDate | date:'medium' }}</span></div> }
+        @if (contest.validationEndDate) { <div class="cd-dt"><label>{{ 'contest.validation_end' | translate }}</label><span>{{ contest.validationEndDate | date:'medium' }}</span></div> }
+      </div>
+
+      <div class="cd-tabs">
+        <button [class.active]="activeTab === 'info'" (click)="activeTab = 'info'">{{ 'contest.info_tab' | translate }}</button>
+        <button [class.active]="activeTab === 'leaderboard'" (click)="activeTab = 'leaderboard'">{{ 'contest.leaderboard' | translate }}</button>
+      </div>
+
+      @if (activeTab === 'info') {
+        <div class="cd-tab-content">
+          @if (textContent) { <div class="cd-content"><studer-text-viewer [data]="textContent"></studer-text-viewer></div> }
+          @if (contest.tags?.length) { <div class="cd-tags">@for (t of contest.tags; track t) { <span class="entity entity--tag">#{{ t }}</span> }</div> }
+
+          @if (canSubmit) {
+            <button class="btn btn--primary" (click)="showSubmitForm = !showSubmitForm">{{ showSubmitForm ? ('common.cancel' | translate) : ('contest.submit_course' | translate) }}</button>
+            @if (showSubmitForm) { <div class="cd-submit"><studer-course-create [contestId]="contest.id" (saved)="showSubmitForm = false; loadContest()"></studer-course-create></div> }
+          }
+          @if (canValidate) {
+            <button class="btn btn--primary" (click)="getRandomCourse()" [disabled]="showValidation">{{ 'contest.validate_random' | translate }}</button>
+            @if (showValidation && validatingCourse) {
+              <div class="cd-val">
                 <h3>{{ validatingCourse.name }}</h3>
-                <div class="stars">
-                  @for (star of [1,2,3,4,5]; track star) {
-                    <button class="star-btn" [class.active]="userRating >= star" (click)="userRating = star">★</button>
-                  }
-                </div>
-                <button class="btn btn--primary" (click)="submitRating()" [disabled]="submittingRating || userRating === 0">
-                  {{ 'contest.submit_rating' | translate }}
-                </button>
+                @if (validatingCourse.blocks?.length) { <div>@for (b of validatingCourse.blocks; track b.id) { <div class="cd-vb"><strong>{{ b.blockName }}</strong>@if (b.version?.content) { <studer-block-viewer [content]="parseBlockContent(b.version.content)"></studer-block-viewer> }</div> }</div> }
+                <div class="stars">@for (s of [1,2,3,4,5]; track s) { <button class="star-btn" [class.on]="userRating >= s" (click)="userRating = s">★</button> }</div>
+                <button class="btn btn--primary" (click)="submitRating()" [disabled]="submittingRating || !userRating">{{ 'contest.submit_rating' | translate }}</button>
               </div>
-            </div>
-          }
-        </section>
-      }
-    </div>
-
-    @if (showResults) {
-      <div class="contest-detail__achievements">
-        <h2>{{ 'contest.achievements' | translate }}</h2>
-        <div class="achievements-grid">
-          @for (a of achievements; track a.id) {
-            <div class="achievement-card" [class.unlocked]="a.unlocked" [class.locked]="!a.unlocked">
-              <div class="achievement-badge">
-                @if (a.badgeUrl) {
-                  <img [src]="a.badgeUrl" alt="{{ a.name }}">
-                } @else {
-                  <i class="pi pi-trophy"></i>
-                }
-              </div>
-              <div class="achievement-info">
-                <strong>{{ a.name }}</strong>
-                <span>{{ a.description }}</span>
-                @if (a.unlocked && a.unlockedAt) {
-                  <small>{{ a.unlockedAt | date:'shortDate' }}</small>
-                }
-              </div>
-            </div>
+            }
           }
         </div>
-      </div>
-    }
+      }
 
-    <div class="contest-detail__leaderboard">
-      <h2>{{ 'contest.leaderboard' | translate }}</h2>
-      @if (leaderboard.length > 0) {
-        <table class="leaderboard-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>{{ 'contest.course_name' | translate }}</th>
-              <th>{{ 'contest.rating' | translate }}</th>
-              <th>{{ 'contest.likes' | translate }}</th>
-              <th>{{ 'contest.score' | translate }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (entry of leaderboard; track entry.courseId; let i = $index) {
-              <tr [class.top-three]="i < 3">
-                <td class="rank">{{ i + 1 }}</td>
-                <td>{{ entry.courseName }}</td>
-                <td>{{ entry.averageRating | number:'1.1-1' }} ({{ entry.ratingCount }})</td>
-                <td>{{ entry.likeCount }}</td>
-                <td class="score">{{ entry.score | number:'1.2-2' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      } @else {
-        <div class="leaderboard-empty">{{ 'contest.leaderboard_empty' | translate }}</div>
+      @if (activeTab === 'leaderboard') {
+        <div class="cd-tab-content">
+          @if (leaderboard.length > 0) {
+            <div class="cd-lb-top">
+              @if (leaderboard.length > 1) { <div class="cd-lb-podium"><span class="cd-lb-medal cd-lb-medal--silver">2</span><strong>{{ leaderboard[1].courseName }}</strong><span>{{ leaderboard[1].score | number:'1.2-2' }}</span></div> }
+              @if (leaderboard.length > 0) { <div class="cd-lb-podium cd-lb-podium--first"><span class="cd-lb-medal cd-lb-medal--gold">1</span><strong>{{ leaderboard[0].courseName }}</strong><span>{{ leaderboard[0].score | number:'1.2-2' }}</span></div> }
+              @if (leaderboard.length > 2) { <div class="cd-lb-podium"><span class="cd-lb-medal cd-lb-medal--bronze">3</span><strong>{{ leaderboard[2].courseName }}</strong><span>{{ leaderboard[2].score | number:'1.2-2' }}</span></div> }
+            </div>
+            <table class="cd-tbl"><thead><tr><th>#</th><th>{{ 'contest.course_name' | translate }}</th><th>{{ 'contest.rating' | translate }}</th><th>{{ 'contest.score' | translate }}</th></tr></thead><tbody>@for (e of leaderboard; track e.courseId; let i = $index) { <tr [class.top]="i < 3"><td>{{ i + 1 }}</td><td>{{ e.courseName }}</td><td>{{ e.averageRating | number:'1.1-1' }} ({{ e.ratingCount }})</td><td class="sc">{{ e.score | number:'1.2-2' }}</td></tr> }</tbody></table>
+          } @else { <p class="cd-empty">{{ 'contest.leaderboard_empty' | translate }}</p> }
+        </div>
       }
     </div>
-
-    @if (isAdmin) {
-      <div class="contest-admin-actions">
-        <h3>{{ 'contest.admin_actions' | translate }}</h3>
-        <button class="btn btn--danger" (click)="finishContest()" [disabled]="showResults">
-          {{ 'contest.finish_contest' | translate }}
-        </button>
-      </div>
-    }
   }
 </section>

@@ -84,9 +84,65 @@ services:
     command: server /data --console-address ":9001"
     networks:
       - backend_net
+
+  # ===== EasyAI (AI assistant) =====
+  easyai-api:
+    container_name: studer_easyai_api
+    build: ../EasyAi/
+    restart: always
+    ports:
+      - "8001:8000"
+    depends_on:
+      - easyai-db
+      - easyai-ollama
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@easyai-db:5432/easyai
+      - OLLAMA_BASE_URL=http://easyai-ollama:11434
+    volumes:
+      - ../EasyAi/app:/app/app
+      - ../EasyAi/scripts:/app/scripts
+    networks:
+      - backend_net
+
+  easyai-db:
+    container_name: studer_easyai_db
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: easyai
+    ports:
+      - "5433:5432"
+    volumes:
+      - easyai_pgdata:/var/lib/postgresql/data
+    networks:
+      - backend_net
+
+  easyai-ollama:
+    image: ollama/ollama:latest
+    container_name: studer_easyai_ollama
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - easyai_ollama_data:/root/.ollama
+    entrypoint: >
+      bash -c "
+        /bin/ollama serve &
+        pid=$!
+        sleep 10 &&
+        ollama pull qwen2.5:0.5b &
+        wait $pid
+      "
+    networks:
+      - backend_net
+
 volumes:
   db_data:
   minio_data:
+  easyai_pgdata:
+  easyai_ollama_data:
 networks:
   frontend_net:
     driver: bridge

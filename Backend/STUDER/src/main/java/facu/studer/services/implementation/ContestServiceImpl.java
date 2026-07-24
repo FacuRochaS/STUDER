@@ -1,5 +1,7 @@
 package facu.studer.services.implementation;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import facu.studer.DTOs.MessageDTO;
 import facu.studer.DTOs.blocks.BlockVersionResponseDTO;
 import facu.studer.DTOs.contest.*;
@@ -25,9 +27,9 @@ import facu.studer.services.ContestService;
 import facu.studer.services.PointsService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.annotation.PostConstruct;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
 @Service
 public class ContestServiceImpl implements ContestService {
 
-    private static final List<String> VALID_STATUSES = List.of("ANNOUNCED", "PREPARATION", "BUILDING", "VALIDATION", "RESULTS", "CANCELLED");
+    private static final List<String> VALID_STATUSES = List.of("ANNOUNCED", "PREPARATION", "VALIDATION", "RESULTS", "CANCELLED");
 
     private final ContestRepository contestRepository;
     private final CourseRepository courseRepository;
@@ -74,23 +76,23 @@ public class ContestServiceImpl implements ContestService {
         this.pointsService = pointsService;
     }
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void seedDefaultAchievements() {
         if (achievementRepository.count() > 0) return;
-        Achievement[] defaults = {
-            Achievement.builder().id(1L).name("contest_participant").description("Participated in a contest")
-                .badgeUrl("/badges/participant.png").category("participation").criteria(null).build(),
-            Achievement.builder().id(2L).name("contest_winner_gold").description("Won 1st place in a contest")
-                .badgeUrl("/badges/gold.png").category("winner").criteria(null).build(),
-            Achievement.builder().id(3L).name("contest_winner_silver").description("Won 2nd place in a contest")
-                .badgeUrl("/badges/silver.png").category("winner").criteria(null).build(),
-            Achievement.builder().id(4L).name("contest_winner_bronze").description("Won 3rd place in a contest")
-                .badgeUrl("/badges/bronze.png").category("winner").criteria(null).build(),
-        };
-        for (Achievement a : defaults) {
-            achievementRepository.save(a);
-        }
+        var now = LocalDateTime.now();
+        achievementRepository.save(Achievement.builder().name("contest_participant").description("Participated in a contest")
+                .badgeUrl("/badges/participant.png").category("participation").criteria(null)
+                .isActive(true).createdDatetime(now).lastUpdatedDatetime(now).build());
+        achievementRepository.save(Achievement.builder().name("contest_winner_gold").description("Won 1st place in a contest")
+                .badgeUrl("/badges/gold.png").category("winner").criteria(null)
+                .isActive(true).createdDatetime(now).lastUpdatedDatetime(now).build());
+        achievementRepository.save(Achievement.builder().name("contest_winner_silver").description("Won 2nd place in a contest")
+                .badgeUrl("/badges/silver.png").category("winner").criteria(null)
+                .isActive(true).createdDatetime(now).lastUpdatedDatetime(now).build());
+        achievementRepository.save(Achievement.builder().name("contest_winner_bronze").description("Won 3rd place in a contest")
+                .badgeUrl("/badges/bronze.png").category("winner").criteria(null)
+                .isActive(true).createdDatetime(now).lastUpdatedDatetime(now).build());
     }
 
     // ===== ADMIN: CONTEST CRUD =====
@@ -99,34 +101,30 @@ public class ContestServiceImpl implements ContestService {
     @Transactional
     public ContestResponseDTO createContest(String username, ContestCreateRequestDTO request) {
         User admin = requireAdmin(username);
-
         Set<Tag> managedTags = resolveTagsByName(request.getTags());
+
+        LocalDateTime start = request.getStartDate();
+        Integer prepH = request.getPreparationDurationHours() != null ? request.getPreparationDurationHours() : 0;
+        Integer valH = request.getValidationDurationHours() != null ? request.getValidationDurationHours() : 0;
+        LocalDateTime prepEnd = start.plusHours(prepH);
+        LocalDateTime valEnd = prepEnd.plusHours(valH);
+
+        JsonNode contentNode = null;
+        if (request.getContent() != null && !request.getContent().isBlank()) {
+            try { contentNode = new ObjectMapper().readTree(request.getContent()); } catch (Exception ignored) {}
+        }
 
         Contest contest = Contest.builder()
                 .title(request.getTitle())
-                .banner(request.getBanner())
                 .description(request.getDescription())
-                .theme(request.getTheme())
-                .difficulty(request.getDifficulty())
-                .content(request.getContent())
+                .content(contentNode)
                 .tags(managedTags)
-                .startDate(request.getStartDate())
-                .preparationEndDate(request.getPreparationEndDate())
-                .buildingEndDate(request.getBuildingEndDate())
-                .validationEndDate(request.getValidationEndDate())
-                .endDate(request.getEndDate())
+                .startDate(start)
+                .preparationEndDate(prepEnd)
+                .validationEndDate(valEnd)
                 .status("ANNOUNCED")
-                .rewards(request.getRewards())
-                .externalLinks(request.getExternalLinks())
-                .bibliography(request.getBibliography())
-                .learningObjectives(request.getLearningObjectives())
-                .minLevel(request.getMinLevel())
-                .minReputation(request.getMinReputation())
-                .maxParticipants(request.getMaxParticipants())
-                .createdBy(admin)
-                .participantCount(0)
-                .courseCount(0)
-                .blockCount(0)
+                .minPoints(request.getMinPoints())
+                .participantCount(0).courseCount(0).blockCount(0)
                 .isActive(true)
                 .createdDatetime(LocalDateTime.now())
                 .lastUpdatedDatetime(LocalDateTime.now())
@@ -151,26 +149,28 @@ public class ContestServiceImpl implements ContestService {
         Set<Tag> managedTags = request.getTags() != null ? resolveTagsByName(request.getTags()) : contest.getTags();
 
         contest.setTitle(request.getTitle());
-        contest.setBanner(request.getBanner());
         contest.setDescription(request.getDescription());
-        contest.setTheme(request.getTheme());
-        contest.setDifficulty(request.getDifficulty());
-        contest.setContent(request.getContent());
+
+        if (request.getContent() != null && !request.getContent().isBlank()) {
+            try { contest.setContent(new ObjectMapper().readTree(request.getContent())); } catch (Exception ignored) {}
+        }
+
         contest.setTags(managedTags);
         contest.setStartDate(request.getStartDate());
-        contest.setPreparationEndDate(request.getPreparationEndDate());
-        contest.setBuildingEndDate(request.getBuildingEndDate());
-        contest.setValidationEndDate(request.getValidationEndDate());
-        contest.setEndDate(request.getEndDate());
-        contest.setRewards(request.getRewards());
-        contest.setExternalLinks(request.getExternalLinks());
-        contest.setBibliography(request.getBibliography());
-        contest.setLearningObjectives(request.getLearningObjectives());
-        contest.setMinLevel(request.getMinLevel());
-        contest.setMinReputation(request.getMinReputation());
-        contest.setMaxParticipants(request.getMaxParticipants());
-        contest.setLastUpdatedDatetime(LocalDateTime.now());
 
+        LocalDateTime start = request.getStartDate() != null ? request.getStartDate() : contest.getStartDate();
+        if (request.getPreparationDurationHours() != null) {
+            contest.setPreparationEndDate(start.plusHours(request.getPreparationDurationHours()));
+        }
+        if (request.getValidationDurationHours() != null) {
+            LocalDateTime prepEnd = contest.getPreparationEndDate() != null ? contest.getPreparationEndDate() : start;
+            contest.setValidationEndDate(prepEnd.plusHours(request.getValidationDurationHours()));
+        }
+        if (request.getMinPoints() != null) {
+            contest.setMinPoints(request.getMinPoints());
+        }
+
+        contest.setLastUpdatedDatetime(LocalDateTime.now());
         Contest saved = contestRepository.save(contest);
         return mapToDTO(saved);
     }
@@ -203,17 +203,9 @@ public class ContestServiceImpl implements ContestService {
             throw new IllegalArgumentException("contest.invalid_transition");
         }
 
-        String oldStatus = contest.getStatus();
         contest.setStatus(newStatus);
         contest.setLastUpdatedDatetime(LocalDateTime.now());
         contestRepository.save(contest);
-
-        // Handle phase entry logic
-        if ("BUILDING".equals(newStatus) && !"BUILDING".equals(oldStatus)) {
-            // Preparation just ended - courses move to hidden
-            List<Course> courses = courseRepository.findAllByContestId(contestId);
-            contest.setCourseCount(courses.size());
-        }
 
         return MessageDTO.builder().success(true).message("contest.status_changed").build();
     }
@@ -221,7 +213,7 @@ public class ContestServiceImpl implements ContestService {
     @Override
     @Transactional
     public MessageDTO finishContest(String username, Long contestId) {
-        User admin = requireAdmin(username);
+        requireAdmin(username);
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new ResourceNotFoundException("contest.not_found"));
 
@@ -241,7 +233,6 @@ public class ContestServiceImpl implements ContestService {
         contest.setLastUpdatedDatetime(LocalDateTime.now());
         contestRepository.save(contest);
 
-        // Award achievements
         awardParticipationAchievements(contest, contestCourses);
 
         return MessageDTO.builder().success(true).message("contest.finished").build();
@@ -283,6 +274,12 @@ public class ContestServiceImpl implements ContestService {
                 .stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ContestResponseDTO> searchContests(String query, Pageable pageable) {
+        return contestRepository.searchByTitle(query, pageable).map(this::mapToDTO);
+    }
+
     // ===== PARTICIPATION =====
 
     @Override
@@ -292,30 +289,23 @@ public class ContestServiceImpl implements ContestService {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new ResourceNotFoundException("contest.not_found"));
 
-        if (!"BUILDING".equals(contest.getStatus())) {
-            throw new IllegalArgumentException("contest.not_in_building");
+        if (!"PREPARATION".equals(contest.getStatus())) {
+            throw new IllegalArgumentException("contest.not_accepting_submissions");
         }
 
-        if (contest.getMinLevel() != null && getLevel(owner.getPoints()) < contest.getMinLevel()) {
-            throw new IllegalArgumentException("contest.level_too_low");
-        }
-        if (contest.getMinReputation() != null && owner.getPoints() < contest.getMinReputation()) {
-            throw new IllegalArgumentException("contest.reputation_too_low");
-        }
-        if (contest.getMaxParticipants() != null && contest.getParticipantCount() >= contest.getMaxParticipants()) {
-            throw new IllegalArgumentException("contest.max_participants_reached");
-        }
-
-        if (courseRepository.findBySlug(request.getSlug()).isPresent()) {
-            throw new IllegalArgumentException("course.slug_exists");
+        if (contest.getMinPoints() != null && owner.getPoints() < contest.getMinPoints()) {
+            throw new IllegalArgumentException("contest.points_too_low");
         }
 
         Set<Tag> managedTags = resolveTagsByName(request.getTags());
 
+        String slug = request.getSlug() != null ? request.getSlug() : request.getName().toLowerCase().replaceAll("[^a-z0-9]+", "-");
+        Integer slugCount = courseRepository.countCoursesByName(request.getName());
+        if (slugCount != null && slugCount > 0) slug = slug + slugCount;
+        if (courseRepository.findBySlug(slug).isPresent()) slug = slug + System.currentTimeMillis();
+
         Course course = Course.builder()
-                .owner(owner)
-                .name(request.getName())
-                .slug(request.getSlug())
+                .owner(owner).name(request.getName()).slug(slug)
                 .tags(managedTags)
                 .link(request.getLink() != null ? request.getLink() : "")
                 .published(false)
@@ -466,11 +456,11 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Transactional
-    public void awardAchievement(String username, Long achievementId) {
-        if (userAchievementRepository.existsByUserUsernameAndAchievementIdAndIsActiveTrue(username, achievementId)) return;
-        User user = findUserByUsername(username);
-        Achievement achievement = achievementRepository.findById(achievementId)
+    public void awardAchievement(String username, String achievementName) {
+        Achievement achievement = achievementRepository.findByName(achievementName)
                 .orElseThrow(() -> new ResourceNotFoundException("achievement.not_found"));
+        if (userAchievementRepository.existsByUserUsernameAndAchievementIdAndIsActiveTrue(username, achievement.getId())) return;
+        User user = findUserByUsername(username);
         UserAchievement ua = UserAchievement.builder()
                 .user(user).achievement(achievement)
                 .isActive(true).createdDatetime(LocalDateTime.now()).lastUpdatedDatetime(LocalDateTime.now())
@@ -482,11 +472,9 @@ public class ContestServiceImpl implements ContestService {
     // ===== HELPERS =====
 
     private void awardParticipationAchievements(Contest contest, List<Course> courses) {
-        // Award "contest_participant" to every course owner
         courses.forEach(c -> {
-            try { awardAchievement(c.getOwner().getUsername(), 1L); } catch (Exception ignored) {}
+            try { awardAchievement(c.getOwner().getUsername(), "contest_participant"); } catch (Exception ignored) {}
         });
-        // Top 3 creators get "contest_winner"
         List<Course> ranked = courses.stream()
                 .filter(c -> c.getRatingCount() > 0)
                 .sorted((a, b) -> {
@@ -494,22 +482,17 @@ public class ContestServiceImpl implements ContestService {
                     double avgB = (double) b.getRatingSum() / b.getRatingCount();
                     return Double.compare(avgB, avgA);
                 }).collect(Collectors.toList());
+        String[] medals = {"contest_winner_gold", "contest_winner_silver", "contest_winner_bronze"};
         for (int i = 0; i < Math.min(3, ranked.size()); i++) {
-            try { awardAchievement(ranked.get(i).getOwner().getUsername(), 2L + i); } catch (Exception ignored) {}
+            try { awardAchievement(ranked.get(i).getOwner().getUsername(), medals[i]); } catch (Exception ignored) {}
         }
-    }
-
-    private int getLevel(long points) {
-        if (points < 100) return 1;
-        return (int) (Math.sqrt(points / 100.0)) + 1;
     }
 
     private List<String> getValidTransitions(String current) {
         return switch (current) {
             case "ANNOUNCED" -> List.of("PREPARATION", "CANCELLED");
-            case "PREPARATION" -> List.of("BUILDING", "ANNOUNCED", "CANCELLED");
-            case "BUILDING" -> List.of("VALIDATION", "PREPARATION", "CANCELLED");
-            case "VALIDATION" -> List.of("RESULTS", "BUILDING", "CANCELLED");
+            case "PREPARATION" -> List.of("VALIDATION", "ANNOUNCED", "CANCELLED");
+            case "VALIDATION" -> List.of("RESULTS", "PREPARATION", "CANCELLED");
             case "RESULTS" -> List.of();
             case "CANCELLED" -> List.of("ANNOUNCED");
             default -> List.of();
@@ -520,24 +503,27 @@ public class ContestServiceImpl implements ContestService {
         List<String> tagNames = contest.getTags() != null
                 ? contest.getTags().stream().map(Tag::getName).collect(Collectors.toList())
                 : List.of();
+
+        Integer prepH = 0;
+        if (contest.getStartDate() != null && contest.getPreparationEndDate() != null) {
+            prepH = (int) java.time.Duration.between(contest.getStartDate(), contest.getPreparationEndDate()).toHours();
+        }
+        Integer valH = 0;
+        if (contest.getPreparationEndDate() != null && contest.getValidationEndDate() != null) {
+            valH = (int) java.time.Duration.between(contest.getPreparationEndDate(), contest.getValidationEndDate()).toHours();
+        }
+
         return ContestResponseDTO.builder()
                 .id(contest.getId()).title(contest.getTitle())
-                .banner(contest.getBanner()).description(contest.getDescription())
-                .theme(contest.getTheme()).difficulty(contest.getDifficulty())
-                .content(contest.getContent()).tags(tagNames)
+                .description(contest.getDescription())
+                .content(contest.getContent() != null ? contest.getContent().toString() : null)
                 .status(contest.getStatus())
                 .startDate(contest.getStartDate())
                 .preparationEndDate(contest.getPreparationEndDate())
-                .buildingEndDate(contest.getBuildingEndDate())
                 .validationEndDate(contest.getValidationEndDate())
-                .endDate(contest.getEndDate())
-                .externalLinks(contest.getExternalLinks())
-                .bibliography(contest.getBibliography())
-                .learningObjectives(contest.getLearningObjectives())
-                .minLevel(contest.getMinLevel())
-                .minReputation(contest.getMinReputation())
-                .maxParticipants(contest.getMaxParticipants())
-                .rewards(contest.getRewards())
+                .preparationDurationHours(prepH)
+                .validationDurationHours(valH)
+                .minPoints(contest.getMinPoints())
                 .participantCount(contest.getParticipantCount())
                 .courseCount(contest.getCourseCount())
                 .blockCount(contest.getBlockCount())

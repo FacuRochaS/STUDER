@@ -1,11 +1,11 @@
 <div class="discussion-container">
-  <app-discussion-sidebar
+  <studer-discussion-sidebar
     (categorySelected)="onCategorySelected($event)">
-  </app-discussion-sidebar>
+  </studer-discussion-sidebar>
 
   <main class="discussion-content">
     @if (selectedCategory === 'explore') {
-      <app-explore-filters (filtersChanged)="onFiltersChanged($event)"></app-explore-filters>
+      <studer-explore-filters (filtersChanged)="onFiltersChanged($event)"></studer-explore-filters>
     }
 
     @if (showCreateForm) {

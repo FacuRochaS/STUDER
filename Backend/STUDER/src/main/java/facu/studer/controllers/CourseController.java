@@ -5,6 +5,7 @@ import facu.studer.DTOs.courses.*;
 import facu.studer.security.SecurityUtils;
 import facu.studer.services.CourseService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -29,6 +30,16 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<CoursePageResponseDTO> searchCourses(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        String username = securityUtils.requireCurrentUsername();
+        CoursePageResponseDTO response = courseService.searchCourses(username, query, PageRequest.of(page, size));
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CourseResponseDTO> getCourse(@PathVariable Long id) {
         String username = securityUtils.requireCurrentUsername();
@@ -47,6 +58,14 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/user/{username}")
+    public ResponseEntity<CoursePageResponseDTO> getCoursesByUsername(
+            @PathVariable String username,
+            @RequestParam(defaultValue = "0") int page) {
+        String currentUsername = securityUtils.requireCurrentUsername();
+        CoursePageResponseDTO response = courseService.getCoursesByUsername(currentUsername, username, page);
+        return ResponseEntity.ok(response);
+    }
     @GetMapping("/me")
     public ResponseEntity<CoursePageResponseDTO> getUserCourses(
             @RequestParam(defaultValue = "0") int page) {

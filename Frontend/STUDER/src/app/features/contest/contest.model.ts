@@ -3,25 +3,16 @@ import { CourseBlockResponseDTO } from '../courses/course.model';
 export interface ContestResponseDTO {
   id: number;
   title: string;
-  banner: string;
   description: string;
-  theme: string;
-  difficulty: string;
   content: any;
   tags: string[];
   status: string;
   startDate: string;
   preparationEndDate: string;
-  buildingEndDate: string;
   validationEndDate: string;
-  endDate: string;
-  externalLinks: string;
-  bibliography: string;
-  learningObjectives: string;
-  minLevel: number;
-  minReputation: number;
-  maxParticipants: number;
-  rewards: any;
+  preparationDurationHours: number;
+  validationDurationHours: number;
+  minPoints: number;
   participantCount: number;
   courseCount: number;
   blockCount: number;
@@ -30,24 +21,13 @@ export interface ContestResponseDTO {
 
 export interface ContestCreateRequestDTO {
   title: string;
-  banner?: string;
   description?: string;
-  theme?: string;
-  difficulty?: string;
-  content?: any;
+  content?: string;
   tags?: string[];
-  externalLinks?: string;
-  bibliography?: string;
-  learningObjectives?: string;
-  minLevel?: number;
-  minReputation?: number;
-  maxParticipants?: number;
-  rewards?: any;
   startDate: string;
-  preparationEndDate?: string;
-  buildingEndDate?: string;
-  validationEndDate?: string;
-  endDate: string;
+  preparationDurationHours?: number;
+  validationDurationHours?: number;
+  minPoints?: number;
 }
 
 export interface ContestCourseResponseDTO {
@@ -105,6 +85,7 @@ export interface DashboardMetricsDTO {
   difficultyDistribution: { difficulty: string; count: number }[];
   topTags: { tag: string; count: number }[];
   topUsers: { userId: number; username: string; firstName: string; lastName: string; avatarUrl: string; points: number }[];
+  blockTypeDistribution: { difficulty: string; count: number }[];
 }
 
 export interface StatusChangeRequest {

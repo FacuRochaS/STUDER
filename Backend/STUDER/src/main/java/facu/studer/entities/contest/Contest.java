@@ -3,7 +3,6 @@ package facu.studer.entities.contest;
 import com.fasterxml.jackson.databind.JsonNode;
 import facu.studer.entities.BaseEntity;
 import facu.studer.entities.Tag;
-import facu.studer.entities.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,14 +26,8 @@ public class Contest extends BaseEntity {
 
     private String title;
 
-    private String banner;
-
     @Column(columnDefinition = "TEXT")
     private String description;
-
-    private String difficulty;
-
-    private String theme;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
@@ -50,33 +43,12 @@ public class Contest extends BaseEntity {
 
     private LocalDateTime startDate;
     private LocalDateTime preparationEndDate;
-    private LocalDateTime buildingEndDate;
     private LocalDateTime validationEndDate;
-    private LocalDateTime endDate;
 
     @Column(nullable = false)
     private String status;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private JsonNode rewards;
-
-    @Column(columnDefinition = "TEXT")
-    private String externalLinks;
-
-    @Column(columnDefinition = "TEXT")
-    private String bibliography;
-
-    @Column(columnDefinition = "TEXT")
-    private String learningObjectives;
-
-    private Integer minLevel;
-    private Long minReputation;
-    private Integer maxParticipants;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    private User createdBy;
+    private Long minPoints;
 
     @Column(nullable = false)
     private Integer participantCount = 0;

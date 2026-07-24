@@ -1,4 +1,17 @@
-.stats-placeholder {
-  padding: var(--spacing-large);
-  color: var(--color-on-surface-variant);
+.stats-container { padding: 0.5rem; }
+.stats-loading { text-align: center; padding: 2rem; color: var(--color-text-secu); }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem; }
+.stat-card {
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+  padding: 1rem 0.5rem;
+  background: var(--input-background);
+  border-radius: 8px;
+  text-align: center;
 }
+.stat-icon { font-size: 1.5rem; }
+.stat-icon--likes { color: var(--color-error); }
+.stat-icon--forks { color: var(--color-restriction); }
+.stat-icon--versions { color: var(--color-primary); }
+.stat-icon--courses { color: var(--color-correct); }
+.stat-value { font-size: 1.5rem; font-weight: 800; color: var(--color-text-prim); }
+.stat-label { font-size: 0.7rem; color: var(--color-text-secu); text-transform: uppercase; letter-spacing: 0.3px; }

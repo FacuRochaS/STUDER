@@ -5,6 +5,7 @@ import { Subject, takeUntil, debounceTime, distinctUntilChanged, switchMap, of }
 import { TranslateModule } from '@ngx-translate/core';
 import { Router, RouterModule } from '@angular/router';
 import { CourseService } from '../../course.service';
+import { ContestService } from '../../../contest/contest.service';
 import { CourseCreateRequestDTO, CourseUpdateRequestDTO, CourseBlockRequestDTO, CourseResponseDTO } from '../../course.model';
 import { BlockService } from '../../../blocks/block.service';
 import { BlockResponseDTO, BlockPageResponseDTO, BlockVersionCreateRequestDTO, BlockForkCreateRequestDTO } from '../../../blocks/block.model';
@@ -47,10 +48,11 @@ export class CourseCreateComponent implements OnInit, OnDestroy {
 
   @Input() mode: 'create' | 'edit' = 'create';
   @Input() editCourse: CourseResponseDTO | null = null;
+  @Input() contestId: number | null = null;
 
   private readonly destroy$ = new Subject<void>();
-
   private readonly courseService = inject(CourseService);
+  private readonly contestService = inject(ContestService);
   private readonly blockService = inject(BlockService);
   private readonly modalService = inject(ModalService);
   private readonly router = inject(Router);
@@ -79,6 +81,8 @@ export class CourseCreateComponent implements OnInit, OnDestroy {
   blockSearchHasMore = false;
   blockFilterDifficulty = '';
   blockFilterOwnOnly = false;
+  blockFilterFollowing = false;
+  blockFilterLiked = false;
   blockFilterMostLiked = false;
   blockFilterTags: string[] = [];
 
@@ -136,21 +140,15 @@ export class CourseCreateComponent implements OnInit, OnDestroy {
     this.blockSearchSubject.pipe(
       debounceTime(300),
       switchMap(() => {
-        const query = this.blockSearchQuery.trim();
-        if (query.length < 2 && !this.blockFilterOwnOnly) {
-          this.blockSearchResults = [];
-          this.blockSearchLoading = false;
-          return of(null);
-        }
         this.blockSearchLoading = true;
-        return this.blockService.getBlocksBySearch(
-          0,
-          this.blockFilterTags.length > 0 ? this.blockFilterTags : undefined,
-          this.blockFilterMostLiked || undefined,
-          this.blockFilterDifficulty || undefined,
-          undefined,
-          query.length >= 2 ? query : undefined,
-        );
+        return this.blockService.exploreBlocks(0, {
+          query: this.blockSearchQuery.trim() || undefined,
+          tags: this.blockFilterTags.length > 0 ? this.blockFilterTags : undefined,
+          difficulty: this.blockFilterDifficulty || undefined,
+          mine: this.blockFilterOwnOnly || undefined,
+          following: this.blockFilterFollowing || undefined,
+          liked: this.blockFilterLiked || undefined,
+        });
       }),
       takeUntil(this.destroy$),
     ).subscribe((page: BlockPageResponseDTO | null) => {
@@ -300,47 +298,22 @@ export class CourseCreateComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadOwnBlocks(): void {
-    this.blockSearchLoading = true;
-    this.blockService.getMyBlock(0).subscribe({
-      next: (page) => {
-        this.blockSearchResults = page.blocks;
-        this.blockSearchHasMore = page.hasMore;
-        this.blockSearchPage = 0;
-        this.blockSearchLoading = false;
-      },
-      error: () => {
-        this.blockSearchResults = [];
-        this.blockSearchLoading = false;
-      },
-    });
-  }
-
   onBlockSearchInput(): void {
-    if (this.blockFilterOwnOnly) {
-      this.loadOwnBlocks();
-    } else {
-      this.blockSearchSubject.next();
-    }
+    this.blockSearchSubject.next();
   }
 
-  toggleFilterOwnOnly(): void {
-    this.blockFilterOwnOnly = !this.blockFilterOwnOnly;
-    if (this.blockFilterOwnOnly) {
-      this.loadOwnBlocks();
-    } else {
-      this.onBlockSearchInput();
-    }
-  }
+  toggleFilterOwnOnly(): void { this.blockFilterOwnOnly = !this.blockFilterOwnOnly; this.blockFilterFollowing = false; this.blockFilterLiked = false; this.blockSearchSubject.next(); }
+  toggleFilterFollowing(): void { this.blockFilterFollowing = !this.blockFilterFollowing; this.blockFilterOwnOnly = false; this.blockFilterLiked = false; this.blockSearchSubject.next(); }
+  toggleFilterLiked(): void { this.blockFilterLiked = !this.blockFilterLiked; this.blockFilterOwnOnly = false; this.blockFilterFollowing = false; this.blockSearchSubject.next(); }
 
   toggleFilterMostLiked(): void {
     this.blockFilterMostLiked = !this.blockFilterMostLiked;
-    this.onBlockSearchInput();
+    this.blockSearchSubject.next();
   }
 
   setBlockFilterDifficulty(difficulty: string): void {
     this.blockFilterDifficulty = this.blockFilterDifficulty === difficulty ? '' : difficulty;
-    this.onBlockSearchInput();
+    this.blockSearchSubject.next();
   }
 
   openBlockEditor(): void {
@@ -423,32 +396,35 @@ export class CourseCreateComponent implements OnInit, OnDestroy {
       const request: CourseCreateRequestDTO = {
         name: this.name.trim(),
         tags: this.tags.length > 0 ? this.tags : undefined,
-        link: undefined,
         blocks,
-      };
-
-      const doCreate = (link?: string) => {
-        request.link = link;
-        this.courseService.create(request).subscribe({
-          next: (course) => {
-            this.saving = false;
-            this.saved.emit(course.id);
-            this.router.navigate(['/courses']);
-          },
-          error: () => {
-            this.saving = false;
-          },
-        });
       };
 
       if (this.imageFile) {
         this.uploadService.uploadImage(this.imageFile, 'courses').subscribe({
-          next: (res) => doCreate(res.url),
-          error: () => doCreate(),
+          next: (res) => { request.link = res.url; this.doCreate(request); },
+          error: () => this.doCreate(request),
         });
       } else {
-        doCreate();
+        this.doCreate(request);
       }
+    }
+  }
+
+  private doCreate(request: CourseCreateRequestDTO): void {
+    if (this.contestId) {
+      this.contestService.submitCourse(this.contestId, request).subscribe({
+        next: (course) => { this.saving = false; this.saved.emit(course.id); },
+        error: () => { this.saving = false; },
+      });
+    } else {
+      this.courseService.create(request).subscribe({
+        next: (course) => {
+          this.saving = false;
+          this.saved.emit(course.id);
+          this.router.navigate(['/courses']);
+        },
+        error: () => { this.saving = false; },
+      });
     }
   }
 

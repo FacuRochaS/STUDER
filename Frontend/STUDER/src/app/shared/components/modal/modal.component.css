@@ -27,11 +27,23 @@
   border-radius: 12px;
   box-shadow: var(--overlay-shadow);
   width: fit-content;
-  min-width: 60vw;
+  min-width: 360px;
   max-width: 95vw;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Tree and editor modals need extra width */
+.modal__container:has(studer-block-tree) {
+  min-width: 85vw;
+  height: 88vh;
+}
+
+.modal__container:has(studer-course-create),
+.modal__container:has(studer-block-editor) {
+  min-width: 70vw;
+  max-height: 92vh;
 }
 
 .modal__header {
@@ -70,5 +82,5 @@
 .modal__content {
   overflow: auto;
   flex-grow: 1;
-  padding: 0 1.5rem 1.5rem;
+  padding: 0 1rem 1rem;
 }

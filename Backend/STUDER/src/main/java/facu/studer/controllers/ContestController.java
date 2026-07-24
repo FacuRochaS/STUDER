@@ -45,6 +45,14 @@ public class ContestController {
         return ResponseEntity.ok(contestService.getUpcomingContests());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<ContestResponseDTO>> searchContests(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(contestService.searchContests(query, PageRequest.of(page, size)));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ContestResponseDTO> getContest(@PathVariable Long id) {
         return ResponseEntity.ok(contestService.getContest(id));

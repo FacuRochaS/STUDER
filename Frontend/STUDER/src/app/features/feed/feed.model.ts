@@ -1,7 +1,7 @@
 import { UserPublicResponseDTO } from '../chats/chats.model';
 
 export interface PostCreateRequestDTO {
-  content: any;
+  content: string;
   tags?: string[];
 }
 

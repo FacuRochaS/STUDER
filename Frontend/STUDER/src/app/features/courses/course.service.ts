@@ -44,6 +44,11 @@ export class CourseService {
     return this.http.get<CoursePageResponseDTO>(`${this.base}/favourites`, { params });
   }
 
+  getCoursesByUsername(username: string, page = 0): Observable<CoursePageResponseDTO> {
+    const params = new HttpParams().set('page', page.toString());
+    return this.http.get<CoursePageResponseDTO>(`${this.base}/user/${username}`, { params });
+  }
+
   update(id: number, data: CourseUpdateRequestDTO): Observable<CourseResponseDTO> {
     return this.http.put<CourseResponseDTO>(`${this.base}/${id}`, data);
   }

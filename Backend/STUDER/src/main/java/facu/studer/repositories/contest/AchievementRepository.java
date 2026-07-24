@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AchievementRepository extends JpaRepository<Achievement, Long> {
+    java.util.Optional<Achievement> findByName(String name);
 }
