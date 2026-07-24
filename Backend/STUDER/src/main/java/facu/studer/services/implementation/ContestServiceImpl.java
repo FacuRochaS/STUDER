@@ -122,7 +122,7 @@ public class ContestServiceImpl implements ContestService {
                 .startDate(start)
                 .preparationEndDate(prepEnd)
                 .validationEndDate(valEnd)
-                .status("ANNOUNCED")
+                .status(start.isBefore(LocalDateTime.now()) ? "PREPARATION" : "ANNOUNCED")
                 .minPoints(request.getMinPoints())
                 .participantCount(0).courseCount(0).blockCount(0)
                 .isActive(true)
@@ -289,7 +289,7 @@ public class ContestServiceImpl implements ContestService {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new ResourceNotFoundException("contest.not_found"));
 
-        if (!"PREPARATION".equals(contest.getStatus())) {
+        if (!"PREPARATION".equals(resolveEffectiveStatus(contest))) {
             throw new IllegalArgumentException("contest.not_accepting_submissions");
         }
 
@@ -354,7 +354,7 @@ public class ContestServiceImpl implements ContestService {
     public ContestCourseResponseDTO getRandomCourseForValidation(String username, Long contestId) {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new ResourceNotFoundException("contest.not_found"));
-        if (!"VALIDATION".equals(contest.getStatus())) {
+        if (!"VALIDATION".equals(resolveEffectiveStatus(contest))) {
             throw new IllegalArgumentException("contest.not_in_validation");
         }
 
@@ -379,7 +379,7 @@ public class ContestServiceImpl implements ContestService {
         Course course = courseRepository.findById(request.getCourseId())
                 .orElseThrow(() -> new ResourceNotFoundException("course.not_found"));
 
-        if (course.getContest() == null || !"VALIDATION".equals(course.getContest().getStatus())) {
+        if (course.getContest() == null || !"VALIDATION".equals(resolveEffectiveStatus(course.getContest()))) {
             throw new IllegalArgumentException("contest.not_in_validation");
         }
         if (courseRatingRepository.existsByUserUsernameAndCourseIdAndIsActiveTrue(username, request.getCourseId())) {
@@ -517,7 +517,8 @@ public class ContestServiceImpl implements ContestService {
                 .id(contest.getId()).title(contest.getTitle())
                 .description(contest.getDescription())
                 .content(contest.getContent() != null ? contest.getContent().toString() : null)
-                .status(contest.getStatus())
+                .tags(tagNames)
+                .status(resolveEffectiveStatus(contest))
                 .startDate(contest.getStartDate())
                 .preparationEndDate(contest.getPreparationEndDate())
                 .validationEndDate(contest.getValidationEndDate())
@@ -529,6 +530,20 @@ public class ContestServiceImpl implements ContestService {
                 .blockCount(contest.getBlockCount())
                 .createdDatetime(contest.getCreatedDatetime())
                 .build();
+    }
+
+    private String resolveEffectiveStatus(Contest contest) {
+        String stored = contest.getStatus();
+        if ("RESULTS".equals(stored) || "CANCELLED".equals(stored)) return stored;
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime start = contest.getStartDate();
+        LocalDateTime prepEnd = contest.getPreparationEndDate();
+        LocalDateTime valEnd = contest.getValidationEndDate();
+        if (start != null && now.isBefore(start)) return "ANNOUNCED";
+        if (prepEnd != null && now.isBefore(prepEnd)) return "PREPARATION";
+        if (valEnd != null && now.isBefore(valEnd)) return "VALIDATION";
+        if (valEnd != null && !now.isBefore(valEnd)) return "RESULTS";
+        return stored;
     }
 
     private ContestCourseResponseDTO buildContestCourseDTO(Course course) {

@@ -27,10 +27,13 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
               @for (c of activeContests; track c.id) {
                 <a class="contest-card contest-card--active" [routerLink]="['/contest', c.id]">
                   <div class="contest-card-body">
-                    <span class="contest-badge contest-badge--{{ c.status | lowercase }}">{{ getStatusLabel(c.status) }}</span>
+                    <span class="contest-badge contest-badge--{{ 'c.status' | translate }}">{{ getStatusLabel(c.status) }}</span>
                     <h3 class="contest-card-title">{{ c.title }}</h3>
                     @if (c.description) {
                       <p class="contest-card-desc">{{ c.description }}</p>
+                    }
+                    @if (c.tags?.length) {
+                      <div class="contest-card-tags">@for (t of c.tags; track t) { <span class="entity entity--tag">#{{ t }}</span> }</div>
                     }
                     <div class="contest-card-meta">
                       <span><i class="pi pi-users"></i> {{ c.participantCount }}</span>
@@ -56,6 +59,9 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
                     @if (c.description) {
                       <p class="contest-card-desc">{{ c.description }}</p>
                     }
+                    @if (c.tags?.length) {
+                      <div class="contest-card-tags">@for (t of c.tags; track t) { <span class="entity entity--tag">#{{ t }}</span> }</div>
+                    }
                     <div class="contest-card-meta">
                       <span><i class="pi pi-calendar"></i> {{ 'contest.list.starts' | translate }} {{ c.startDate | date:'shortDate' }}</span>
                     </div>
@@ -77,6 +83,9 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
                     <h3 class="contest-card-title">{{ c.title }}</h3>
                     @if (c.description) {
                       <p class="contest-card-desc">{{ c.description }}</p>
+                    }
+                    @if (c.tags?.length) {
+                      <div class="contest-card-tags">@for (t of c.tags; track t) { <span class="entity entity--tag">#{{ t }}</span> }</div>
                     }
                     <div class="contest-card-meta">
                       <span><i class="pi pi-users"></i> {{ c.participantCount }}</span>
@@ -113,6 +122,7 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
     .contest-card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; gap: 0.6rem; }
     .contest-card-title { margin: 0; font-size: 1rem; font-weight: 700; color: var(--color-text-prim); }
     .contest-card-desc { margin: 0; font-size: 0.85rem; color: var(--color-text-secu); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .contest-card-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
     .contest-card-meta { display: flex; gap: 1rem; font-size: 0.8rem; color: var(--color-text-secu); margin-top: auto; padding-top: 0.5rem; border-top: 1px solid var(--border); }
     .contest-card-meta span { display: flex; align-items: center; gap: 0.3rem; }
     .contest-badge { display: inline-flex; align-items: center; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; width: fit-content; }

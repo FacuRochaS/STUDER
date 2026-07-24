@@ -245,7 +245,12 @@ export class CourseDetailComponent implements OnInit, OnDestroy {
   onOpenTree(index: number): void {
     const state = this.blockStates[index];
     if (!state) return;
-
+    import('../../../blocks/component/block-tree/block-tree.component').then(m => {
+      this.modalService.open(m.BlockTreeComponent, {
+        title: 'blocks.tree.title',
+        inputs: { blockId: state.blockId },
+      });
+    });
   }
 
   hasActivityContent(index: number): boolean {

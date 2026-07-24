@@ -85,12 +85,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private List<Map<String, Object>> usersOverTime(LocalDate start, LocalDate end) {
-        List<Object[]> rows = em.createQuery(
-            "SELECT FUNCTION('DATE_FORMAT', u.createdDatetime, '%Y-%m'), COUNT(u) FROM User u WHERE u.isActive = true AND u.createdDatetime >= :s AND u.createdDatetime <= :e GROUP BY FUNCTION('DATE_FORMAT', u.createdDatetime, '%Y-%m') ORDER BY FUNCTION('DATE_FORMAT', u.createdDatetime, '%Y-%m')",
-            Object[].class).setParameter("s", start.atStartOfDay()).setParameter("e", end.atTime(23, 59, 59)).getResultList();
-        List<Map<String, Object>> list = new ArrayList<>();
-        for (Object[] r : rows) list.add(Map.of("month", (String) r[0], "usersRegistered", ((Number) r[1]).longValue()));
-        return list;
+        try {
+            String sql = "SELECT TO_CHAR(created_datetime, 'YYYY-MM') AS month, COUNT(*) AS users FROM users WHERE is_active = true AND created_datetime >= ? AND created_datetime <= ? GROUP BY TO_CHAR(created_datetime, 'YYYY-MM') ORDER BY month";
+            List<Object[]> rows = em.createNativeQuery(sql, Object[].class).setParameter(1, start.atStartOfDay()).setParameter(2, end.atTime(23, 59, 59)).getResultList();
+            List<Map<String, Object>> list = new ArrayList<>();
+            for (Object[] r : rows) list.add(Map.of("month", (String) r[0], "usersRegistered", ((Number) r[1]).longValue()));
+            return list;
+        } catch (Exception e) { return List.of(); }
     }
 
     private List<Map<String, Object>> dailyActivity(LocalDate start, LocalDate end) {
@@ -140,7 +141,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private List<Map<String, Object>> weeklyGrowth(LocalDate start, LocalDate end) {
-        String sql = "SELECT CONCAT(YEAR(w.week)*100+WEEK(w.week,1)) AS label, COALESCE(u.cnt,0), COALESCE(b.cnt,0), COALESCE(c.cnt,0), COALESCE(p.cnt,0) FROM (SELECT DISTINCT DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY) AS week FROM users WHERE is_active=true AND created_datetime>=? AND created_datetime<=? UNION SELECT DISTINCT DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY) FROM blocks WHERE is_active=true AND created_datetime>=? AND created_datetime<=? UNION SELECT DISTINCT DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY) FROM courses WHERE is_active=true AND created_datetime>=? AND created_datetime<=? UNION SELECT DISTINCT DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY) FROM posts WHERE is_active=true AND created_datetime>=? AND created_datetime<=?) w LEFT JOIN (SELECT DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY) AS week, COUNT(*) AS cnt FROM users WHERE is_active=true AND created_datetime>=? AND created_datetime<=? GROUP BY DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY)) u ON w.week=u.week LEFT JOIN (SELECT DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY) AS week, COUNT(*) AS cnt FROM blocks WHERE is_active=true AND created_datetime>=? AND created_datetime<=? GROUP BY DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY)) b ON w.week=b.week LEFT JOIN (SELECT DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY) AS week, COUNT(*) AS cnt FROM courses WHERE is_active=true AND created_datetime>=? AND created_datetime<=? GROUP BY DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY)) c ON w.week=c.week LEFT JOIN (SELECT DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY) AS week, COUNT(*) AS cnt FROM posts WHERE is_active=true AND created_datetime>=? AND created_datetime<=? GROUP BY DATE_SUB(created_datetime, INTERVAL WEEKDAY(created_datetime) DAY)) p ON w.week=p.week ORDER BY w.week";
+        try {
+            String sql = "SELECT TO_CHAR(w.week, 'IYYY-IW') AS label, COALESCE(u.cnt,0), COALESCE(b.cnt,0), COALESCE(c.cnt,0), COALESCE(p.cnt,0) FROM (SELECT DISTINCT date_trunc('week', created_datetime) AS week FROM users WHERE is_active=true AND created_datetime>=? AND created_datetime<=? UNION SELECT DISTINCT date_trunc('week', created_datetime) FROM blocks WHERE is_active=true AND created_datetime>=? AND created_datetime<=? UNION SELECT DISTINCT date_trunc('week', created_datetime) FROM courses WHERE is_active=true AND created_datetime>=? AND created_datetime<=? UNION SELECT DISTINCT date_trunc('week', created_datetime) FROM posts WHERE is_active=true AND created_datetime>=? AND created_datetime<=?) w LEFT JOIN (SELECT date_trunc('week', created_datetime) AS week, COUNT(*) AS cnt FROM users WHERE is_active=true AND created_datetime>=? AND created_datetime<=? GROUP BY date_trunc('week', created_datetime)) u ON w.week=u.week LEFT JOIN (SELECT date_trunc('week', created_datetime) AS week, COUNT(*) AS cnt FROM blocks WHERE is_active=true AND created_datetime>=? AND created_datetime<=? GROUP BY date_trunc('week', created_datetime)) b ON w.week=b.week LEFT JOIN (SELECT date_trunc('week', created_datetime) AS week, COUNT(*) AS cnt FROM courses WHERE is_active=true AND created_datetime>=? AND created_datetime<=? GROUP BY date_trunc('week', created_datetime)) c ON w.week=c.week LEFT JOIN (SELECT date_trunc('week', created_datetime) AS week, COUNT(*) AS cnt FROM posts WHERE is_active=true AND created_datetime>=? AND created_datetime<=? GROUP BY date_trunc('week', created_datetime)) p ON w.week=p.week ORDER BY w.week";
         LocalDateTime s = start.atStartOfDay(), e = end.atTime(23, 59, 59);
         List<Object[]> rows = em.createNativeQuery(sql, Object[].class)
             .setParameter(1, s).setParameter(2, e).setParameter(3, s).setParameter(4, e).setParameter(5, s).setParameter(6, e)
@@ -151,6 +153,7 @@ public class AdminServiceImpl implements AdminService {
         List<Map<String, Object>> list = new ArrayList<>();
         for (Object[] r : rows) list.add(Map.of("week", r[0].toString(), "users", n(r[1]), "blocks", n(r[2]), "courses", n(r[3]), "posts", n(r[4])));
         return list;
+        } catch (Exception e) { return List.of(); }
     }
 
     @Override
@@ -171,8 +174,10 @@ public class AdminServiceImpl implements AdminService {
         c.put("inactiveUsers", totalUsers - activeUsers);
         c.put("admins", q("SELECT COUNT(u) FROM User u WHERE u.isActive = true AND u.role = 'ADMIN'"));
 
-        Object avgAge = em.createQuery("SELECT AVG(YEAR(CURRENT_DATE) - YEAR(u.birthDate)) FROM User u WHERE u.isActive = true", Double.class).getSingleResult();
-        c.put("averageAge", avgAge != null ? Math.round((Double) avgAge * 10) / 10.0 : 0);
+        try {
+            Object avgAge = em.createNativeQuery("SELECT AVG(EXTRACT(YEAR FROM AGE(birth_date))) FROM users WHERE is_active = true AND birth_date IS NOT NULL", Object.class).getSingleResult();
+            c.put("averageAge", avgAge instanceof Number n ? Math.round(n.doubleValue() * 10) / 10.0 : 0);
+        } catch (Exception e) { c.put("averageAge", 0); }
 
         Long friendCount = em.createQuery("SELECT COUNT(f) FROM Friend f WHERE f.isActive = true AND f.senderAccept = true AND f.receiverAccept = true", Long.class).getSingleResult();
         c.put("averageFollowers", totalUsers > 0 ? Math.round((double) friendCount / totalUsers * 2 * 10) / 10.0 : 0);
@@ -212,11 +217,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private List<Map<String, Object>> ageDistribution() {
-        String sql = "SELECT CASE WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) < 18 THEN 'Under 18' WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) < 25 THEN '18-24' WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) < 35 THEN '25-34' WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) < 45 THEN '35-44' WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) < 55 THEN '45-54' WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) < 65 THEN '55-64' ELSE '65+' END AS age_range, COUNT(*) FROM users WHERE is_active = true AND birth_date IS NOT NULL GROUP BY age_range ORDER BY MIN(TIMESTAMPDIFF(YEAR, birth_date, CURDATE()))";
-        List<Object[]> rows = em.createNativeQuery(sql, Object[].class).getResultList();
-        List<Map<String, Object>> list = new ArrayList<>();
-        for (Object[] r : rows) list.add(Map.of("ageRange", (String) r[0], "users", ((Number) r[1]).longValue()));
-        return list;
+        try {
+            String sql = "SELECT CASE WHEN yrs < 18 THEN 'Under 18' WHEN yrs < 25 THEN '18-24' WHEN yrs < 35 THEN '25-34' WHEN yrs < 45 THEN '35-44' WHEN yrs < 55 THEN '45-54' WHEN yrs < 65 THEN '55-64' ELSE '65+' END AS age_range, COUNT(*) FROM (SELECT EXTRACT(YEAR FROM AGE(birth_date)) AS yrs FROM users WHERE is_active = true AND birth_date IS NOT NULL) t GROUP BY age_range ORDER BY MIN(yrs)";
+            List<Object[]> rows = em.createNativeQuery(sql, Object[].class).getResultList();
+            List<Map<String, Object>> list = new ArrayList<>();
+            for (Object[] r : rows) list.add(Map.of("ageRange", (String) r[0], "users", ((Number) r[1]).longValue()));
+            return list;
+        } catch (Exception e) { return List.of(); }
     }
 
     private Map<String, Object> usersByRole() {
@@ -557,7 +564,7 @@ public class AdminServiceImpl implements AdminService {
         c.put("avgReplies", total > 0 ? Math.round((double) replies / total * 10) / 10.0 : 0);
         Object avgTime;
         try {
-            avgTime = em.createNativeQuery("SELECT AVG(TIMESTAMPDIFF(HOUR, d.created_datetime, (SELECT MAX(m.created_datetime) FROM discussion_messages m WHERE m.discussion_id = d.id AND m.is_active = true))) FROM discussions d WHERE d.is_active = true AND EXISTS (SELECT 1 FROM discussion_messages m WHERE m.discussion_id = d.id AND m.is_active = true)", Object.class).getSingleResult();
+            avgTime = em.createNativeQuery("SELECT AVG(EXTRACT(EPOCH FROM ((SELECT MAX(m.created_datetime) FROM discussion_messages m WHERE m.discussion_id = d.id AND m.is_active = true) - d.created_datetime)) / 3600) FROM discussions d WHERE d.is_active = true AND EXISTS (SELECT 1 FROM discussion_messages m WHERE m.discussion_id = d.id AND m.is_active = true)", Object.class).getSingleResult();
         } catch (Exception e) { avgTime = null; }
         c.put("avgResolutionTime", avgTime instanceof Number n ? Math.round(n.doubleValue() * 10) / 10.0 : 0);
         return c;
@@ -611,9 +618,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private List<Map<String, Object>> resolutionTime() {
-        String sql = "SELECT CASE WHEN hrs = 0 THEN '< 1h' WHEN hrs <= 6 THEN '1-6h' WHEN hrs <= 24 THEN '6-24h' WHEN hrs <= 72 THEN '1-3d' WHEN hrs <= 168 THEN '3-7d' ELSE '> 7d' END AS trange, COUNT(*) FROM (SELECT (SELECT MAX(m2.created_datetime) FROM discussion_messages m2 WHERE m2.discussion_id = d.id AND m2.is_active = true) AS last_msg FROM discussions d WHERE d.is_active = true) t CROSS JOIN LATERAL (SELECT COALESCE(TIMESTAMPDIFF(HOUR, d2.created_datetime, COALESCE(t.last_msg, d2.created_datetime)), 0) AS hrs FROM discussions d2 WHERE d2.id IN (SELECT d3.id FROM discussions d3 WHERE d3.is_active = true LIMIT 1)) x GROUP BY trange ORDER BY MIN(hrs)";
         try {
-            String s = "SELECT CASE WHEN hrs = 0 THEN '< 1h' WHEN hrs <= 6 THEN '1-6h' WHEN hrs <= 24 THEN '6-24h' WHEN hrs <= 72 THEN '1-3d' WHEN hrs <= 168 THEN '3-7d' ELSE '> 7d' END AS trange, COUNT(*) FROM (SELECT d.id, COALESCE(TIMESTAMPDIFF(HOUR, d.created_datetime, (SELECT MAX(m.created_datetime) FROM discussion_messages m WHERE m.discussion_id = d.id AND m.is_active = true)), 0) AS hrs FROM discussions d WHERE d.is_active = true) t GROUP BY trange ORDER BY MIN(t.hrs)";
+            String s = "SELECT CASE WHEN hrs = 0 THEN '< 1h' WHEN hrs <= 6 THEN '1-6h' WHEN hrs <= 24 THEN '6-24h' WHEN hrs <= 72 THEN '1-3d' WHEN hrs <= 168 THEN '3-7d' ELSE '> 7d' END AS trange, COUNT(*) FROM (SELECT d.id, COALESCE(EXTRACT(EPOCH FROM ((SELECT MAX(m.created_datetime) FROM discussion_messages m WHERE m.discussion_id = d.id AND m.is_active = true) - d.created_datetime)) / 3600, 0) AS hrs FROM discussions d WHERE d.is_active = true) t GROUP BY trange ORDER BY MIN(t.hrs)";
             List<Object[]> rows = em.createNativeQuery(s, Object[].class).getResultList();
             List<Map<String, Object>> list = new ArrayList<>();
             for (Object[] r : rows) list.add(Map.of("hoursRange", (String) r[0], "discussions", ((Number) r[1]).longValue()));

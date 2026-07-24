@@ -16,46 +16,51 @@ import { TagInputComponent } from '../../../shared/components/tag-input/tag-inpu
   imports: [CommonModule, FormsModule, RouterModule, TranslateModule, TextCreatorComponent, TagInputComponent],
   template: `
     <section class="cf">
-      <h1>{{ isEdit ? ('admin.edit_contest' | translate) : ('admin.create_contest' | translate) }}</h1>
-      <div class="stepper-inline">
-        <button class="step" [class.active]="step === 1" [class.done]="step > 1" (click)="step = 1">
-          <span class="step__badge">{{ step > 1 ? '✓' : '1' }}</span>
-          <span class="step__label">{{ 'contest.step_info' | translate }}</span>
-        </button>
-        <div class="step__line" [class.done]="step > 1"></div>
-        <button class="step" [class.active]="step === 2" (click)="step = 2">
-          <span class="step__badge">2</span>
-          <span class="step__label">{{ 'contest.step_content' | translate }}</span>
-        </button>
-      </div>
-      <form (ngSubmit)="submit()" class="form">
-        @if (step === 1) {
-          <div class="fg">
-            <div class="f f--full"><label>{{ 'contest.title' | translate }} *</label><input [(ngModel)]="title" name="title" required class="inp" /></div>
-            <div class="f f--full"><label>{{ 'contest.description' | translate }}</label><textarea [(ngModel)]="desc" name="desc" rows="2" class="inp"></textarea></div>
-            <div class="f f--full"><label>{{ 'contest.tags' | translate }}</label><studer-tag-input [(tags)]="tags"></studer-tag-input></div>
-            <div class="f"><label>{{ 'contest.start_date' | translate }} *</label><input type="datetime-local" [(ngModel)]="startDate" name="sd" required class="inp" /></div>
-            <div class="f"><label>{{ 'admin.preparation_hours' | translate }}</label><input type="number" [(ngModel)]="prepH" name="ph" min="0" class="inp" placeholder="72" /></div>
-            <div class="f"><label>{{ 'admin.validation_hours' | translate }}</label><input type="number" [(ngModel)]="valH" name="vh" min="0" class="inp" placeholder="120" /></div>
-            <div class="f"><label>{{ 'contest.min_points' | translate }}</label><input type="number" [(ngModel)]="minPts" name="mp" min="0" class="inp" placeholder="0" /></div>
-          </div>
-        }
-        @if (step === 2) {
-          <div class="f f--full"><label>{{ 'contest.content' | translate }}</label><studer-text-creator [data]="contentData" (dataChange)="contentData = $event"></studer-text-creator></div>
-        }
-        <div class="fa">
-          @if (step === 1) { <button type="button" class="btn btn--primary" (click)="step = 2" [disabled]="!title || !startDate">{{ 'course.create.next' | translate }} <i class="pi pi-arrow-right"></i></button> }
-          @else { <button type="button" class="btn btn--secondary" (click)="step = 1"><i class="pi pi-arrow-left"></i> {{ 'course.create.back' | translate }}</button>
-            <button type="submit" class="btn btn--primary" [disabled]="saving || !title || !startDate">{{ saving ? ('common.saving' | translate) : (isEdit ? ('common.save' | translate) : ('common.create' | translate)) }}</button> }
-          <a routerLink="/admin" class="btn btn--cancel">{{ 'common.cancel' | translate }}</a>
+      <div class="cf-card">
+        <h1>{{ isEdit ? ('admin.edit_contest' | translate) : ('admin.create_contest' | translate) }}</h1>
+        <div class="stepper-inline">
+          <button class="step" [class.active]="step === 1" [class.done]="step > 1" (click)="step = 1">
+            <span class="step__badge">{{ step > 1 ? '✓' : '1' }}</span>
+            <span class="step__label">{{ 'contest.step_info' | translate }}</span>
+          </button>
+          <div class="step__line" [class.done]="step > 1"></div>
+          <button class="step" [class.active]="step === 2" (click)="step = 2">
+            <span class="step__badge">2</span>
+            <span class="step__label">{{ 'contest.step_content' | translate }}</span>
+          </button>
         </div>
-      </form>
+        <form (ngSubmit)="submit()" class="form">
+          @if (step === 1) {
+            <div class="fg">
+              <div class="f f--full"><label>{{ 'contest.title' | translate }} *</label><input [(ngModel)]="title" name="title" required class="inp" /></div>
+              <div class="f f--full"><label>{{ 'contest.description' | translate }}</label><textarea [(ngModel)]="desc" name="desc" rows="2" class="inp"></textarea></div>
+              <div class="f f--full"><label>{{ 'contest.tags' | translate }}</label><studer-tag-input [(tags)]="tags"></studer-tag-input></div>
+              <div class="f"><label>{{ 'contest.start_date' | translate }} *</label><input type="datetime-local" [(ngModel)]="startDate" name="sd" required class="inp" /></div>
+              <div class="f"><label>{{ 'admin.preparation_hours' | translate }}</label><input type="number" [(ngModel)]="prepH" name="ph" min="0" class="inp" placeholder="72" /></div>
+              <div class="f"><label>{{ 'admin.validation_hours' | translate }}</label><input type="number" [(ngModel)]="valH" name="vh" min="0" class="inp" placeholder="120" /></div>
+              <div class="f"><label>{{ 'contest.min_points' | translate }}</label><input type="number" [(ngModel)]="minPts" name="mp" min="0" class="inp" placeholder="0" /></div>
+            </div>
+          }
+          @if (step === 2) {
+            <div class="f f--full"><label>{{ 'contest.content' | translate }}</label><studer-text-creator [data]="contentData" (dataChange)="contentData = $event"></studer-text-creator></div>
+          }
+          <div class="fa">
+            <a routerLink="/admin" class="btn btn--outline">{{ 'common.cancel' | translate }}</a>
+            <div class="fa-right">
+              @if (step === 2) { <button type="button" class="btn btn--outline" (click)="step = 1"><i class="pi pi-arrow-left"></i> {{ 'course.create.back' | translate }}</button> }
+              @if (step === 1) { <button type="button" class="btn btn--primary" (click)="step = 2" [disabled]="!title || !startDate">{{ 'course.create.next' | translate }} <i class="pi pi-arrow-right"></i></button> }
+              @if (step === 2) { <button type="submit" class="btn btn--primary" [disabled]="saving || !title || !startDate">{{ saving ? ('common.saving' | translate) : (isEdit ? ('common.save' | translate) : ('common.create' | translate)) }}</button> }
+            </div>
+          </div>
+        </form>
+      </div>
     </section>
   `,
   styles: [`
-    .cf { max-width: 700px; margin: 0 auto; padding: 1.5rem; }
-    .cf h1 { margin-bottom: 1rem; color: var(--color-text-prim); }
-    .stepper-inline { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 1rem; padding: 0.25rem 0; }
+    .cf { max-width: 720px; margin: 0 auto; padding: 1.5rem; }
+    .cf-card { background: var(--color-bg); border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 12px var(--box-shadow-color); }
+    .cf-card h1 { margin: 0 0 1rem; color: var(--color-text-prim); font-size: 1.25rem; }
+    .stepper-inline { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 1.25rem; padding: 0.25rem 0; }
     .step { display: flex; align-items: center; gap: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.4rem 0.75rem; border-radius: 6px; transition: background 0.2s; font-family: inherit; }
     .step:hover { background: var(--sidebar-hover-bg); }
     .step__badge { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; background: var(--input-background); color: var(--color-text-secu); border: 2px solid var(--border); transition: all 0.3s; flex-shrink: 0; }
@@ -71,22 +76,17 @@ import { TagInputComponent } from '../../../shared/components/tag-input/tag-inpu
     .f--full { grid-column: 1/-1; }
     .f { display: flex; flex-direction: column; gap: 0.3rem; }
     .f label { color: var(--color-text-secu); font-size: 0.8rem; font-weight: 600; }
-    .inp { padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--input-background); color: var(--color-text-prim); font-family: inherit; font-size: 0.88rem; }
+    .inp { padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 8px; background: var(--input-background); color: var(--color-text-prim); font-family: inherit; font-size: 0.88rem; }
     .inp:focus { outline: none; border-color: var(--color-primary); }
-    .up { display: flex; align-items: center; }
-    .ub { display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.9rem; border: 1px dashed var(--border); border-radius: 6px; cursor: pointer; color: var(--color-text-secu); font-size: 0.85rem; }
-    .ub:hover { border-color: var(--color-primary); color: var(--color-primary); }
-    .ip { position: relative; width: 120px; height: 68px; border-radius: 6px; overflow: hidden; }
-    .ip img { width: 100%; height: 100%; object-fit: cover; }
-    .ir { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .fa { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-    .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.1rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; font-family: inherit; transition: opacity 0.2s; }
+    .fa { display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem; }
+    .fa-right { display: flex; gap: 0.5rem; }
+    .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; font-family: inherit; transition: opacity 0.2s; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn--primary { background: var(--color-primary); color: var(--color-text-btn); }
     .btn--primary:hover:not(:disabled) { opacity: 0.9; }
-    .btn--secondary { background: var(--input-background); color: var(--color-text-prim); }
-    .btn--secondary:hover:not(:disabled) { color: var(--color-primary); }
-    .btn--cancel { background: none; color: var(--color-text-secu); }
+    .btn--outline { background: transparent; color: var(--color-text-secu); border: 1px solid var(--border); }
+    .btn--outline:hover { color: var(--color-primary); border-color: var(--color-primary); }
+    @media (max-width: 600px) { .cf { padding: 1rem; } .cf-card { padding: 1rem; } .fg { grid-template-columns: 1fr; } }
   `]
 })
 export class AdminContestCreateComponent implements OnInit {
@@ -120,7 +120,7 @@ export class AdminContestCreateComponent implements OnInit {
       title: this.title, description: this.desc || undefined,
       tags: this.tags.length > 0 ? this.tags : undefined,
       content: this.contentData.paragraphs.length > 0 ? JSON.stringify(this.contentData) : undefined,
-      startDate: new Date(this.startDate).toISOString(),
+      startDate: this.startDate ? this.startDate + ':00' : undefined,
       preparationDurationHours: this.prepH,
       validationDurationHours: this.valH,
       minPoints: this.minPts ?? undefined,
