@@ -1,0 +1,213 @@
+<div class="course-create">
+  <div class="course-create__body">
+    <div class="course-create__main">
+      @if (currentStep === 1 && mode !== 'edit') {
+        <div class="form-section">
+          <div class="stepper-inline">
+            <button class="step active">
+              <span class="step__badge">1</span>
+              <span class="step__label">{{ 'course.create.info' | translate }}</span>
+            </button>
+            <div class="step__line"></div>
+            <button class="step">
+              <span class="step__badge">2</span>
+              <span class="step__label">{{ 'course.create.blocks' | translate }}</span>
+            </button>
+          </div>
+
+
+          <div class="form-group">
+            <label class="form-label">{{ 'course.create.name' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="name" placeholder="{{ 'course.create.name_placeholder' | translate }}" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'course.create.image' | translate }}</label>
+            <div class="image-upload-zone">
+              @if (imagePreviewUrl) {
+                <div class="image-preview">
+                  <img [src]="imagePreviewUrl" alt="Preview" />
+                  <button class="image-remove" (click)="removeImage()"><i class="pi pi-times"></i></button>
+                </div>
+              } @else {
+                <label class="image-upload-btn">
+                  <i class="pi pi-upload"></i>
+                  <span>{{ 'course.create.image_placeholder' | translate }}</span>
+                  <input type="file" accept="image/*" (change)="onImageSelected($event)" />
+                </label>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'course.create.tags' | translate }}</label>
+            <studer-tag-input [(tags)]="tags" [placeholder]="'course.create.tags_placeholder' | translate"></studer-tag-input>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn--primary" (click)="goToStep(2)" [disabled]="!name.trim()">
+              {{ 'course.create.next' | translate }}
+              <i class="pi pi-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (currentStep === 2) {
+        <div class="form-section">
+          @if (mode !== 'edit') {
+            <div class="stepper-inline">
+              <button class="step done" (click)="goToStep(1)">
+                <span class="step__badge">✓</span>
+                <span class="step__label">{{ 'course.create.info' | translate }}</span>
+              </button>
+              <div class="step__line done"></div>
+              <button class="step active">
+                <span class="step__badge">2</span>
+                <span class="step__label">{{ 'course.create.blocks' | translate }}</span>
+              </button>
+            </div>
+          }
+
+          <div class="form-section__header form-section__header--centered">
+            <button class="btn btn--outline" (click)="blockBrowserOpen = !blockBrowserOpen">
+              <i class="pi pi-search"></i>
+              {{ 'course.create.browse_blocks' | translate }}
+            </button>
+            <button class="btn btn--outline" (click)="openBlockEditor()">
+              <i class="pi pi-plus-circle"></i>
+              {{ 'course.create.create_block' | translate }}
+            </button>
+          </div>
+
+          <div class="selected-blocks-list" (dragover)="onDragOver($event)" (drop)="onDropFromBrowser($event)">
+            @if (selectedBlocks.length === 0) {
+              <div class="empty-blocks" (dragover)="onDragOver($event)" (drop)="onDropFromBrowser($event)">
+                <i class="pi pi-box"></i>
+                <p>{{ 'course.create.no_blocks' | translate }}</p>
+              </div>
+            }
+
+            @for (block of selectedBlocks; track trackByBlockId; let i = $index) {
+              <div class="block-card-wrapper"
+                draggable="true"
+                (dragstart)="onDragStart(i)"
+                (dragover)="onDragOver($event)"
+                (drop)="onDrop(i)"
+                (dragend)="onDragEnd()"
+                [class.dragging]="dragIndex === i">
+                <div class="block-card-wrapper__drag-handle">
+                  <i class="pi pi-bars"></i>
+                  <span class="block-card-wrapper__order">{{ block.order }}</span>
+                </div>
+                <div class="block-card-wrapper__body">
+                  <studer-block-header
+                    [block]="block.blockData"
+                    (toggleContent)="toggleBlockContent(i)"
+                    (edit)="onEditCourseBlock(i)">
+                  </studer-block-header>
+                  @if (expandedBlocks.has(i)) {
+                    <div class="block-card-wrapper__content">
+                      <studer-block-viewer [content]="parseContent(block.blockData.version.content)"></studer-block-viewer>
+                    </div>
+                  }
+                  <div class="block-card-wrapper__actions">
+                    <label class="keep-updated">
+                      <input type="checkbox" [(ngModel)]="block.keepUpdated" (ngModelChange)="onKeepUpdatedChange(i)">
+                      <span>{{ 'course.create.keep_updated' | translate }}</span>
+                    </label>
+                    <button class="block-card-wrapper__remove" (click)="removeBlock(i)">
+                      <i class="pi pi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="form-actions">
+            @if (mode !== 'edit') {
+              <button class="btn btn--secondary" (click)="goToStep(1)">
+                <i class="pi pi-arrow-left"></i>
+                {{ 'course.create.back' | translate }}
+              </button>
+            }
+            <button class="btn btn--primary" (click)="onSave()" [disabled]="saving || selectedBlocks.length === 0">
+              @if (saving) { <i class="pi pi-spin pi-spinner"></i> }
+              {{ mode === 'edit' ? ('course.create.save_changes' | translate) : ('course.create.save' | translate) }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (currentStep === 2) {
+      <div class="course-create__sidebar" [class.open]="blockBrowserOpen">
+        <div class="browser-header">
+          <h4>{{ 'course.create.browser_title' | translate }}</h4>
+          <button class="browser-close" (click)="blockBrowserOpen = false"><i class="pi pi-times"></i></button>
+        </div>
+
+        <div class="browser-search">
+          <input type="text" class="form-control" [(ngModel)]="blockSearchQuery" (input)="onBlockSearchInput()" placeholder="{{ 'course.create.search_blocks' | translate }}" />
+        </div>
+
+        <div class="browser-filters">
+          <label class="filter-chip" [class.active]="blockFilterOwnOnly">
+            <input type="checkbox" [checked]="blockFilterOwnOnly" (change)="toggleFilterOwnOnly()" />
+            <span>{{ 'course.create.my_blocks' | translate }}</span>
+          </label>
+          <label class="filter-chip" [class.active]="blockFilterFollowing">
+            <input type="checkbox" [checked]="blockFilterFollowing" (change)="toggleFilterFollowing()" />
+            <span>{{ 'course.create.following_blocks' | translate }}</span>
+          </label>
+          <label class="filter-chip" [class.active]="blockFilterLiked">
+            <input type="checkbox" [checked]="blockFilterLiked" (change)="toggleFilterLiked()" />
+            <span>{{ 'course.create.liked_blocks' | translate }}</span>
+          </label>
+          <label class="filter-chip" [class.active]="blockFilterMostLiked">
+            <input type="checkbox" [checked]="blockFilterMostLiked" (change)="toggleFilterMostLiked()" />
+            <span>{{ 'course.create.most_liked' | translate }}</span>
+          </label>
+          @for (diff of ['EASY', 'NORMAL', 'HARD', 'EXPERT']; track diff) {
+            <button class="filter-chip" [class.active]="blockFilterDifficulty === diff" (click)="setBlockFilterDifficulty(diff)">
+              {{ 'course.create.difficulty_' + diff.toLowerCase() | translate }}
+            </button>
+          }
+        </div>
+
+        <div class="browser-results">
+          @if (blockSearchLoading) {
+            <div class="browser-loading"><i class="pi pi-spin pi-spinner"></i></div>
+          } @else {
+            @for (block of blockSearchResults; track trackBySearchResult) {
+              <div class="browser-card"
+                draggable="true"
+                (dragstart)="onBrowserDragStart(block)"
+                (click)="selectBlockFromBrowser(block)">
+                <div class="browser-card__top">
+                  <span class="browser-card__name">{{ block.name }}</span>
+                  <span class="badge badge--{{ block.difficulty | lowercase }}">{{ block.difficulty }}</span>
+                </div>
+                <div class="browser-card__meta">
+                  <span class="browser-card__user">{{ block.owner.username }}</span>
+                  <span class="browser-card__likes">
+                    <i class="pi pi-heart"></i> {{ block.likeCount || 0 }}
+                  </span>
+                </div>
+              </div>
+            } @empty {
+              <div class="browser-empty">{{ 'course.create.no_blocks_found' | translate }}</div>
+            }
+            @if (blockSearchHasMore) {
+              <button class="btn btn--outline btn--full" (click)="loadMoreBlocks()" [disabled]="loadingMoreBlocks">
+                <i class="pi pi-spin pi-spinner"></i>
+                {{ 'course.create.load_more' | translate }}
+              </button>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

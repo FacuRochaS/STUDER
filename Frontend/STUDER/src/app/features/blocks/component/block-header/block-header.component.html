@@ -1,5 +1,5 @@
 @if (block) {
-  <header class="block-header">
+  <header class="block-header" (click)="onToggleContent()">
     <div class="block-header__left">
       @if (block.isFork) {
         <svg class="block-header__icon" [title]="'blocks.header.fork_title' | translate" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm0 2.122a2.25 2.25 0 1 0-1.5 0v.878A2.25 2.25 0 0 0 5.75 8.5h1.5v2.128a2.251 2.251 0 1 0 1.5 0V8.5h1.5a2.25 2.25 0 0 0 2.25-2.25v-.878a2.25 2.25 0 1 0-1.5 0v.878a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 5 6.25v-.878ZM10.75 12a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0Z" clip-rule="evenodd" /></svg>
@@ -10,9 +10,18 @@
       <div class="block-header__meta">
         <span class="block-header__difficulty block-header__difficulty--{{ block.difficulty | lowercase }}">{{ block.difficulty }}</span>
       </div>
-      <button class="btn-icon" (click)="toggleLike()" [class.liked]="isLiked" [title]="'blocks.header.like' | translate">
-        <i class="pi" [ngClass]="isLiked ? 'pi-heart-fill' : 'pi-heart'"></i>
+      <button class="fork-btn" (click)="onOpenTree($event)" [title]="'blocks.header.fork_title' | translate">
+        <i class="pi pi-sitemap"></i>
       </button>
+      <button class="edit-btn" (click)="onEdit($event)" [title]="'blocks.header.edit_title' | translate">
+        <i class="pi pi-pencil"></i>
+      </button>
+      @if (isAuthenticated) {
+        <button class="like-btn" [class.liked]="likedByCurrentUser" (click)="onLike($event)" [disabled]="liking">
+          <i class="pi" [class.pi-heart-fill]="likedByCurrentUser" [class.pi-heart]="!likedByCurrentUser"></i>
+          <span>{{ blockLikeCount }}</span>
+        </button>
+      }
     </div>
   </header>
 }

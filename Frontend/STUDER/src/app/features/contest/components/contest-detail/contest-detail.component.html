@@ -1,0 +1,93 @@
+<section class="cd">
+  @if (loading) { <studer-loader></studer-loader> }
+  @else if (error) { <div class="cd-err">{{ error }}</div> }
+  @else if (contest) {
+    <div class="cd-card">
+      <button class="cd-back" routerLink="/contests"><i class="pi pi-arrow-left"></i></button>
+      <div class="cd-head">
+        <div class="cd-head-top">
+          <h1>{{ contest.title }}</h1>
+          <span class="cd-badge cd-badge--{{ contest.status.toLowerCase() }}">{{ getStatusLabel(contest.status) | translate }}</span>
+        </div>
+        @if (contest.description) { <p class="cd-desc">{{ contest.description }}</p> }
+      </div>
+
+      <div class="cd-dates">
+        <div class="cd-dt"><i class="pi pi-calendar cd-dt-icon"></i><div><label>{{ 'contest.start_date' | translate }}</label><span>{{ contest.startDate | date:'mediumDate' }}</span></div></div>
+        @if (contest.preparationEndDate) { <div class="cd-dt"><i class="pi pi-clock cd-dt-icon"></i><div><label>{{ 'contest.preparation_end' | translate }}</label><span>{{ contest.preparationEndDate | date:'mediumDate' }}</span></div></div> }
+        @if (contest.validationEndDate) { <div class="cd-dt"><i class="pi pi-clock cd-dt-icon"></i><div><label>{{ 'contest.validation_end' | translate }}</label><span>{{ contest.validationEndDate | date:'mediumDate' }}</span></div></div> }
+      </div>
+
+      <div class="cd-phase">
+        <div class="cd-phase-bar"><div class="cd-phase-fill" [style.width.%]="getPhaseProgress()"></div></div>
+        <div class="cd-phase-steps">
+          @for (p of phases; track p; let i = $index) {
+            <div class="cd-ps" [class.active]="phaseIndex >= i" [class.current]="contest.status === p">
+              <span class="cd-ps-dot">{{ contest.status === p ? '●' : (phaseIndex > i ? '✓' : (i + 1)) }}</span>
+              <span class="cd-ps-label">{{ getStatusLabel(p) | translate }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="cd-numbers">
+        <div class="cd-num"><i class="pi pi-users"></i><strong>{{ contest.participantCount }}</strong><span>{{ 'contest.participants' | translate }}</span></div>
+        <div class="cd-num"><i class="pi pi-book"></i><strong>{{ contest.courseCount }}</strong><span>{{ 'contest.courses' | translate }}</span></div>
+        <div class="cd-num"><i class="pi pi-box"></i><strong>{{ contest.blockCount }}</strong><span>{{ 'contest.blocks' | translate }}</span></div>
+        @if (minLevel) { <div class="cd-num"><i class="pi pi-star"></i><strong>{{ minLevel }}</strong><span>{{ 'contest.min_level' | translate }}</span></div> }
+      </div>
+
+      <div class="cd-tabs">
+        <button [class.active]="activeTab === 'info'" (click)="activeTab = 'info'">{{ 'contest.info_tab' | translate }}</button>
+        <button [class.active]="activeTab === 'leaderboard'" (click)="activeTab = 'leaderboard'">{{ 'contest.leaderboard' | translate }}</button>
+      </div>
+
+      @if (activeTab === 'info') {
+        <div class="cd-tab-content">
+          @if (textContent) { <div class="cd-content"><studer-text-viewer [data]="textContent"></studer-text-viewer></div> }
+          @if (contest.tags?.length) { <div class="cd-tags">@for (t of contest.tags; track t) { <span class="entity entity--tag">#{{ t }}</span> }</div> }
+
+          @if (canSubmit) {
+            <button class="btn btn--primary" (click)="showSubmitForm = !showSubmitForm">{{ showSubmitForm ? ('common.cancel' | translate) : ('contest.submit_course' | translate) }}</button>
+            @if (showSubmitForm) { <div class="cd-submit"><studer-course-create [contestId]="contest.id" (saved)="showSubmitForm = false; loadContest()"></studer-course-create></div> }
+          } @else if (contest.status === 'PREPARATION' && !hasMinLevel) {
+            <div class="cd-level-required">
+              <i class="pi pi-lock"></i>
+              <span>{{ 'contest.level_required' | translate: { level: minLevel } }}</span>
+            </div>
+          }
+          @if (canValidate) {
+            <button class="btn btn--primary" (click)="getRandomCourse()" [disabled]="showValidation">{{ 'contest.validate_random' | translate }}</button>
+            @if (showValidation && validatingCourse) {
+              <div class="cd-val">
+                <h3>{{ validatingCourse.name }}</h3>
+                @if (validatingCourse.blocks?.length) { <div>@for (b of validatingCourse.blocks; track b.id) { <div class="cd-vb"><strong>{{ b.blockName }}</strong>@if (b.version?.content) { <studer-block-viewer [content]="parseBlockContent(b.version.content)"></studer-block-viewer> }</div> }</div> }
+                <div class="stars">@for (s of [1,2,3,4,5]; track s) { <button class="star-btn" [class.on]="userRating >= s" (click)="userRating = s">★</button> }</div>
+                <button class="btn btn--primary" (click)="submitRating()" [disabled]="submittingRating || !userRating">{{ 'contest.submit_rating' | translate }}</button>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      @if (activeTab === 'leaderboard') {
+        <div class="cd-tab-content">
+          @if (leaderboard.length > 0) {
+            <div class="cd-lb-top">
+              @if (leaderboard.length > 1) { <div class="cd-lb-podium"><span class="cd-lb-medal cd-lb-medal--silver">2</span><strong>{{ leaderboard[1].courseName }}</strong><span>{{ leaderboard[1].score | number:'1.2-2' }}</span></div> }
+              @if (leaderboard.length > 0) { <div class="cd-lb-podium cd-lb-podium--first"><span class="cd-lb-medal cd-lb-medal--gold">1</span><strong>{{ leaderboard[0].courseName }}</strong><span>{{ leaderboard[0].score | number:'1.2-2' }}</span></div> }
+              @if (leaderboard.length > 2) { <div class="cd-lb-podium"><span class="cd-lb-medal cd-lb-medal--bronze">3</span><strong>{{ leaderboard[2].courseName }}</strong><span>{{ leaderboard[2].score | number:'1.2-2' }}</span></div> }
+            </div>
+            <table class="cd-tbl"><thead><tr><th>#</th><th>{{ 'contest.course_name' | translate }}</th><th>{{ 'contest.rating' | translate }}</th><th>{{ 'contest.score' | translate }}</th></tr></thead><tbody>@for (e of leaderboard; track e.courseId; let i = $index) { <tr [class.top]="i < 3"><td>{{ i + 1 }}</td><td>{{ e.courseName }}</td><td>{{ e.averageRating | number:'1.1-1' }} ({{ e.ratingCount }})</td><td class="sc">{{ e.score | number:'1.2-2' }}</td></tr> }</tbody></table>
+          } @else { <p class="cd-empty">{{ 'contest.leaderboard_empty' | translate }}</p> }
+        </div>
+      }
+
+      @if (isAdmin && contest.status !== 'RESULTS' && contest.status !== 'CANCELLED') {
+        <div class="cd-admin">
+          <button class="btn btn--primary" (click)="finishContest()">{{ 'contest.finish' | translate }}</button>
+        </div>
+      }
+    </div>
+  }
+</section>

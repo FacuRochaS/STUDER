@@ -1,0 +1,12 @@
+<section class="cards">
+  <div class="c c--purple"><span class="cv">{{ ck('totalTags') }}</span><span class="cl">{{ 'admin.cards.total_tags' | translate }}</span></div>
+  <div class="c c--green"><span class="cv">{{ ck('usedTags') }}</span><span class="cl">{{ 'admin.cards.used_tags' | translate }}</span></div>
+  <div class="c c--blue"><span class="cv">{{ cs('avgBlocksPerTag') }}</span><span class="cl">{{ 'admin.cards.avg_blocks_tag' | translate }}</span></div>
+</section>
+
+<div class="charts-grid">
+  @if (chartsData.topTags?.length) { <div class="chart-box"><h3>{{ 'admin.charts.top_tags' | translate }}</h3><div class="ch-wrap ch-wrap--lg"><canvas id="g1"></canvas></div></div> }
+  @if (chartsData.tagsCreated?.length) { <div class="chart-box"><h3>{{ 'admin.charts.tags_created' | translate }}</h3><div class="ch-wrap"><canvas id="g2"></canvas></div></div> }
+  @if (chartsData.tagGrowth?.length) { <div class="chart-box"><h3>{{ 'admin.charts.tag_growth' | translate }}</h3><div class="ch-wrap"><canvas id="g3"></canvas></div></div> }
+
+</div>

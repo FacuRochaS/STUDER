@@ -63,10 +63,12 @@ export class LoginRegisterComponent implements OnInit, OnDestroy {
   /**
    * Crea el formulario reactivo para login
    */
+  maxDate = '';
+
   private createLoginForm(): FormGroup {
     return this.fb.group({
       username: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(50)]],
-      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(100)]],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(100), this.passwordComplexityValidator()]],
     });
   }
 
@@ -74,15 +76,56 @@ export class LoginRegisterComponent implements OnInit, OnDestroy {
    * Crea el formulario reactivo para registro
    */
   private createRegisterForm(): FormGroup {
+    this.setMaxDate();
     return this.fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      birthDate: ['', [Validators.required]],
+      birthDate: ['', [Validators.required, this.minAgeValidator(13)]],
       email: ['', [Validators.required, Validators.email, Validators.minLength(5), Validators.maxLength(50)]],
       username: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(50)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(8), this.passwordComplexityValidator()]],
       confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
     }, { validators: this.passwordsMatchValidator() });
+  }
+
+  private setMaxDate(): void {
+    const today = new Date();
+    const max = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
+    this.maxDate = max.toISOString().split('T')[0];
+  }
+
+  /**
+   * Validador de edad mínima
+   */
+  private minAgeValidator(minAge: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      const birthDate = new Date(control.value);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        if (age - 1 < minAge) return { minAge: { required: minAge, actual: age - 1 } };
+      }
+      if (age < minAge) return { minAge: { required: minAge, actual: age } };
+      return null;
+    };
+  }
+
+  /**
+   * Validador de complejidad de contraseña
+   */
+  private passwordComplexityValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      const value = control.value;
+      const errors: any = {};
+      if (!/[A-Z]/.test(value)) errors.missingUppercase = true;
+      if (!/[a-z]/.test(value)) errors.missingLowercase = true;
+      if (!/[0-9]/.test(value)) errors.missingNumber = true;
+      if (!/[^A-Za-z0-9]/.test(value)) errors.missingSpecial = true;
+      return Object.keys(errors).length ? { passwordComplexity: errors } : null;
+    };
   }
 
   /**

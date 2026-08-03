@@ -62,6 +62,12 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private Long points;
+
+    @Column(nullable = false)
+    private String role;
+
     /**
      * Last connection time.
      */

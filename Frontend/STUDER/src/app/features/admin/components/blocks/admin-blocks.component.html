@@ -1,0 +1,23 @@
+<section class="cards">
+  <div class="c c--purple"><span class="cv">{{ ck('totalBlocks') }}</span><span class="cl">{{ 'admin.cards.total_blocks' | translate }}</span></div>
+  <div class="c c--teal"><span class="cv">{{ ck('totalVersions') }}</span><span class="cl">{{ 'admin.cards.total_versions' | translate }}</span></div>
+  <div class="c c--orange"><span class="cv">{{ ck('totalForks') }}</span><span class="cl">{{ 'admin.cards.total_forks' | translate }}</span></div>
+  <div class="c c--red"><span class="cv">{{ ck('totalLikes') }}</span><span class="cl">{{ 'admin.cards.total_likes' | translate }}</span></div>
+</section>
+
+<section class="cards">
+  <div class="c c--teal"><span class="cv">{{ cs('avgVersions') }}</span><span class="cl">{{ 'admin.cards.avg_versions' | translate }}</span></div>
+  <div class="c c--orange"><span class="cv">{{ cs('avgForks') }}</span><span class="cl">{{ 'admin.cards.avg_forks' | translate }}</span></div>
+  <div class="c c--red"><span class="cv">{{ cs('avgLikes') }}</span><span class="cl">{{ 'admin.cards.avg_likes' | translate }}</span></div>
+  <div class="c c--green"><span class="cv">{{ ck('publishedBlocks') }}</span><span class="cl">{{ 'admin.cards.published_courses' | translate }}</span></div>
+  <div class="c c--red"><span class="cv">{{ ck('draftBlocks') }}</span><span class="cl">{{ 'admin.cards.draft_courses' | translate }}</span></div>
+</section>
+
+<div class="charts-grid">
+  @if (chartsData.blocksCreated?.length) { <div class="chart-box"><h3>{{ 'admin.charts.blocks_created' | translate }}</h3><div class="ch-wrap"><canvas id="b1"></canvas></div></div> }
+  @if (chartsData.difficultyDistribution) { <div class="chart-box"><h3>{{ 'admin.charts.difficulty' | translate }}</h3><div class="ch-wrap ch-wrap--sq"><canvas id="b4"></canvas></div></div> }
+  @if (chartsData.blockTypes?.length) { <div class="chart-box"><h3>{{ 'admin.charts.block_types' | translate }}</h3><div class="ch-wrap ch-wrap--sq"><canvas id="b5"></canvas></div></div> }
+  @if (chartsData.mostForked?.length) { <div class="chart-box"><h3>{{ 'admin.charts.most_forked' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="b6"></canvas></div></div> }
+  @if (chartsData.mostLiked?.length) { <div class="chart-box"><h3>{{ 'admin.charts.most_liked' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="b7"></canvas></div></div> }
+  @if (chartsData.topAuthors?.length) { <div class="chart-box"><h3>{{ 'admin.charts.top_authors' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="b8"></canvas></div></div> }
+</div>

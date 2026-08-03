@@ -1,0 +1,50 @@
+<div class="contest-page">
+  <div class="contest-tabs">
+    <div class="contest-tabs__nav">
+      @for (tab of tabs; track tab.id) {
+        <button class="contest-tab" [class.active]="activeTab === tab.id" (click)="activeTab = tab.id">
+          <i [class]="tab.icon"></i>
+          <span>{{ tab.label | translate }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="contest-list">
+    @if (loading) {
+      <studer-loader></studer-loader>
+    } @else if (filteredContests.length > 0) {
+      <div class="contest-grid" appAutoAnimate>
+        @for (c of filteredContests; track c.id) {
+          <a class="contest-card" [routerLink]="['/contest', c.id]">
+            <div class="contest-card-body">
+              <span class="contest-badge contest-badge--{{ c.status | lowercase }}">{{ getStatusLabel(c.status) | translate }}</span>
+              <h3 class="contest-card-title">{{ c.title }}</h3>
+              @if (c.description) {
+                <p class="contest-card-desc">{{ c.description }}</p>
+              }
+              @if (c.tags?.length) {
+                <div class="contest-card-tags">@for (t of c.tags; track t) { <span class="entity entity--tag">#{{ t }}</span> }</div>
+              }
+              <div class="contest-card-meta">
+                <span><i class="fa-solid fa-users"></i> {{ c.participantCount }}</span>
+                <span><i class="fa-solid fa-book"></i> {{ c.courseCount }}</span>
+                @if (c.minPoints) { <span><i class="fa-solid fa-star"></i> {{ 'contest.min_level' | translate }} {{ getMinLevel(c.minPoints) }}</span> }
+                @if (c.status === 'ANNOUNCED' || c.status === 'PREPARATION') {
+                  <span><i class="fa-solid fa-calendar"></i> {{ 'contest.list.starts' | translate }} {{ c.startDate | date:'shortDate' }}</span>
+                } @else {
+                  <span><i class="fa-solid fa-calendar"></i> {{ c.startDate | date:'shortDate' }}</span>
+                }
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="contest-empty">
+        <i class="fa-solid fa-trophy"></i>
+        <p>{{ 'contest.list.empty' | translate }}</p>
+      </div>
+    }
+  </div>
+</div>

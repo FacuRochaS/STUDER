@@ -1,20 +1,27 @@
 <div class="discussion-container">
-  <app-discussion-sidebar
-    (categorySelected)="onCategorySelected($event)"
-    (newDiscussion)="onNewDiscussion()">
-  </app-discussion-sidebar>
-
+  <div class="tabs-padding">
+  <studer-discussion-tabs
+    [activeTab]="selectedCategory"
+    [showCreate]="showCreateForm"
+    (tabSelected)="onCategorySelected($event)"
+    (createToggled)="toggleCreate()"
+    (filtersChanged)="onFiltersChanged($event)">
+  </studer-discussion-tabs>
+  </div>
   <main class="discussion-content">
-    @if (selectedCategory === 'explore') {
-      <app-explore-filters (filtersChanged)="onFiltersChanged($event)"></app-explore-filters>
-    }
-
-    @if (loading) {
-      <div class="loading-spinner">
-        <studer-loader></studer-loader>
+    @if (showCreateForm) {
+      <div appAutoAnimate>
+        <app-discussion-create-form
+          (save)="onCreateDiscussion($event)"
+          (cancel)="showCreateForm = false">
+        </app-discussion-create-form>
       </div>
+    } @else if (loading) {
+      <studer-loader></studer-loader>
     } @else {
-      <app-discussion-list [discussions]="discussions"></app-discussion-list>
+      <div appAutoAnimate>
+        <app-discussion-list [discussions]="discussions"></app-discussion-list>
+      </div>
     }
   </main>
 </div>

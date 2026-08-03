@@ -35,6 +35,8 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  points: number;
+  role: string;
   profilePictureOriginalUrl: string;
   profilePictureAvatarUrl: string;
   profilePictureWebpUrl: string;
@@ -46,6 +48,9 @@ export interface UserPublic {
   username: string;
   firstName: string;
   lastName: string;
+  points: number;
+  followers: number;
+  role: string;
   profilePictureOriginalUrl: string;
   profilePictureAvatarUrl: string;
   profilePictureWebpUrl: string;

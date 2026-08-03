@@ -3,23 +3,29 @@
 } @else if (error) {
   <p>{{ 'blocks.detail.error' | translate }}</p>
 } @else if (block) {
-  <studer-block-header [block]="block"></studer-block-header>
-  <studer-tabs [tabs]="tabs" [activeTabId]="activeTabId" (tabChange)="onTabChange($event)"></studer-tabs>
-
-  <main class="tab-content">
-    @switch (activeTabId) {
-      @case ('content') {
-        <studer-block-viewer [content]="parseContent(block.versions[block.versions.length - 1].content)"></studer-block-viewer>
+  <studer-block-header
+    [block]="block"
+    (toggleContent)="toggleContent()"
+    (openTree)="onOpenTree()"
+    (edit)="onEdit()">
+  </studer-block-header>
+  @if (contentVisible) {
+    <studer-tabs [tabs]="tabs" [activeTabId]="activeTabId" (tabChange)="onTabChange($event)"></studer-tabs>
+    <main class="tab-content">
+      @switch (activeTabId) {
+        @case ('content') {
+          <studer-block-viewer [content]="parsedContent"></studer-block-viewer>
+        }
+        @case ('info') {
+          <studer-info-tab [block]="block"></studer-info-tab>
+        }
+        @case ('versions') {
+          <studer-versions-tab [block]="block"></studer-versions-tab>
+        }
+        @case ('stats') {
+          <studer-stats-tab></studer-stats-tab>
+        }
       }
-      @case ('info') {
-        <studer-info-tab [block]="block"></studer-info-tab>
-      }
-      @case ('versions') {
-        <studer-versions-tab [block]="block"></studer-versions-tab>
-      }
-      @case ('stats') {
-        <studer-stats-tab></studer-stats-tab>
-      }
-    }
-  </main>
+    </main>
+  }
 }

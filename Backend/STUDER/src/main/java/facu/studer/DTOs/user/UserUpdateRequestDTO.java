@@ -29,11 +29,6 @@ public class UserUpdateRequestDTO {
      */
     public static final int EMAIL_MAX_LENGTH = 30;
 
-    /**
-     * Registered email.
-     */
-    @Size(min = EMAIL_MIN_LENGTH, max = EMAIL_MAX_LENGTH, message = "{user.email.size}")
-    private String email;
 
     /**
      * Minimum number of characters for the password.

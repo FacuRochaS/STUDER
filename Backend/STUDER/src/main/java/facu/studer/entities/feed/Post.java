@@ -1,5 +1,7 @@
 package facu.studer.entities.feed;
 
+
+import com.fasterxml.jackson.databind.JsonNode;
 import facu.studer.entities.BaseEntity;
 import facu.studer.entities.Tag;
 import facu.studer.entities.users.User;
@@ -9,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.Set;
 
@@ -32,16 +36,12 @@ public class Post extends BaseEntity {
     private User user;
 
     /**
-     * Content of the post.
+     * Content.
      */
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private JsonNode content;
 
-    /**
-     * link to photo.
-     */
-    @Column(nullable = false)
-    private String link;
 
     /**
      * Tags associated with the post.

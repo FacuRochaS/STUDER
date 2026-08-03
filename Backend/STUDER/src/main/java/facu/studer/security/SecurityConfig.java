@@ -79,6 +79,9 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/users/register").permitAll()
+                .requestMatchers("/api/v1/chatbot/**").permitAll()
+                .requestMatchers("/api/v1/ia/**").permitAll()
+                .requestMatchers("/api/v1/search").permitAll()
                 // Swagger/OpenAPI (if using)
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 // All other requests require authentication

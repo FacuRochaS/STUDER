@@ -10,9 +10,18 @@ import { UserProfileComponent } from './features/users/components/user-profile/u
 import { ChatComponent } from './features/chats/components/chat.component';
 import { DiscussionsTestComponent } from './features/test/discussions-test.component';
 import {authGuard} from './core/auth/auth.guard';
+import { CourseExploreComponent } from './features/courses/components/course-explore/course-explore.component';
+import { CourseCreateComponent } from './features/courses/components/course-create/course-create.component';
+import { ContestListComponent } from './features/contest/components/contest-list/contest-list.component';
+import { ContestDetailComponent } from './features/contest/components/contest-detail/contest-detail.component';
+import { AdminComponent } from './features/admin/admin.component';
+import { AdminContestCreateComponent } from './features/admin/contest-create/admin-contest-create.component';
+import { AdminGuard } from './features/admin/admin.guard';
+import { FaqComponent } from './features/landing/faq/faq.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
+  { path: 'faq', component: FaqComponent },
   { path: 'login', component: LoginRegisterComponent},
   { path: 'test', component: TestComponent },
 
@@ -22,9 +31,17 @@ export const routes: Routes = [
     //canActivate: [authGuard],
     children: [
       { path: 'home', component: HomeComponent },
+      { path: 'courses', component: CourseExploreComponent },
+      { path: 'courses/create', component: CourseCreateComponent },
+      { path: 'courses/:id', redirectTo: '/courses' },
+      { path: 'feed', component: HomeComponent },
+      { path: 'contests', component: ContestListComponent },
+      { path: 'contest/:id', component: ContestDetailComponent },
+      { path: 'admin', component: AdminComponent, canActivate: [AdminGuard]  },
+      { path: 'admin/contests/create', component: AdminContestCreateComponent, canActivate: [AdminGuard]  },
+      { path: 'admin/contests/:id/edit', component: AdminContestCreateComponent, canActivate: [AdminGuard]   },
       { path: 'discussions', component: DiscussionComponent },
       { path: 'discussions/:id', component: DiscussionComponent },
-      { path: 'courses', component: HomeComponent },
       { path: 'calendar', component: HomeComponent },
       { path: 'messages', component: ChatComponent },
       { path: 'messages/:chatId', component: ChatComponent },
@@ -33,8 +50,6 @@ export const routes: Routes = [
       { path: 'user/me', component: UserProfileComponent },
       { path: 'user/:identifier', component: UserProfileComponent },
 
-      // --- RUTA DE PRUEBA AÑADIDA ---
-      { path: 'test/discussions', component: DiscussionsTestComponent }
     ]
   },
   { path: '**', redirectTo: '' }

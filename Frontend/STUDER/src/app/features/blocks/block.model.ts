@@ -20,12 +20,14 @@ export interface BlockCompleteResponseDTO{
   tags: string[]
   versions: BlockVersionResponseDTO[]
   parent: BlockResponseDTO
+  likedByCurrentUser?: boolean
+  likeCount?: number
 }
 
 export interface BlockCompleteTreeResponseDTO {
-  parent: BlockCompleteResponseDTO
+  parents: BlockCompleteResponseDTO[]
   block: BlockCompleteResponseDTO
-  sons:BlockResponseDTO[]
+  sons: BlockResponseDTO[]
 }
 
 export interface BlockCreateRequestDTO {
@@ -69,6 +71,13 @@ export interface BlockVersionResponseDTO {
   versionNumber:number
   changeDescription:string
 }
+export interface BlockStatsDTO {
+  likeCount: number;
+  forkCount: number;
+  versionCount: number;
+  usedInCourses: number;
+}
+
 export interface BlockResponseDTO {
   id:number
   createdDatetime:string
@@ -80,6 +89,8 @@ export interface BlockResponseDTO {
   difficulty:Difficulty
   tags: string[]
   version:BlockVersionResponseDTO
+  likedByCurrentUser?: boolean
+  likeCount?: number
 }
 
 

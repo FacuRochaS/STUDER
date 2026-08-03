@@ -1,0 +1,16 @@
+.video-viewer {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.video-viewer iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+}
+
+.video-viewer video {
+  width: 100%;
+  border-radius: 8px;
+}

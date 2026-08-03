@@ -8,8 +8,8 @@ def escape(text):
 
 
 
-end_date = datetime(2026, 6, 25)
-start_date = end_date - timedelta(days=30)
+end_date = datetime(2026, 7, 24, 16, 0, 0)
+start_date = end_date - timedelta(days=180)
 
 
 def random_date(start, end):
@@ -21,8 +21,9 @@ def random_date(start, end):
 
 tags_nombres = [
     "java", "spring-boot", "angular", "docker", "ui-ux", "frontend", "backend",
-    "matematicas", "algoritmos", "gaming", "minecraft", "mario-kart", "anime",
-    "universidad", "utn", "unc", "ayuda", "debate", "pokemon", "arquitectura"
+    "matematicas", "algoritmos", "gaming", "ayuda", "debate",
+    "aprendizaje", "comunidad", "logros", "tutorial",
+    "programacion", "javascript", "typescript", "devops", "ia", "arquitectura"
 ]
 
 tags = {name: i + 1 for i, name in enumerate(tags_nombres)}
@@ -39,6 +40,9 @@ categorias_discusiones = [
     {"t": "Debate: ¿Tailwind o Bootstrap para paneles de administración?",
      "d": "Para un proyecto de la facu tenemos que armar un dashboard, ¿qué dicen que es más rápido de implementar hoy en día para UI?",
      "tags": ["ui-ux", "frontend", "debate"]},
+    {"t": "Signals vs RxJS en Angular 19",
+     "d": "¿Ya migraron a signals? Yo estoy usando computed() y effect() pero no sé si conviene abandonar RxJS del todo.",
+     "tags": ["angular", "frontend", "debate"]},
     # Backend / Java / Spring
     {"t": "Ayuda con DTOs y Mappers en Java Spring Boot",
      "d": "Tengo una entidad gigante y no quiero devolverla entera al front. ¿Usan MapStruct o arman los mappers a mano?",
@@ -49,32 +53,67 @@ categorias_discusiones = [
     {"t": "¿Cómo estructurar bien la seguridad con JWT en Java?",
      "d": "Estoy implementando Spring Security y la verdad es un dolor de cabeza. ¿Algún repo de ejemplo que tengan a mano?",
      "tags": ["java", "spring-boot", "backend"]},
-    # Matematicas / Universidad (UTN/UNC)
+    {"t": "Spring Boot 3 vs versiones anteriores",
+     "d": "¿Ya probaron Spring Boot 3 con Jakarta? Tiene cambios importantes en el classpath y algunas cosas rompen.",
+     "tags": ["java", "spring-boot", "backend", "debate"]},
+    {"t": "Migrando de Hibernate a JPA puro",
+     "d": "Estamos evaluando dejar de depender tanto de Hibernate. ¿Alguien ya hizo el cambio? ¿Vale la pena?",
+     "tags": ["java", "backend", "arquitectura"]},
+    # TypeScript / JavaScript
+    {"t": "TypeScript Generics explicados para humanos",
+     "d": "Siempre me pierdo con los genéricos. ¿Alguien tiene un recurso que los explique de forma simple?",
+     "tags": ["typescript", "javascript", "ayuda"]},
+    {"t": "¿Vale la pena aprender TypeScript en 2026?",
+     "d": "Veo que todo el mundo lo usa pero también veo mucha gente volviendo a JS vanilla. ¿Opiniones?",
+     "tags": ["typescript", "javascript", "debate"]},
+    # Docker / DevOps
+    {"t": "Docker Compose para desarrollo local: guía definitiva",
+     "d": "Armé esta guía paso a paso para tener todo el entorno de desarrollo corriendo con Docker Compose. Incluye BD, backend y frontend.",
+     "tags": ["docker", "devops", "tutorial"]},
+    {"t": "CI/CD con GitHub Actions y Docker",
+     "d": "Configuré un pipeline que builda la imagen, corre los tests y deploya automáticamente. Comparto el .yml.",
+     "tags": ["docker", "devops", "tutorial"]},
+    # Programacion general
+    {"t": "¿Estudiar programación en 2026?",
+     "d": "Estoy pensando en arrancar a estudiar pero no sé si vale la pena con tanto avance de la IA. ¿Qué opinan?",
+     "tags": ["programacion", "aprendizaje", "debate"]},
+    {"t": "El mejor lenguaje para arrancar",
+     "d": "Siempre pregunto esto y cada uno dice algo distinto. Yo creo que Python es el más amigable. ¿Ustedes?",
+     "tags": ["programacion", "aprendizaje", "debate"]},
+    # Matematicas / Universidad
     {"t": "Duda urgente: Identidad de Bézout",
-     "d": "Mañana rindo y estoy trabado. ¿Cómo aplico el algoritmo de Euclides hacia atrás para sacar los coeficientes? Siempre me mareo en el último paso.",
-     "tags": ["matematicas", "algoritmos", "universidad", "ayuda"]},
+     "d": "Mañana rindo y estoy trabado. ¿Cómo aplico el algoritmo de Euclides hacia atrás para sacar los coeficientes?",
+     "tags": ["matematicas", "algoritmos", "ayuda"]},
     {"t": "Resumen Unidad 1 y 2 para el parcial",
-     "d": "Gente, armé un PDF con todos los temas del práctico y los ejemplos de parciales de la Unidad 1 y 2. Les dejo el link por si a alguien le sirve.",
-     "tags": ["universidad", "matematicas"]},
-    {"t": "¿Alguien cursó en la UTN FRC con este profe?",
-     "d": "Me tocó cursar a la noche y quería saber si es muy exigente con los finales prácticos o si toma más teoría.",
-     "tags": ["utn", "universidad", "debate"]},
-    {"t": "Inscripciones a materias UNC",
+     "d": "Gente, armé un PDF con todos los temas del práctico y los ejemplos de parciales. Les dejo el link.",
+     "tags": ["matematicas", "aprendizaje"]},
+    {"t": "Inscripciones a materias 2026",
      "d": "¿Alguien sabe cuándo abren las inscripciones a través del sistema? El cuatrimestre pasado se colapsó todo.",
-     "tags": ["unc", "universidad"]},
-    # Gaming / Ocio
+     "tags": ["aprendizaje"]},
+    # Gaming
     {"t": "Mejores shaders oscuros para Minecraft",
-     "d": "Estoy armando un server de supervivencia y busco shaders que le den un estilo más sombrío, tipo terror, pero que no maten la PC.",
-     "tags": ["minecraft", "gaming", "debate"]},
-    {"t": "Atajos rotos en Mario Kart",
-     "d": "Ayer descubrí un atajo en la pista del volcán que te salta media vuelta. ¿Qué otros atajos así de rotos conocen?",
-     "tags": ["mario-kart", "gaming", "nintendo"]},
-    {"t": "Ideas para pixel art de Pokémon",
-     "d": "Quiero armar un Gyarados negro gigante en mi mundo de Minecraft. ¿Tienen alguna web que pase imágenes a bloques?",
-     "tags": ["pokemon", "minecraft", "gaming", "ayuda"]},
+     "d": "Busco shaders que le den un estilo más sombrío, tipo terror, pero que no maten la PC.",
+     "tags": ["gaming", "debate"]},
     {"t": "Recomendación de Anime de esta temporada",
-     "d": "Acabo de terminar un par de series y me quedé sin nada para ver. ¿Qué están siguiendo ahora que valga la pena?",
-     "tags": ["anime", "debate"]},
+     "d": "Acabo de terminar un par de series y me quedé sin nada para ver. ¿Qué están siguiendo ahora?",
+     "tags": ["debate"]},
+    # IA / tech
+    {"t": "¿La IA va a reemplazar a los programadores?",
+     "d": "Con Copilot, ChatGPT y todas estas herramientas, ¿creen que en 5 años cambie completamente el rol del dev?",
+     "tags": ["ia", "programacion", "debate"]},
+    {"t": "Usando IA para generar tests automáticos",
+     "d": "Probé pedirle a una IA que me genere tests unitarios para mi API y funcionaron bastante bien. ¿Alguien más lo intentó?",
+     "tags": ["ia", "programacion", "tutorial"]},
+    # Comunidad
+    {"t": "Presentémonos: ¿de dónde son y qué estudian?",
+     "d": "Me gustaría conocer más a la comunidad. Yo soy de Córdoba, estudio Ingeniería en Sistemas.",
+     "tags": ["comunidad"]},
+    {"t": "Compartan sus logros del mes",
+     "d": "¡Julio fue un mesazo! Terminé 2 cursos en STUDER y empecé un proyecto freelance.",
+     "tags": ["logros", "comunidad"]},
+    {"t": "¿Qué música escuchan mientras codean?",
+     "d": "Yo no puedo programar sin mi playlist de lo-fi. ¿Ustedes?",
+     "tags": ["comunidad"]},
 ]
 
 discusiones_generadas = []
@@ -91,7 +130,7 @@ conceptos = [
     ("Torneos de Mario Kart", ["mario-kart", "gaming"]), ("Estrenos de Anime", ["anime"])
 ]
 
-for i in range(60):
+for i in range(100):
 
     if i < len(categorias_discusiones):
         base = categorias_discusiones[i]
@@ -143,7 +182,7 @@ msg_id_counter = 1
 
 for disc in discusiones_generadas:
 
-    num_mensajes = random.choice([0, 0, 1, 2, 3, 4, 5, 8, 12])
+    num_mensajes = random.choice([0, 0, 1, 2, 3, 4, 5, 8, 12, 15])
     disc["message_count"] = num_mensajes
 
     mensajes_locales = []
@@ -182,8 +221,8 @@ for disc in discusiones_generadas:
 likes_insert = []
 like_id_counter = 1
 for m in mensajes_insert:
-    num_likes = random.randint(0, 4)
-    users_liked = random.sample(range(1, 101), num_likes)
+    num_likes = random.randint(0, 6)
+    users_liked = random.sample(range(1, 101), min(num_likes, 100))
     for u in users_liked:
         likes_insert.append({
             "id": like_id_counter,
@@ -197,14 +236,14 @@ for m in mensajes_insert:
 favs_insert = []
 fav_id_counter = 1
 for u in range(1, 101):
-    num_favs = random.randint(0, 3)
-    fav_discs = random.sample(range(1, 61), num_favs)
+    num_favs = random.randint(0, 5)
+    fav_discs = random.sample(range(1, 101), min(num_favs, 100))
     for d_id in fav_discs:
         favs_insert.append({
             "id": fav_id_counter,
             "user_id": u,
             "discussion_id": d_id,
-            "created_datetime": end_date - timedelta(days=random.randint(1, 10))
+            "created_datetime": end_date - timedelta(days=random.randint(1, 60))
         })
         fav_id_counter += 1
 

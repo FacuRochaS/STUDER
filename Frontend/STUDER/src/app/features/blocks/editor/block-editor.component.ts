@@ -8,6 +8,8 @@ import { TagInputComponent } from '../../../shared/components/tag-input/tag-inpu
 import { TranslateModule } from '@ngx-translate/core';
 import {TextCreatorComponent} from '../text/creator/text-creator.component';
 import {ActivityCreatorComponent} from '../activity/creator/activity-creator.component';
+import {VideoCreatorComponent} from '../video/creator/video-creator.component';
+import {GalleryCreatorComponent} from '../gallery/creator/gallery-creator.component';
 
 export type Difficulty = 'EASY' | 'NORMAL' | 'HARD' | 'EXPERT';
 
@@ -17,37 +19,44 @@ export type Difficulty = 'EASY' | 'NORMAL' | 'HARD' | 'EXPERT';
   selector: 'studer-block-editor',
   standalone: true,
   // Agregamos los componentes al array de imports
-  imports: [CommonModule, FormsModule, TranslateModule, TagInputComponent, TextCreatorComponent, ActivityCreatorComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, TagInputComponent, TextCreatorComponent, ActivityCreatorComponent, VideoCreatorComponent, GalleryCreatorComponent],
   templateUrl: './block-editor.component.html',
   styleUrls: ['./block-editor.component.css']
 })
 export class BlockEditorComponent implements OnInit {
+  currentStep: 1 | 2 = 1;
   @Input() initialContent: BlockContentItem[] = [];
+  @Input() mode: string = 'create';
+  @Input() blockId?: number;
+  @Input() blockName?: string;
+  @Input() blockDifficulty?: string;
+  @Input() blockTags?: string[];
   @Output() save = new EventEmitter<any>();
 
   content: BlockContentItem[] = [];
   metadata = {
     name: '',
-    slug: '',
     tags: [] as string[],
     difficulty: 'NORMAL' as Difficulty,
     published: false,
   };
 
-  // Nuestra lista estática de tipos soportados
-  availableContentTypes: string[] = ['text', 'activity'];
+  changeDescription = '';
+
+  availableContentTypes: string[] = ['text', 'activity', 'video', 'gallery'];
 
   ngOnInit(): void {
     this.content = JSON.parse(JSON.stringify(this.initialContent));
+    if (this.mode === 'edit') {
+      this.currentStep = 2;
+      this.metadata.name = this.blockName ?? '';
+      this.metadata.difficulty = (this.blockDifficulty as Difficulty) || 'NORMAL';
+      this.metadata.tags = this.blockTags ?? [];
+    }
   }
 
-  generateSlug(): void {
-    this.metadata.slug = this.metadata.name
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/[\s_-]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+  goToStep(step: 1 | 2): void {
+    this.currentStep = step;
   }
 
   addComponent(type: string): void {
@@ -65,6 +74,10 @@ export class BlockEditorComponent implements OnInit {
         allowRetry: true,
         showFeedback: true
       };
+    } else if (type === 'video') {
+      defaultData = { url: '', platform: 'youtube', startTime: null, autoplay: false, controls: true };
+    } else if (type === 'gallery') {
+      defaultData = { images: [], layout: 'carousel' };
     }
 
     const newComponent: BlockContentItem = {
@@ -96,9 +109,18 @@ export class BlockEditorComponent implements OnInit {
   }
 
   onSave(): void {
-    this.save.emit({
-      ...this.metadata,
-      content: JSON.stringify(this.content)
-    });
+    if (this.mode === 'edit') {
+      this.save.emit({
+        content: JSON.stringify(this.content),
+        changeDescription: this.changeDescription || 'Edited',
+        blockId: this.blockId,
+        published: this.metadata.published,
+      });
+    } else {
+      this.save.emit({
+        ...this.metadata,
+        content: JSON.stringify(this.content)
+      });
+    }
   }
 }

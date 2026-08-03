@@ -1,0 +1,49 @@
+<div class="tree-root">
+  <div class="tree-canvas-panel">
+    <div class="tree-controls">
+      <button class="ctrl-btn" (click)="zoomIn()" title="Zoom in"><i class="pi pi-plus"></i></button>
+      <span class="ctrl-zoom">{{ zoom * 100 | number:'1.0-0' }}%</span>
+      <button class="ctrl-btn" (click)="zoomOut()" title="Zoom out"><i class="pi pi-minus"></i></button>
+      <div class="ctrl-divider"></div>
+      <button class="ctrl-btn" (click)="fitView()" title="Fit"><i class="pi pi-arrows-alt"></i></button>
+      <button class="ctrl-btn" (click)="resetView()" title="Reset"><i class="pi pi-refresh"></i></button>
+    </div>
+
+    @if (loading) { <div class="tree-loading"><studer-loader></studer-loader></div> }
+    @else if (error) { <div class="tree-error"><i class="fa-solid fa-triangle-exclamation"></i><p>Failed to load tree</p><button class="retry-btn" (click)="loadTree(blockId)">Retry</button></div> }
+    @else if (tree && tree.nodes.length > 0) {
+      <div class="tree-viewport" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp()" (mouseleave)="onMouseUp()" (wheel)="onWheel($event)">
+        <div class="tree-stage" [style.transform]="'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoom + ')'" [style.width.px]="tree.width" [style.height.px]="tree.height">
+          <svg class="tree-svg" [attr.width]="tree.width" [attr.height]="tree.height">
+            @for (node of tree.nodes; track trackById) {
+              @if (node.parent) {
+                <line [attr.x1]="node.parent.x + NW / 2" [attr.y1]="node.parent.y + NH + node.parent.versionY" [attr.x2]="node.x + NW / 2" [attr.y2]="node.y" class="tree-svg-line" [class.tree-svg-line--path]="isInPath(node)"/>
+              }
+            }
+          </svg>
+
+          @for (node of tree.nodes; track trackById) {
+            <div class="tree-node" [style.left.px]="node.x" [style.top.px]="node.y" [style.width.px]="NW" [class.tree-node--selected]="selectedNode?.id === node.id" [class.tree-node--path]="isInPath(node) && selectedNode?.id !== node.id" [class.tree-node--fork]="node.isFork" (click)="onNodeClick(node)">
+              <div class="node-header"><span class="node-name">{{ node.name }}</span><span class="node-diff node-diff--{{ node.difficulty | lowercase }}">{{ node.difficulty }}</span></div>
+              <div class="node-meta"><span>{{ node.ownerName }}</span><span class="node-likes"><i class="pi pi-heart"></i> {{ node.likeCount }}</span></div>
+            </div>
+
+            <!-- Version pills below node -->
+            @if (node.versions.length > 0) {
+              <div class="node-versions" [style.left.px]="node.x" [style.top.px]="node.y + NH + 4" [style.width.px]="NW">
+                @for (v of node.versions; track trackByV) {
+                  <button class="ver-pill" [class.ver-pill--active]="selectedNode?.id === node.id && selectedVersionId === v.id" (click)="selectVersion(node, v, $event)" [title]="v.changeDescription || ''">v{{ v.versionNumber }}</button>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+    } @else { <div class="tree-empty"><i class="fa-solid fa-sitemap"></i><p>No tree data available</p></div> }
+  </div>
+
+  <div class="tree-detail-panel">
+    @if (selectedBlock) { <studer-block-card [block]="selectedBlock"></studer-block-card> }
+    @else { <div class="detail-empty"><i class="fa-solid fa-sitemap"></i><p>Select a node to view details</p></div> }
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="course-list-container">
+  @if (courses.length > 0) {
+    <div appAutoAnimate style="display:contents">
+    @for (course of courses; track trackByCourseId; let i = $index) {
+      <div tabindex="0" class="course-card" (click)="onCourseClick(course.id)" (keydown.enter)="onCourseClick(course.id)">
+        <div class="course-card__media">
+          @if (course.link) {
+            <img [src]="course.link" alt="{{ course.name }}" loading="lazy" class="course-card__image" />
+          } @else {
+            <div class="course-card__banner course-card__banner--{{ bannerColor(i) }}">
+              <span class="course-card__initial">{{ course.name.charAt(0).toUpperCase() }}</span>
+            </div>
+          }
+          <button class="course-card__fav" (click)="toggleFavourite(course, $event)">
+            <i class="pi" [class.pi-star-fill]="course.favourite" [class.pi-star]="!course.favourite"></i>
+          </button>
+        </div>
+
+        <div class="course-card__body">
+          <h3 class="course-card__name">{{ course.name }}</h3>
+
+          @if (course.tags && course.tags.length) {
+            <div class="course-card__tags">
+              <a class="entity entity--tag" *ngFor="let tag of course.tags | slice:0:4">#{{ tag }}</a>
+            </div>
+          }
+
+          <ng-container *ngIf="course.blocks && course.blocks.length">
+            <div class="course-card__blocks-preview">
+              <span class="course-card__block-name" *ngFor="let b of course.blocks | slice:0:3">{{ b.blockName }}</span>
+              <span class="course-card__block-more" *ngIf="course.blocks.length > 3">+{{ course.blocks.length - 3 }}</span>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="course-card__footer">
+          <div class="course-card__owner">
+            <img [src]="course.owner?.profilePictureThumbnailUrl || course.owner?.profilePictureWebpUrl || 'assets/images/default-avatar.png'" class="course-card__avatar" />
+            @if (course.owner?.username) {
+              <studer-username [username]="course.owner.username"></studer-username>
+            }
+          </div>
+          <div class="course-card__stats">
+            <span *ngIf="course.ratingCount > 0"><i class="pi pi-star-fill"></i> {{ getAverageRating(course) }}</span>
+            <span><i class="pi pi-box"></i> {{ (course.blocks && course.blocks.length) || 0 }}</span>
+            <span><i class="pi pi-heart"></i> {{ course.favouriteCount || 0 }}</span>
+          </div>
+        </div>
+      </div>
+    }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <i class="fa-solid fa-book"></i>
+      <h3>{{ 'course.list.no_courses_title' | translate }}</h3>
+      <p>{{ 'course.list.no_courses_subtitle' | translate }}</p>
+    </div>
+  }
+</div>

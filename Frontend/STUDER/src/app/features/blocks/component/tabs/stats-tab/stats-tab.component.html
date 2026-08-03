@@ -1,10 +1,28 @@
-<div class="stats-placeholder">
-  <h2>{{ 'blocks.stats.title' | translate }}</h2>
-  <ul>
-    <li>{{ 'blocks.stats.views' | translate }}</li>
-    <li>{{ 'blocks.stats.likes' | translate }}</li>
-    <li>{{ 'blocks.stats.forks' | translate }}</li>
-    <li>{{ 'blocks.stats.used_in_courses' | translate }}</li>
-    <li>{{ 'blocks.stats.avg_read_time' | translate }}</li>
-  </ul>
+<div class="stats-container">
+  @if (loading) {
+    <div class="stats-loading"><i class="pi pi-spin pi-spinner"></i></div>
+  } @else if (stats) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <i class="pi pi-heart stat-icon stat-icon--likes"></i>
+        <span class="stat-value">{{ stats.likeCount }}</span>
+        <span class="stat-label">{{ 'blocks.stats.likes' | translate }}</span>
+      </div>
+      <div class="stat-card">
+        <i class="pi pi-share-alt stat-icon stat-icon--forks"></i>
+        <span class="stat-value">{{ stats.forkCount }}</span>
+        <span class="stat-label">{{ 'blocks.stats.forks' | translate }}</span>
+      </div>
+      <div class="stat-card">
+        <i class="pi pi-history stat-icon stat-icon--versions"></i>
+        <span class="stat-value">{{ stats.versionCount }}</span>
+        <span class="stat-label">{{ 'blocks.stats.versions' | translate }}</span>
+      </div>
+      <div class="stat-card">
+        <i class="pi pi-book stat-icon stat-icon--courses"></i>
+        <span class="stat-value">{{ stats.usedInCourses }}</span>
+        <span class="stat-label">{{ 'blocks.stats.used_in_courses' | translate }}</span>
+      </div>
+    </div>
+  }
 </div>

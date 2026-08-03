@@ -34,7 +34,6 @@ public class Notification extends BaseEntity {
 
     /** Notification type. */
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private LinkedType type;
 
     /** Notification linked id entity. */

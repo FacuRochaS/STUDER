@@ -37,10 +37,10 @@ export const caseConverterInterceptor = (
 ): Observable<HttpEvent<any>> => {
 
   const isAssetRequest = req.url.includes('/assets/');
-  // Ignorar la conversión para FormData, ya que no es JSON.
+  const isIaRequest = req.url.includes('/ia/');
   const isFormData = req.body instanceof FormData;
 
-  if (isAssetRequest || isFormData) {
+  if (isAssetRequest || isFormData || isIaRequest) {
     return next(req);
   }
 

@@ -1,0 +1,183 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ===== Tab Bar ===== */
+.feed-tabs {
+  display: flex;
+  flex-shrink: 0;
+  padding-bottom: 1rem;
+}
+
+.feed-tabs__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  width: 100%;
+  background: var(--color-bg);
+  border-radius: 14px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.feed-tabs__spacer { flex: 1; }
+
+.feed-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secu);
+  padding: 0.6rem 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.feed-tab:hover { color: var(--color-text-prim); }
+.feed-tab.active { background: var(--input-background); color: var(--color-primary); }
+.feed-tab i { font-size: 0.95rem; }
+
+.feed-tab--create {
+  background: var(--color-primary);
+  color: var(--color-text-btn);
+}
+.feed-tab--create:hover { opacity: 0.9; color: var(--color-text-btn); }
+
+/* ===== Content Area ===== */
+.feed__scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+}
+
+/* ===== 2-Column Grid ===== */
+.feed__columns {
+  display: flex;
+  gap: 1rem;
+  max-width: 98rem;
+  margin: 0 auto;
+  align-items: flex-start;
+  padding-right: 1rem;
+  z-index: 1;
+}
+
+.feed__col {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .feed__columns {
+    flex-direction: column;
+    max-width: 500px;
+  }
+}
+
+/* ===== Create Post ===== */
+.feed__create {
+  margin: 0 auto 1.5rem;
+  width: 99%;
+}
+
+.feed__form {
+  padding: 1rem;
+  background: var(--color-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px var(--box-shadow-color);
+}
+
+.feed__form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  justify-content: flex-end;
+}
+
+/* ===== Load More ===== */
+.feed__loading-more {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.feed__end {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-primary);
+}
+
+.feed__end i {
+  font-size: 2rem;
+  color: var(--color-primary);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.feed__end p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ===== Empty ===== */
+.feed__empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-primary);
+}
+
+.feed__empty-icon {
+  font-size: 3rem;
+  opacity: 0.7;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.feed__empty p { margin: 0; font-size: 1rem; }
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-text-btn);
+}
+.btn--primary:hover { opacity: 0.9; }
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-text-secu);
+  box-shadow: 0 0 0 1px var(--border);
+}
+.btn--secondary:hover {
+  box-shadow: 0 0 0 1px var(--color-primary);
+  color: var(--color-primary);
+}

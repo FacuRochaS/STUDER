@@ -46,4 +46,8 @@ public class UserResponseDTO {
     private String profilePictureWebpUrl;
 
     private String profilePictureThumbnailUrl;
+
+    private String role;
+
+    private Long points;
 }

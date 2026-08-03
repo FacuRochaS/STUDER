@@ -1,0 +1,35 @@
+<div class="course-tabs">
+  <div class="course-tabs__nav" appAutoAnimate>
+    <div class="course-tabs__row">
+      @for (tab of tabs; track tab.id) {
+        <button class="course-tab" [class.active]="activeTab === tab.id" (click)="selectTab(tab.id)">
+          <i [class]="tab.icon"></i>
+          <span>{{ tab.label | translate }}</span>
+        </button>
+      }
+      <div class="course-tabs__spacer"></div>
+      <button class="course-tab course-tab--create" (click)="toggleCreate()">
+        <i [class]="showCreate ? 'pi pi-times' : 'pi pi-plus'"></i>
+        <span>{{ showCreate ? ('common.cancel' | translate) : ('course.sidebar.new' | translate) }}</span>
+      </button>
+    </div>
+
+    @if (activeTab === 'explore') {
+      <div class="course-tabs__filters">
+        <div class="filters-row">
+          <label class="filter-label">{{ 'explore.tags' | translate }}</label>
+          <studer-tag-input class="filter-tags" [(tags)]="filters.tags"></studer-tag-input>
+          <label class="filter-label">{{ 'explore.last_days' | translate }}</label>
+          <select [(ngModel)]="filters.lastDays" class="filter-select">
+            <option [ngValue]="null">{{ 'explore.any_time' | translate }}</option>
+            <option [ngValue]="1">{{ 'explore.last_day' | translate }}</option>
+            <option [ngValue]="7">{{ 'explore.last_7days' | translate }}</option>
+            <option [ngValue]="30">{{ 'explore.last_30days' | translate }}</option>
+            <option [ngValue]="90">{{ 'explore.last_90days' | translate }}</option>
+          </select>
+          <button class="btn btn--primary" (click)="applyFilters()">{{ 'explore.apply' | translate }}</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

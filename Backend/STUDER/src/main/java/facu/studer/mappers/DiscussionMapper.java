@@ -41,7 +41,7 @@ public final class DiscussionMapper {
                 .id(discussion.getId())
                 .title(discussion.getTitle())
                 .description(discussion.getDescription())
-                .owner(UserMapper.toPublicResponseDTO(discussion.getOwner()))
+                .owner(UserMapper.toPublicSimpleResponseDTO(discussion.getOwner()))
                 .tags(tagNames)
                 .messageCount(discussion.getMessageCount())
                 .createdAt(discussion.getCreatedDatetime())

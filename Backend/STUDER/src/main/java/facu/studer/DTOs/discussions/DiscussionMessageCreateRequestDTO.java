@@ -18,7 +18,6 @@ import lombok.*;
 public class DiscussionMessageCreateRequestDTO {
 
     /** Content of the message. */
-    @NotBlank(message = "discussion.message.content.required")
     private String content;
 
     /** ID of the parent message (null for root-level messages). */

@@ -1,0 +1,52 @@
+<div class="gallery-viewer">
+  @if (data.layout === 'carousel') {
+    <div class="carousel-wrapper">
+      <button class="carousel-btn carousel-btn--prev" (click)="prev()">&#8249;</button>
+      <div class="carousel-track" #track [style.transform]="'translateX(-' + scrollLeft + 'px)'">
+        @for (image of data.images; track $index) {
+          <div class="carousel-slide" (click)="enlarge(image)">
+            <img [src]="image.url" [alt]="image.alt" loading="lazy" />
+            @if (image.caption) {
+              <p class="caption">{{ image.caption }}</p>
+            }
+          </div>
+        }
+      </div>
+      <button class="carousel-btn carousel-btn--next" (click)="next()">&#8250;</button>
+    </div>
+  } @else if (data.layout === 'grid') {
+    <div class="grid-layout">
+      @for (image of data.images; track $index) {
+        <div class="grid-item" (click)="enlarge(image)">
+          <img [src]="image.url" [alt]="image.alt" loading="lazy" />
+          @if (image.caption) {
+            <p class="caption">{{ image.caption }}</p>
+          }
+        </div>
+      }
+    </div>
+  } @else if (data.layout === 'masonry') {
+    <div class="masonry-layout">
+      @for (image of data.images; track $index) {
+        <div class="masonry-item" (click)="enlarge(image)">
+          <img [src]="image.url" [alt]="image.alt" loading="lazy" />
+          @if (image.caption) {
+            <p class="caption">{{ image.caption }}</p>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (enlargedImage(); as img) {
+    <div class="overlay" (click)="closeEnlarged()">
+      <div class="overlay-content" (click)="$event.stopPropagation()">
+        <button class="overlay-close" (click)="closeEnlarged()">&times;</button>
+        <img [src]="img.url" [alt]="img.alt" />
+        @if (img.caption) {
+          <p class="overlay-caption">{{ img.caption }}</p>
+        }
+      </div>
+    </div>
+  }
+</div>

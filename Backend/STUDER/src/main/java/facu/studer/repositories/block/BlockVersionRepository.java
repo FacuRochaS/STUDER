@@ -16,7 +16,6 @@ public interface BlockVersionRepository extends JpaRepository<BlockVersion, Long
 
     @Query("SELECT bv FROM BlockVersion bv " +
             "WHERE bv.block.id = :blockId " +
-            "AND bv.published = true " +
             "AND bv.isActive = true " +
             "AND bv.block.isActive = true ")
     List<BlockVersion> findBlockVersionsByBlockId(
