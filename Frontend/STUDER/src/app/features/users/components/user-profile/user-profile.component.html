@@ -1,212 +1,139 @@
 <section class="profile">
   @if (loading) {
-    <div class="profile__loading">{{ 'profile.loading' | translate }}</div>
-  } @else {
-    @if (user) {
-      <div class="profile__layout">
-        <aside class="profile__sidebar">
+    <div class="profile__loading"><studer-loader></studer-loader></div>
+  } @else if (user) {
+    <div class="profile__layout">
+      <!-- Left: ID Card (Sticky) -->
+      <aside class="profile__sidebar">
+        <div class="profile__id-card">
           <div class="profile__avatar-ring">
-            <svg class="profile__ring-svg" viewBox="0 0 180 180">
+            <svg viewBox="0 0 180 180">
               <defs>
-                <linearGradient id="studerRingGradient" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#4285f4" />
-                  <stop offset="50%" stop-color="#00bf63" />
+                <linearGradient id="rg" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#4285f4"/>
+                  <stop offset="50%" stop-color="#00bf63"/>
                 </linearGradient>
               </defs>
-              <circle class="profile__ring-bg" cx="90" cy="90" r="82" />
-              <circle class="profile__ring-fill" cx="90" cy="90" r="82"
-                [style.stroke-dashoffset]="ringDashOffset" />
+              <circle cx="90" cy="90" r="82" class="ring-bg" />
+              <circle cx="90" cy="90" r="82" class="ring-fill" [style.stroke-dashoffset]="ringDashOffset" />
             </svg>
             <div class="profile__avatar">
-              @if (avatarUrl) {
-                <img [src]="avatarUrl" [alt]="user.username" />
-              } @else {
-                <span>{{ initials }}</span>
-              }
-              @if (isOwnProfile) {
-                <label class="profile__upload">
-                  <input type="file" accept="image/*" (change)="onFileSelected($event)" />
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                    <path d="M12 9a3.75 3.75 0 1 0 0 7.5A3.75 3.75 0 0 0 12 9Z" />
-                    <path fill-rule="evenodd" d="M9.344 3.071a49.52 49.52 0 0 1 5.312 0c.967.052 1.83.585 2.332 1.39l.821 1.317c.24.383.645.643 1.11.71.386.054.77.113 1.152.177 1.432.239 2.429 1.493 2.429 2.909V18a3 3 0 0 1-3 3h-15a3 3 0 0 1-3-3V9.574c0-1.416.997-2.67 2.429-2.909.382-.064.766-.123 1.152-.177.465-.067.87-.327 1.11-.71l.821-1.317A3.001 3.001 0 0 1 9.344 3.07Z" clip-rule="evenodd" />
-                  </svg>
-                </label>
-              }
+              @if (avatarUrl) { <img [src]="avatarUrl" [alt]="user.username" /> }
+              @else { <span>{{ initials }}</span> }
+
             </div>
-            <div class="profile__level-badge">{{ levelInfo.level }}</div>
+            <span class="profile__level">{{ levelInfo.level }}</span>
           </div>
 
-          <div class="profile__identity">
-            <h2>{{ user.firstName }} {{ user.lastName }}</h2>
-            <studer-rich-text [text]="'@' + user.username"></studer-rich-text>
+          <h2 class="profile__name">{{ user.firstName }} {{ user.lastName }}</h2>
+          <studer-username class="profile__username" [username]="user.username"></studer-username>
+
+          <div class="profile__prestige">
+            <div class="prestige-item"><span class="prestige-value">{{ levelInfo.level }}</span><span class="prestige-label">{{ 'profile.level' | translate }}</span></div>
+            <div class="prestige-item"><span class="prestige-value">{{ user.points || 0 }}</span><span class="prestige-label">{{ 'profile.points' | translate }}</span></div>
+            <div class="prestige-item"><span class="prestige-value">{{ user.followers || 0 }}</span><span class="prestige-label">{{ 'profile.followers' | translate }}</span></div>
           </div>
 
-          <div class="profile__stats">
-            <div class="stat-item">
-              <span class="stat-value">{{ levelInfo.level }}</span>
-              <span class="stat-label">{{ 'profile.level' | translate }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-value">{{ user.followers }}</span>
-              <span class="stat-label">{{ 'profile.followers' | translate }}</span>
-            </div>
-          </div>
           <div class="profile__level-bar">
-            <div class="level-bar">
-              <div class="level-bar__fill" [style.width.%]="levelInfo.progress"></div>
-            </div>
-            <span class="level-bar__text">{{ levelInfo.currentPoints }}/{{ levelInfo.nextLevelPoints }}</span>
+            <div class="level-bar"><div class="level-bar__fill" [style.width.%]="levelInfo.progress"></div></div>
+            <span class="level-text">{{ levelInfo.currentPoints }}/{{ levelInfo.nextLevelPoints }}</span>
           </div>
 
-          @if (canShowSocialActions) {
-            <div class="profile__actions">
-              <button
-                type="button"
-                class="profile__btn profile__btn--secondary"
-                [disabled]="followLoading"
-                (click)="onFollowToggle()">
-                @if (friendStatus?.isFollowing) {
-                  {{ 'profile.unfollow' | translate }}
-                } @else {
-                  {{ 'profile.follow' | translate }}
-                }
-              </button>
-            </div>
+          <div class="profile__contributions">
+            <div class="contrib-item"><i class="fa-solid fa-newspaper"></i><span>{{ userPosts.length }}</span><small>{{ 'profile.contrib.posts' | translate }}</small></div>
+            <div class="contrib-item"><i class="fa-solid fa-cube"></i><span>{{ blocks.length }}</span><small>{{ 'profile.contrib.blocks' | translate }}</small></div>
+            <div class="contrib-item"><i class="fa-solid fa-book"></i><span>{{ userCourses.length }}</span><small>{{ 'profile.contrib.courses' | translate }}</small></div>
+            <div class="contrib-item"><i class="fa-solid fa-comments"></i><span>{{ userDiscussions.length }}</span><small>{{ 'profile.contrib.discussions' | translate }}</small></div>
+          </div>
+
+          @if (!isOwnProfile) {
+            <button class="profile__follow-btn" [disabled]="followLoading" (click)="onFollowToggle()">
+              {{ friendStatus?.isFollowing ? ('profile.unfollow' | translate) : ('profile.follow' | translate) }}
+            </button>
           }
-        </aside>
-
-        <div class="profile__content">
-          <div class="profile__tabs">
-            @for (tab of profileTabs; track tab.id) {
-              <button class="profile-tab" [class.active]="activeTab === tab.id" (click)="setActiveTab(tab.id)">
-                <i [class]="tab.icon"></i>
-                <span>{{ tab.label | translate }}</span>
-              </button>
-            }
-          </div>
-
-          @switch (activeTab) {
-            @case ('feed') {
-              <div class="profile-posts">
-                @if (isOwnProfile) {
-                  <button class="btn btn--primary btn--sm" (click)="goToFeed()">
-                    <i class="pi pi-plus"></i> {{ 'profile.posts.create' | translate }}
-                  </button>
-                }
-                @if (postsLoading) {
-                  <div class="blocks__loading">{{ 'profile.blocks.loading' | translate }}</div>
-                } @else {
-                  @if (userPosts.length > 0) {
-                    @for (post of userPosts; track post.id) {
-                      <article class="profile-post-card">
-                        <div class="profile-post-header">
-                          <studer-username [username]="post.user.username"></studer-username>
-                          <span class="profile-post-time">{{ post.createdDatetime | date:'short' }}</span>
-                        </div>
-                        <div class="profile-post-body">
-                          <studer-rich-text [text]="'post content'"></studer-rich-text>
-                        </div>
-                        <div class="profile-post-footer">
-                          <span><i class="pi pi-heart"></i> {{ post.likeCount }}</span>
-                          @if (post.tags.length) {
-                            <span class="profile-post-tags">{{ post.tags.join(', ') }}</span>
-                          }
-                        </div>
-                      </article>
-                    }
-                  } @else {
-                    <div class="blocks__empty">{{ 'profile.posts.empty' | translate }}</div>
-                  }
-                }
-              </div>
-            }
-
-            @case ('blocks') {
-              <div class="block-system">
-                @if (isOwnProfile) {
-                  <button class="btn btn--primary btn--sm" (click)="openBlockEditor()">
-                    <i class="pi pi-plus"></i> {{ 'profile.blocks.create' | translate }}
-                  </button>
-                }
-                <div class="blocks__list">
-                  @if (blocksLoading) {
-                    <div class="blocks__loading">{{ 'profile.blocks.loading' | translate }}</div>
-                  } @else {
-                    @if (blocks.length > 0) {
-                      @for (block of blocks; track block.id) {
-                        <studer-block-card [block]="block"></studer-block-card>
-                      }
-                    } @else {
-                      <div class="blocks__empty">{{ 'profile.blocks.empty' | translate }}</div>
-                    }
-                  }
-                </div>
-              </div>
-            }
-
-            @case ('courses') {
-              <div class="courses__list">
-                @if (isOwnProfile) {
-                  <button class="btn btn--primary btn--sm" routerLink="/courses/create">
-                    <i class="pi pi-plus"></i> {{ 'profile.courses.create' | translate }}
-                  </button>
-                }
-                @if (coursesLoading) {
-                  <div class="blocks__loading">{{ 'profile.blocks.loading' | translate }}</div>
-                } @else {
-                  @if (userCourses.length > 0) {
-                    @for (c of userCourses; track c.id) {
-                      <div class="profile-course-card">
-                        <a [routerLink]="['/courses', c.id]">{{ c.name }}</a>
-                        <span>{{ c.blocks.length || 0 }} {{ 'course.list.blocks' | translate }}</span>
-                      </div>
-                    }
-                  } @else {
-                    <div class="blocks__empty">{{ 'profile.courses.empty' | translate }}</div>
-                  }
-                }
-              </div>
-            }
-
-            @case ('stats') {
-              <div class="profile-stats-grid">
-                <div class="stat-card">
-                  <i class="pi pi-star stat-icon"></i>
-                  <span class="stat-value">{{ levelInfo.level }}</span>
-                  <span class="stat-label">{{ 'profile.level' | translate }}</span>
-                </div>
-                <div class="stat-card">
-                  <i class="pi pi-bolt stat-icon"></i>
-                  <span class="stat-value">{{ user.points || 0 }}</span>
-                  <span class="stat-label">{{ 'profile.points' | translate }}</span>
-                </div>
-                <div class="stat-card">
-                  <i class="pi pi-users stat-icon"></i>
-                  <span class="stat-value">{{ user.followers || 0 }}</span>
-                  <span class="stat-label">{{ 'profile.followers' | translate }}</span>
-                </div>
-                <div class="stat-card">
-                  <i class="pi pi-box stat-icon"></i>
-                  <span class="stat-value">{{ blocks.length }}</span>
-                  <span class="stat-label">{{ 'search.tabs.blocks' | translate }}</span>
-                </div>
-                <div class="stat-card">
-                  <i class="pi pi-book stat-icon"></i>
-                  <span class="stat-value">{{ userCourses.length }}</span>
-                  <span class="stat-label">{{ 'search.tabs.courses' | translate }}</span>
-                </div>
-                <div class="stat-card">
-                  <i class="pi pi-send stat-icon"></i>
-                  <span class="stat-value">{{ userPosts.length }}</span>
-                  <span class="stat-label">{{ 'feed.title' | translate }}</span>
-                </div>
-              </div>
-            }
+          @if (isOwnProfile) {
+            <button class="profile__edit-btn" (click)="showEditModal = true">
+              <i class="fa-solid fa-pen"></i> {{ 'profile.edit' | translate }}
+            </button>
           }
         </div>
-      </div>
-    } @else {
-      <div class="profile__empty">{{ 'profile.not_found' | translate }}</div>
-    }
+      </aside>
+
+      <!-- Right: Activity Timeline -->
+      <main class="profile__timeline">
+        <div class="profile__filters">
+          @for (f of filters; track f.id) {
+            <button class="filter-chip" [class.active]="activityFilter === f.id" (click)="activityFilter = f.id">
+              {{ f.label | translate }}
+            </button>
+          }
+        </div>
+
+        <div class="profile__activity" appAutoAnimate>
+          @if (filteredActivity.length > 0) {
+            @for (item of filteredActivity; track item.type + item.data.id) {
+              @switch (item.type) {
+                @case ('post') {
+                  <studer-post-card [post]="item.data"></studer-post-card>
+                }
+                @case ('block') {
+                  <studer-block-card [block]="item.data"></studer-block-card>
+                }
+                @case ('course') {
+                  <a class="activity-course" [routerLink]="['/courses', item.data.id]">
+                    <span class="activity-badge"><i class="fa-solid fa-graduation-cap"></i> {{ 'profile.contrib.courses' | translate }}</span>
+                    <strong>{{ item.data.name }}</strong>
+                    <span class="activity-meta">{{ item.data.blocks?.length || 0 }} bloques</span>
+                  </a>
+                }
+                @case ('discussion') {
+                  <a class="activity-discussion" [routerLink]="['/discussions', item.data.id]">
+                    <span class="activity-badge"><i class="fa-solid fa-comments"></i> {{ 'profile.contrib.discussions' | translate }}</span>
+                    <strong>{{ item.data.title }}</strong>
+                    <span class="activity-meta">{{ item.data.messageCount || 0 }} mensajes</span>
+                  </a>
+                }
+              }
+            }
+          } @else {
+            <div class="profile__empty-activity">
+              <i class="fa-solid fa-clock"></i>
+              <p>{{ 'profile.no_activity' | translate }}</p>
+            </div>
+          }
+        </div>
+      </main>
+    </div>
+  } @else {
+    <div class="profile__empty">{{ 'profile.not_found' | translate }}</div>
   }
 </section>
+
+@if (showEditModal) {
+  <div class="modal-overlay" (click)="showEditModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3>{{ 'profile.edit' | translate }}</h3>
+      <div class="modal-photo">
+        <div class="modal-avatar" (click)="fileInput.click()">
+          @if (avatarUrl) { <img [src]="avatarUrl" /> }
+          @else { <span>{{ initials }}</span> }
+          <div class="modal-avatar-overlay"><i class="fa-solid fa-camera"></i></div>
+        </div>
+        <input type="file" #fileInput accept="image/*" (change)="onFileSelected($event)" hidden />
+      </div>
+      <div class="modal-field">
+        <label>{{ 'profile.password' | translate }}</label>
+        <input type="password" [(ngModel)]="editPassword" name="editPass" autocomplete="new-password" class="modal-input" />
+      </div>
+      <div class="modal-field">
+        <label>{{ 'profile.password_confirm' | translate }}</label>
+        <input type="password" [(ngModel)]="editPasswordConfirm" name="editPassConfirm" autocomplete="new-password" class="modal-input" />
+      </div>
+      @if (errorMsg) { <p class="modal-error">{{ errorMsg | translate }}</p> }
+      <div class="modal-actions">
+        <button class="btn btn--secondary" (click)="showEditModal = false">{{ 'common.cancel' | translate }}</button>
+        <button class="btn btn--primary" (click)="saveProfile()" [disabled]="saving">{{ saving ? ('common.saving' | translate) : ('profile.save' | translate) }}</button>
+      </div>
+    </div>
+  </div>
+}

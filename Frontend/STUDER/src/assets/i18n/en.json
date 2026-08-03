@@ -16,7 +16,8 @@
     "edit": "Edit",
     "create": "Create",
     "title": "Title",
-    "status": "Status"
+    "status": "Status",
+    "back": "Return"
   },
   "home": {
     "welcome": "Welcome to Studer, {{name}}",
@@ -184,6 +185,21 @@
     "level": "Level",
     "points": "Pts",
     "followers": "Followers",
+    "edit": "Edit Profile",
+    "no_activity": "No activity yet",
+    "contrib": {
+      "posts": "Posts",
+      "blocks": "Blocks",
+      "courses": "Courses",
+      "discussions": "Discussions"
+    },
+    "filters": {
+      "all": "All",
+      "posts": "Posts",
+      "blocks": "Blocks",
+      "courses": "Courses",
+      "discussions": "Discussions"
+    },
     "blocks": {
       "title": "Blocks",
       "create": "Create Block",
@@ -243,7 +259,7 @@
   "discussion": {
     "sidebar": {
       "new": "Open new",
-      "yours": "Yours",
+    "yours": "Your Posts",
       "favourites": "Favourites",
       "recent": "Recent",
       "popular": "Popular",
@@ -262,16 +278,21 @@
       "no_discussions_title": "No discussions found",
       "no_discussions_subtitle": "Try selecting another category or create a new discussion."
     },
-    "search_placeholder": "Search discussions...",
-    "explore": {
-      "filters_title": "Explore Filters",
-      "tags": "Tags",
-      "tags_placeholder": "Filter by tags...",
-      "last_days": "Created in last (days)",
-      "activity_hours": "Recent activity (hours)",
-      "reset": "Reset",
-      "apply": "Apply Filters"
-    }
+    "search_placeholder": "Search discussions..."
+  },
+  "explore": {
+    "filters_title": "Explore Filters",
+    "tags": "Tags",
+    "tags_placeholder": "Filter by tags...",
+    "last_days": "Created in last (days)",
+    "activity_hours": "Recent activity (hours)",
+    "reset": "Reset",
+    "apply": "Apply Filters",
+    "any_time": "Any time",
+    "last_day": "Last 24h",
+    "last_7days": "Last 7 days",
+    "last_30days": "Last 30 days",
+    "last_90days": "Last 90 days"
   },
   "chat": {
     "title": "Chats",
@@ -480,11 +501,14 @@
     "recent": "Recent",
     "popular": "Popular",
     "following": "Following",
+    "yours": "Yours",
+    "new_posts": "New",
     "create_post": "Create post",
     "new": "New post",
     "write_something": "Write something...",
     "publish": "Publish",
-    "empty": "No posts yet"
+    "empty": "No posts yet",
+    "reached_end": "You've reached the end"
   },
   "course": {
     "sidebar": {
@@ -621,13 +645,13 @@
     "courses": "Courses",
     "blocks": "Blocks",
     "content": "Content",
-    "min_points": "Min. Points",
     "step_info": "Info",
     "step_content": "Content",
     "days_left": "days left",
     "rewards": "Rewards",
     "admin_actions": "Admin Actions",
     "finish": "Finish",
+    "level_required": "You need level {{ level }} or higher to participate",
     "achievements": "Achievements",
     "list": {
       "title": "Contests",
@@ -635,6 +659,8 @@
       "active": "Active",
       "upcoming": "Upcoming",
       "finished": "Finished",
+      "preparation": "In Preparation",
+      "active_tab": "Active",
       "empty": "No contests available yet",
       "starts": "Starts"
     },

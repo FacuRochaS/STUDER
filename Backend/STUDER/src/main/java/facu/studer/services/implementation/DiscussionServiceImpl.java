@@ -173,6 +173,21 @@ public class DiscussionServiceImpl implements DiscussionService {
     }
 
     @Override
+    public DiscussionPageResponseDTO getDiscussionsByUsername(String targetUsername, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<Discussion> discussionPage = discussionRepository.findByUsername(targetUsername, pageable);
+        List<DiscussionResponseDTO> dtos = discussionPage.getContent().stream()
+                .map(d -> mapToDTO(d, targetUsername))
+                .collect(Collectors.toList());
+        return DiscussionPageResponseDTO.builder()
+                .discussions(dtos)
+                .totalElements(discussionPage.getTotalElements())
+                .hasMore(discussionPage.hasNext())
+                .currentPage(page)
+                .build();
+    }
+
+    @Override
     public DiscussionPageResponseDTO getNewDiscussions(String username, int page) {
         Sort sort = Sort.sort(Discussion.class).by(Discussion::getCreatedDatetime).descending();
 
@@ -479,6 +494,7 @@ public class DiscussionServiceImpl implements DiscussionService {
 
         Optional<MessageLike> messageLike = messageLikeRepository.findByUserUsernameAndMessageIdAndIsActiveFalse(username, messageId);
         if (messageLike.isPresent()) {
+            messageLike.get().setIsActive(true);
             messageLikeRepository.save(messageLike.get());
             return MessageDTO.builder()
                     .success(true)

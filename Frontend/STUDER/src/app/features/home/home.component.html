@@ -1,83 +1,82 @@
 <section class="feed">
-  <studer-feed-sidebar (categorySelected)="onCategorySelected($event)"></studer-feed-sidebar>
+  <nav class="feed-tabs">
+    <div class="feed-tabs__nav" appAutoAnimate>
+      @for (tab of tabs; track tab.id) {
+        <button class="feed-tab" [class.active]="currentFilter === tab.id" (click)="selectTab(tab.id)">
+          <i [class]="tab.icon"></i>
+          <span>{{ tab.label | translate }}</span>
+        </button>
+      }
+      <div class="feed-tabs__spacer"></div>
+      <button class="feed-tab feed-tab--create" (click)="showCreateForm = !showCreateForm">
+        <i [class]="showCreateForm ? 'pi pi-times' : 'pi pi-plus'"></i>
+        <span>{{ showCreateForm ? ('common.cancel' | translate) : ('feed.new' | translate) }}</span>
+      </button>
+    </div>
+  </nav>
 
-  <div class="feed__content">
-    @if (showCreateForm) {
-      <div class="feed__create">
-        <div class="feed__form">
-          <studer-text-creator [data]="postContentData" (dataChange)="onPostContentChange($event)"></studer-text-creator>
-          <studer-gallery-creator [data]="postGalleryData" (dataChange)="postGalleryData = $event"></studer-gallery-creator>
-          <div class="feed__form-actions">
-            <button class="btn btn--primary" (click)="createPost()">
-              {{ 'feed.publish' | translate }}
-            </button>
-            <button class="btn btn--secondary" (click)="showCreateForm = false">
-              {{ 'common.cancel' | translate }}
-            </button>
+  <div class="feed__scroll" (scroll)="onScroll($event)">
+    <div appAutoAnimate>
+      @if (showCreateForm) {
+        <div class="feed__create">
+          <div class="feed__form">
+            <studer-text-creator [data]="postContentData" (dataChange)="postContentData = $event"></studer-text-creator>
+            <studer-gallery-creator [data]="postGalleryData" (dataChange)="postGalleryData = $event"></studer-gallery-creator>
+            <div class="feed__form-actions">
+              <button class="btn btn--primary" (click)="createPost()">{{ 'feed.publish' | translate }}</button>
+              <button class="btn btn--secondary" (click)="showCreateForm = false">{{ 'common.cancel' | translate }}</button>
+            </div>
           </div>
         </div>
-      </div>
-    }
+      }
+    </div>
+
 
     @if (!showCreateForm) {
+
       @if (loading) {
         <studer-loader></studer-loader>
       } @else {
-        @for (post of posts; track post.id) {
-        <article class="feed__post">
-          <div class="feed__post-header">
-            <div class="feed__post-author">
-              <div class="feed__avatar">
-                @if (post.user.profilePictureThumbnailUrl) {
-                  <img [src]="post.user.profilePictureThumbnailUrl" alt="" class="feed__avatar-img" />
-                } @else {
-                  <span class="feed__avatar-placeholder">{{ post.user.firstName.charAt(0) }}{{ post.user.lastName.charAt(0) }}</span>
-                }
-              </div>
-              <div class="feed__author-info">
-                <studer-username [username]="post.user.username"></studer-username>
-                <span class="feed__author-name">{{ post.user.firstName }} {{ post.user.lastName }}</span>
-              </div>
-            </div>
-            <span class="feed__post-time">{{ post.createdDatetime | relativeTime }}</span>
-          </div>
-          <div class="feed__post-body">
-            <div class="feed__post-content">
-              @if (getPostContent(post)?.paragraphs) {
-                <studer-text-viewer [data]="getPostContent(post)"></studer-text-viewer>
-              } @else if (getPostContent(post)?.text) {
-                <studer-rich-text [text]="getPostContent(post).text"></studer-rich-text>
-              } @else {
-                <p>{{ getPostText(post) }}</p>
-              }
-              @if (getPostContent(post)?.gallery) {
-                <div class="feed__post-gallery">
-                  <studer-gallery-viewer [data]="getPostContent(post).gallery"></studer-gallery-viewer>
-                </div>
-              }
-            </div>
-            @if (post.tags && post.tags.length) {
-              <div class="feed__post-tags">
-                @for (tag of post.tags; track tag) {
-                  <studer-tag [name]="tag"></studer-tag>
-                }
-              </div>
+
+      <div class="feed__columns">
+        <div class="feed__col" appAutoAnimate>
+          @for (post of posts; track post.id; let i = $index) {
+            @if (i % 2 === 0) {
+              <studer-post-card [post]="post" (like)="toggleLike(post)"></studer-post-card>
             }
-          </div>
-          <div class="feed__post-actions">
-            <button class="feed__action-btn" [class.liked]="post.likedByCurrentUser" (click)="toggleLike(post)">
-              <i class="pi" [class.pi-heart-fill]="post.likedByCurrentUser" [class.pi-heart]="!post.likedByCurrentUser"></i>
-              <span>{{ post.likeCount }}</span>
-            </button>
-          </div>
-        </article>
-      } @empty {
+          }
+        </div>
+        <div class="feed__col" appAutoAnimate>
+          @for (post of posts; track post.id; let i = $index) {
+            @if (i % 2 !== 0) {
+              <studer-post-card [post]="post" (like)="toggleLike(post)"></studer-post-card>
+            }
+          }
+        </div>
+      </div>
+
+      @if (loadingMore) {
+        <div class="feed__loading-more">
+          <studer-loader></studer-loader>
+        </div>
+      }
+
+      @if (reachedEnd && posts.length > 0) {
+        <div class="feed__end">
+          <div class="feed__end-line"></div>
+          <span>{{ 'feed.reached_end' | translate }}</span>
+          <div class="feed__end-line"></div>
+        </div>
+      }
+
+      @if (posts.length === 0 && !loading) {
         <div class="feed__empty">
           <i class="pi pi-inbox feed__empty-icon"></i>
           <p>{{ 'feed.empty' | translate }}</p>
         </div>
       }
-      }
     }
-  </div>
+    }
+    </div>
+
 </section>

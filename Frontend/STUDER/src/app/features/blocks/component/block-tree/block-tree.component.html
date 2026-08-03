@@ -10,7 +10,7 @@
     </div>
 
     @if (loading) { <div class="tree-loading"><studer-loader></studer-loader></div> }
-    @else if (error) { <div class="tree-error"><i class="pi pi-exclamation-triangle"></i><p>Failed to load tree</p><button class="retry-btn" (click)="loadTree(blockId)">Retry</button></div> }
+    @else if (error) { <div class="tree-error"><i class="fa-solid fa-triangle-exclamation"></i><p>Failed to load tree</p><button class="retry-btn" (click)="loadTree(blockId)">Retry</button></div> }
     @else if (tree && tree.nodes.length > 0) {
       <div class="tree-viewport" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp()" (mouseleave)="onMouseUp()" (wheel)="onWheel($event)">
         <div class="tree-stage" [style.transform]="'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoom + ')'" [style.width.px]="tree.width" [style.height.px]="tree.height">
@@ -39,11 +39,11 @@
           }
         </div>
       </div>
-    } @else { <div class="tree-empty">No tree data</div> }
+    } @else { <div class="tree-empty"><i class="fa-solid fa-sitemap"></i><p>No tree data available</p></div> }
   </div>
 
   <div class="tree-detail-panel">
     @if (selectedBlock) { <studer-block-card [block]="selectedBlock"></studer-block-card> }
-    @else { <div class="detail-empty"><i class="pi pi-sitemap"></i><p>Select a node to view details</p></div> }
+    @else { <div class="detail-empty"><i class="fa-solid fa-sitemap"></i><p>Select a node to view details</p></div> }
   </div>
 </div>

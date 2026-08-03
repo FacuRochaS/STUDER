@@ -18,6 +18,7 @@ export class ActivityCreatorComponent implements OnInit {
   @Output() dataChange = new EventEmitter<ActivityContentData>();
 
   uploadingImageIndex: number | null = null;
+  statementText = '';
 
   constructor(private readonly uploadService: UploadService) {}
 
@@ -25,6 +26,15 @@ export class ActivityCreatorComponent implements OnInit {
     if (!this.data || !this.data.activityType) {
       this.data = { activityType: 'multiple_choice', statement: [], options: [], allowRetry: true, showFeedback: true };
     }
+    this.data.allowRetry = true;
+    if (this.data.statement.length > 0 && this.data.statement[0].type === 'text') {
+      this.statementText = this.data.statement[0].value || '';
+    }
+  }
+
+  onStatementChange(): void {
+    this.data.statement = [{ type: 'text', value: this.statementText }];
+    this.updateModel();
   }
 
   onTypeChange(): void {

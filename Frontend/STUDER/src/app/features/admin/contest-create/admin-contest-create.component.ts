@@ -38,7 +38,7 @@ import { TagInputComponent } from '../../../shared/components/tag-input/tag-inpu
               <div class="f"><label>{{ 'contest.start_date' | translate }} *</label><input type="datetime-local" [(ngModel)]="startDate" name="sd" required class="inp" /></div>
               <div class="f"><label>{{ 'admin.preparation_hours' | translate }}</label><input type="number" [(ngModel)]="prepH" name="ph" min="0" class="inp" placeholder="72" /></div>
               <div class="f"><label>{{ 'admin.validation_hours' | translate }}</label><input type="number" [(ngModel)]="valH" name="vh" min="0" class="inp" placeholder="120" /></div>
-              <div class="f"><label>{{ 'contest.min_points' | translate }}</label><input type="number" [(ngModel)]="minPts" name="mp" min="0" class="inp" placeholder="0" /></div>
+              <div class="f"><label>{{ 'contest.min_level' | translate }}</label><input type="number" [(ngModel)]="minLvl" name="ml" min="1" class="inp" placeholder="1" /></div>
             </div>
           }
           @if (step === 2) {
@@ -96,7 +96,7 @@ export class AdminContestCreateComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   isEdit = false; editId: number | null = null; saving = false; step = 1;
-  title = ''; desc = ''; tags: string[] = []; startDate = ''; prepH = 72; valH = 120; minPts: number | null = null;
+  title = ''; desc = ''; tags: string[] = []; startDate = ''; prepH = 72; valH = 120; minLvl: number | null = null;
   contentData: TextContentData = { paragraphs: [] };
 
   ngOnInit(): void {
@@ -107,7 +107,7 @@ export class AdminContestCreateComponent implements OnInit {
   }
 
   pop(c: ContestResponseDTO): void {
-    this.title = c.title; this.desc = c.description || ''; this.minPts = c.minPoints || null;
+    this.title = c.title; this.desc = c.description || ''; this.minLvl = pointsToLevel(c.minPoints);
     this.tags = c.tags || []; this.prepH = c.preparationDurationHours || 72; this.valH = c.validationDurationHours || 120;
     if (c.startDate) this.startDate = toLocal(c.startDate);
     if (c.content?.paragraphs) this.contentData = c.content as TextContentData;
@@ -123,10 +123,25 @@ export class AdminContestCreateComponent implements OnInit {
       startDate: this.startDate ? this.startDate + ':00' : undefined,
       preparationDurationHours: this.prepH,
       validationDurationHours: this.valH,
-      minPoints: this.minPts ?? undefined,
+      minPoints: this.minLvl != null ? levelToPoints(this.minLvl) : undefined,
     };
     const obs = this.isEdit && this.editId ? this.cs.updateContest(this.editId, p) : this.cs.createContest(p);
     obs.subscribe({ next: () => this.router.navigate(['/admin']), error: () => this.saving = false });
   }
 }
 function toLocal(iso: string): string { if (!iso) return ''; const d = new Date(iso); const p = (n: number) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
+
+const LVL_THRESHOLDS = [0, 10, 20, 40, 80, 100, 200, 300, 500, 700, 1000, 2000, 4000, 8000, 16000];
+
+function levelToPoints(level: number): number {
+  if (level <= 1) return 0;
+  return LVL_THRESHOLDS[Math.min(level - 1, LVL_THRESHOLDS.length - 1)] ?? 0;
+}
+
+function pointsToLevel(points: number | null): number | null {
+  if (points == null || points < 0) return null;
+  for (let i = LVL_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (points >= LVL_THRESHOLDS[i]) return i + 1;
+  }
+  return 1;
+}

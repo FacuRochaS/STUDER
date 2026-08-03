@@ -1,9 +1,3 @@
-@if (backToList) {
-  <button class="back-btn" (click)="closed.emit()">
-    <i class="pi pi-arrow-left"></i>
-  </button>
-}
-
 @if (loading) {
   <studer-loader></studer-loader>
 } @else if (error) {
@@ -14,6 +8,11 @@
   </div>
 } @else if (course) {
   <div class="course-detail">
+    @if (backToList) {
+      <button class="back-btn" (click)="closed.emit()">
+        <i class="pi pi-arrow-left"></i>
+      </button>
+    }
     <div class="course-detail__header">
       <div class="course-detail__owner">
         <img [src]="course.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'" alt="Owner" class="course-detail__avatar" />

@@ -16,7 +16,7 @@
   <div class="input-area">
     <input type="file" #fileInput hidden (change)="onFileSelected($event)">
     <button class="action-btn" (click)="fileInput.click()" [disabled]="isSending" title="{{ 'discussion.item.attach_file' | translate }}">
-      <i class="pi pi-paperclip"></i>
+      <i class="fa-solid fa-image"></i>
     </button>
 
     <input type="text"

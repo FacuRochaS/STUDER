@@ -1,41 +1,29 @@
 <div class="chat-layout">
-
   <aside class="chat-sidebar">
-
-    <div class="chat-sidebar__search">
-      <i class="pi pi-search search-icon"></i>
+    <div class="chat-sidebar__search" style="position:relative">
+      <i class="pi pi-search chat-sidebar__search-icon"></i>
       <input type="text"
              [placeholder]="'chat.search_placeholder' | translate"
              [(ngModel)]="searchQuery"
              (keyup)="filterResults()">
     </div>
 
-
     <div class="chat-sidebar__tabs">
-      <button class="tab-btn"
-              [class.tab-btn--active]="activeTab === 'CHAT'"
-              (click)="setTab('CHAT')">
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'CHAT'" (click)="setTab('CHAT')">
         {{ 'chat.tabs.chat' | translate }}
       </button>
-      <button class="tab-btn"
-              [class.tab-btn--active]="activeTab === 'FRIENDS'"
-              (click)="setTab('FRIENDS')">
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'FRIENDS'" (click)="setTab('FRIENDS')">
         {{ 'chat.tabs.friends' | translate }}
       </button>
     </div>
 
-    <div class="chat-sidebar__list">
+    <div class="chat-sidebar__list" appAutoAnimate>
       @if (activeTab === 'CHAT') {
         @for (chat of chats; track chat.chatId) {
-          <div class="chat-item"
-               [class.chat-item--active]="activeChat?.chatId === chat.chatId"
-               (click)="selectChat(chat)">
-
+          <div class="chat-item" [class.chat-item--active]="activeChat?.chatId === chat.chatId" (click)="selectChat(chat)">
             <div class="chat-item__avatar">
               <img [src]="chat.otherUser.profilePictureAvatarUrl || 'assets/images/default-avatar.png'" alt="Avatar">
-
             </div>
-
             <div class="chat-item__content">
               <div class="chat-item__top">
                 <studer-rich-text class="chat-item__name" [text]="formatUsername(chat.otherUser.username)"></studer-rich-text>
@@ -43,7 +31,6 @@
                   <span class="chat-item__time">{{ chat.lastMessage.timestamp | date:'shortTime' }}</span>
                 }
               </div>
-
               <div class="chat-item__bottom">
                 @if (chat.lastMessage) {
                   <div class="chat-item__last-msg">
@@ -92,26 +79,24 @@
       <header class="chat-main__header">
         <div class="chat-main__user-info">
           <img [src]="activeChat.otherUser.profilePictureAvatarUrl || 'assets/images/default-avatar.png'" alt="Avatar">
-          <div class="chat-main__user-details">
+          <div>
             <studer-rich-text class="chat-main__username" [text]="formatUsername(activeChat.otherUser.username)"></studer-rich-text>
-            <span class="chat-main__status">{{ 'chat.status.online' | translate }}</span>
+            <div class="chat-main__status">{{ 'chat.status.online' | translate }}</div>
           </div>
         </div>
       </header>
 
-      <div class="chat-main__messages" #scrollMe>
+      <div class="chat-main__messages" #scrollMe appAutoAnimate>
         @for (msg of messages; track msg.id) {
-          <div class="message-wrapper" [class.message-wrapper--mine]="msg.senderId === currentUserId">
-
-            @if (msg.senderId !== currentUserId) {
+          <div class="message-wrapper" [class.message-wrapper--mine]="msg.senderId == currentUserId">
+            @if (msg.senderId != currentUserId) {
               <img class="message__avatar" [src]="activeChat.otherUser.profilePictureAvatarUrl || 'assets/images/default-avatar.png'">
             }
-
-            <div class="message-bubble" [class.message-bubble--mine]="msg.senderId === currentUserId">
+            <div class="message-bubble" [class.message-bubble--mine]="msg.senderId == currentUserId">
               @if (msg.link) {
                 <img [src]="msg.link" class="message-image" alt="Attached image">
               }
-              @if(msg.content) {
+              @if (msg.content) {
                 <studer-rich-text [text]="msg.content"></studer-rich-text>
               }
               <span class="message-time">{{ msg.createdDatetime | date:'HH:mm' }}</span>
@@ -122,7 +107,7 @@
 
       <footer class="chat-main__input-area">
         <input type="file" #fileInput hidden (change)="onFileSelected($event)">
-        <button class="icon-btn" (click)="fileInput.click()"><i class="pi pi-paperclip"></i></button>
+        <button class="icon-btn" (click)="fileInput.click()"><i class="fa-solid fa-image"></i></button>
 
         <div class="chat-input-wrapper">
           @if (selectedFile) {
@@ -131,8 +116,7 @@
               <button class="icon-btn" (click)="removeSelectedFile()"><i class="pi pi-times"></i></button>
             </div>
           }
-          <input type="text"
-                 class="chat-input"
+          <input type="text" class="chat-input"
                  [placeholder]="'chat.type_message' | translate"
                  [(ngModel)]="newMessage"
                  (keyup.enter)="sendMessage()">
@@ -144,10 +128,9 @@
       </footer>
     } @else {
       <div class="chat-main__placeholder">
-        <i class="pi pi-comments placeholder-icon"></i>
+        <i class="fa-solid fa-envelope placeholder-icon"></i>
         <h3>{{ 'chat.select_conversation' | translate }}</h3>
       </div>
     }
   </main>
-
 </div>

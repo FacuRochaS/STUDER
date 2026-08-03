@@ -15,8 +15,6 @@
 
 <div class="charts-grid">
   @if (chartsData.blocksCreated?.length) { <div class="chart-box"><h3>{{ 'admin.charts.blocks_created' | translate }}</h3><div class="ch-wrap"><canvas id="b1"></canvas></div></div> }
-  @if (chartsData.versionsDistribution?.length) { <div class="chart-box"><h3>{{ 'admin.charts.versions_distribution' | translate }}</h3><div class="ch-wrap"><canvas id="b2"></canvas></div></div> }
-  @if (chartsData.forksDistribution?.length) { <div class="chart-box"><h3>{{ 'admin.charts.forks_distribution' | translate }}</h3><div class="ch-wrap"><canvas id="b3"></canvas></div></div> }
   @if (chartsData.difficultyDistribution) { <div class="chart-box"><h3>{{ 'admin.charts.difficulty' | translate }}</h3><div class="ch-wrap ch-wrap--sq"><canvas id="b4"></canvas></div></div> }
   @if (chartsData.blockTypes?.length) { <div class="chart-box"><h3>{{ 'admin.charts.block_types' | translate }}</h3><div class="ch-wrap ch-wrap--sq"><canvas id="b5"></canvas></div></div> }
   @if (chartsData.mostForked?.length) { <div class="chart-box"><h3>{{ 'admin.charts.most_forked' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="b6"></canvas></div></div> }

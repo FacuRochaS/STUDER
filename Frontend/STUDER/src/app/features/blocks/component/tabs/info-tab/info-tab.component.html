@@ -2,54 +2,46 @@
   <div class="info-container">
     <div class="info-main">
       <h2 class="info-name">{{ block.name }}</h2>
-      <div class="info-description">
-        {{ 'blocks.info.description_placeholder' | translate }}
-      </div>
-      <div class="info-tags">
-        <studer-rich-text [text]="tagsAsText"></studer-rich-text>
-      </div>
+      @if (block.tags?.length) {
+        <div class="info-tags">
+          <studer-rich-text [text]="tagsAsText"></studer-rich-text>
+        </div>
+      }
     </div>
     <aside class="info-metadata">
-      <div class="metadata-group">
-        <label>{{ 'blocks.info.author' | translate }}</label>
+      <div class="metadata-item">
+        <span>{{ 'blocks.info.author' | translate }}</span>
         <div class="author-info">
           <img [src]="block.owner.profilePictureAvatarUrl || block.owner.profilePictureWebpUrl || 'assets/images/default-avatar.png'" [alt]="block.owner.username" class="author-avatar">
           <studer-rich-text [text]="authorAsText"></studer-rich-text>
         </div>
       </div>
-
-      <div class="metadata-group">
-        <label>{{ 'blocks.info.details' | translate }}</label>
-        <div class="details-grid">
-          <div class="metadata-item">
-            <span>{{ 'blocks.info.difficulty' | translate }}</span>
-            <strong>{{ block.difficulty }}</strong>
-          </div>
-          <div class="metadata-item">
-            <span>{{ 'blocks.info.current_version' | translate }}</span>
-            <strong>v{{ versionNumber }}</strong>
-          </div>
-          <div class="metadata-item">
-            <span>{{ 'blocks.info.created_date' | translate }}</span>
-            <strong>{{ block.createdDatetime | date:'mediumDate' }}</strong>
-          </div>
-          <div class="metadata-item">
-            <span>{{ 'blocks.info.last_modified' | translate }}</span>
-            <strong>{{ block.lastUpdatedDatetime | date:'mediumDate' }}</strong>
-          </div>
-        </div>
+      <div class="metadata-item">
+        <span>{{ 'blocks.info.difficulty' | translate }}</span>
+        <strong>{{ block.difficulty }}</strong>
       </div>
-
-      <div class="metadata-group stats">
-        <div class="metadata-item">
-          <span>{{ 'blocks.info.likes' | translate }}</span>
-          <strong><i class="pi pi-heart"></i> {{ likeCount }}</strong>
-        </div>
+      <div class="metadata-item">
+        <span>{{ 'blocks.info.current_version' | translate }}</span>
+        <strong>{{ versionNumber }}</strong>
+      </div>
+      <div class="metadata-item">
+        <span>{{ 'blocks.info.created_date' | translate }}</span>
+        <strong>{{ block.createdDatetime | date:'mediumDate' }}</strong>
+      </div>
+      <div class="metadata-item">
+        <span>{{ 'blocks.info.last_modified' | translate }}</span>
+        <strong>{{ block.lastUpdatedDatetime | date:'mediumDate' }}</strong>
+      </div>
+      <div class="metadata-item">
+        <span>{{ 'blocks.info.likes' | translate }}</span>
+        <strong><i class="pi pi-heart"></i> {{ likeCount }}</strong>
+      </div>
+      @if (forkCount > 0) {
         <div class="metadata-item">
           <span>{{ 'blocks.info.forks' | translate }}</span>
-          <strong><i class="pi pi-share-alt"></i> 0</strong>
+          <strong><i class="pi pi-share-alt"></i> {{ forkCount }}</strong>
         </div>
-      </div>
+      }
     </aside>
   </div>
 }

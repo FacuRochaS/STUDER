@@ -47,6 +47,16 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
            "AND f.receiverAccept = true")
     List<Friend> findConfirmedFriends(@Param("user") User user);
 
+    /**
+     * Finds confirmed friends (both accepted) for a user.
+     * @param user the user
+     * @return list of friend relationships where both users have accepted
+     */
+    @Query("SELECT f FROM Friend f " +
+            "WHERE (f.sender = :user) OR ((f.receiver = :user) AND f.receiverAccept = true)"
+            )
+    List<Friend> findFollows(@Param("user") User user);
+
 
     /**
      * Gets the opposite user in a friend relationship.

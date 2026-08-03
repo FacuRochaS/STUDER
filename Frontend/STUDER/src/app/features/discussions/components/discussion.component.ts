@@ -2,14 +2,14 @@ import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, delay } from 'rxjs';
 import { DiscussionService } from '../discussion.service';
 import { DiscussionCreateRequestDTO, DiscussionResponseDTO } from '../discussion.model';
-import { DiscussionSidebarComponent, DiscussionCategory } from './discussion-sidebar/discussion-sidebar.component';
+import { DiscussionTabsComponent, ExploreFilters } from './discussion-tabs/discussion-tabs.component';
 import { DiscussionListComponent } from './discussion-list/discussion-list.component';
-import { ExploreFiltersComponent, ExploreFilters } from './explore-filters/explore-filters.component';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 import { DiscussionCreateFormComponent } from './discussion-create-form/discussion-create-form.component';
+import { AutoAnimateDirective } from '../../../shared/directives/auto-animate.directive';
 
 @Component({
   selector: 'app-discussion',
@@ -18,11 +18,11 @@ import { DiscussionCreateFormComponent } from './discussion-create-form/discussi
     CommonModule,
     FormsModule,
     TranslateModule,
-    DiscussionSidebarComponent,
+    DiscussionTabsComponent,
     DiscussionListComponent,
-    ExploreFiltersComponent,
     LoaderComponent,
     DiscussionCreateFormComponent,
+    AutoAnimateDirective,
   ],
   templateUrl: './discussion.component.html',
   styleUrls: ['./discussion.component.css']
@@ -34,7 +34,7 @@ export class DiscussionComponent implements OnInit, OnDestroy {
   showCreateForm = false;
   discussions: DiscussionResponseDTO[] = [];
   loading = false;
-  selectedCategory: DiscussionCategory = 'recent';
+  selectedCategory = 'yours';
 
   currentExploreFilters: ExploreFilters = {
     tags: [],
@@ -43,64 +43,52 @@ export class DiscussionComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
-    this.loadDiscussionsByCategory('recent');
+    this.loadDiscussionsByCategory('yours');
   }
 
-  onCategorySelected(category: DiscussionCategory): void {
+  onCategorySelected(category: string): void {
     this.selectedCategory = category;
-    if (category === 'create') {
-      this.showCreateForm = !this.showCreateForm;
-      return;
-    }
     this.showCreateForm = false;
     this.loadDiscussionsByCategory(category);
   }
 
-  onFiltersChanged(filters: ExploreFilters): void {
-    this.currentExploreFilters = filters;
-    if (this.selectedCategory === 'explore') {
-      this.loadDiscussionsByCategory('explore');
+  toggleCreate(): void {
+    this.showCreateForm = !this.showCreateForm;
+    if (this.showCreateForm && this.selectedCategory === 'explore') {
+      this.selectedCategory = 'yours';
     }
   }
 
-  loadDiscussionsByCategory(category: DiscussionCategory): void {
+  onFiltersChanged(filters: ExploreFilters): void {
+    this.currentExploreFilters = filters;
+    this.loadDiscussionsByCategory('explore');
+  }
+
+  loadDiscussionsByCategory(category: string): void {
     this.loading = true;
     this.discussions = [];
-
-    const discussionObservable = this.getObservableForCategory(category);
-
-    discussionObservable.subscribe({
+    const observable = this.getObservableForCategory(category).pipe(delay(300));
+    observable.subscribe({
       next: (response) => {
         this.discussions = response.discussions;
         this.loading = false;
       },
-      error: () => {
-        this.loading = false;
-      }
+      error: () => this.loading = false
     });
   }
 
-  private getObservableForCategory(category: DiscussionCategory) {
+  private getObservableForCategory(category: string) {
     switch (category) {
-      case 'yours':
-        return this.discussionService.getMyOwnDiscussions();
-      case 'favourites':
-        return this.discussionService.getMyFavouriteDiscussions();
-      case 'recent':
-        return this.discussionService.getMyDiscussions();
-      case 'popular':
-        return this.discussionService.getPopularDiscussions();
-      case 'new':
-        return this.discussionService.getNewDiscussions();
-      case 'explore':
-        return this.discussionService.getPublicDiscussions(
-          0,
-          this.currentExploreFilters.tags,
-          this.currentExploreFilters.lastDays ?? undefined,
-          this.currentExploreFilters.activityHours
-        );
-      default:
-        return this.discussionService.getMyDiscussions();
+      case 'yours': return this.discussionService.getMyOwnDiscussions();
+      case 'favourites': return this.discussionService.getMyFavouriteDiscussions();
+      case 'recent': return this.discussionService.getMyDiscussions();
+      case 'popular': return this.discussionService.getPopularDiscussions();
+      case 'new': return this.discussionService.getNewDiscussions();
+      case 'explore': return this.discussionService.getPublicDiscussions(0,
+        this.currentExploreFilters.tags,
+        this.currentExploreFilters.lastDays ?? undefined,
+        this.currentExploreFilters.activityHours);
+      default: return this.discussionService.getMyDiscussions();
     }
   }
 

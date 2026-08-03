@@ -27,11 +27,12 @@
 .course-card__fav {
   position: absolute; top: 0.5rem; right: 0.5rem;
   background: rgba(0,0,0,0.35); border: none; cursor: pointer;
-  width: 32px; height: 32px; border-radius: 50%;
+  width: 34px; height: 34px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.8); font-size: 1rem; transition: background 0.2s, color 0.2s;
+  color: rgba(255,255,255,0.85); font-size: 1rem;
+  transition: background 0.2s, color 0.2s;
 }
-.course-card__fav:hover { background: rgba(0,0,0,0.55); }
+.course-card__fav:hover { background: rgba(0,0,0,0.5); }
 .course-card__fav .pi-star-fill { color: #f59e0b; }
 
 /* Body */
@@ -51,7 +52,16 @@
 .course-card__stats span { display: flex; align-items: center; gap: 0.15rem; }
 .course-card__stats .pi-star-fill { color: #f59e0b; font-size: 0.65rem; }
 
-.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem; grid-column: 1/-1; }
-.empty-state i { font-size: 2.5rem; color: var(--color-text-secu); margin-bottom: 1rem; opacity: 0.5; }
-.empty-state h3 { font-size: 1.15rem; margin: 0 0 0.35rem; color: var(--color-text-prim); }
-.empty-state p { font-size: 0.85rem; color: var(--color-text-secu); margin: 0; }
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 3rem; grid-column: 1/-1;
+}
+.empty-state i {
+  font-size: 3.5rem; opacity: 0.7; margin-bottom: 1rem; color: var(--color-correct);
+}
+.empty-state h3 {
+  font-size: 1rem; font-weight: 600; margin: 0 0 0.25rem; color: var(--color-correct);
+}
+.empty-state p {
+  font-size: 0.85rem; color: var(--color-correct); margin: 0;
+}

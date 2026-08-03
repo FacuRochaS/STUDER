@@ -16,7 +16,8 @@
     "edit": "Editar",
     "create": "Crear",
     "title": "Título",
-    "status": "Estado"
+    "status": "Estado",
+    "back": "Volver"
   },
   "home": {
     "welcome": "Bienvenido a Studer, {{name}}",
@@ -184,6 +185,21 @@
     "level": "Nivel",
     "points": "Pts",
     "followers": "Seguidores",
+    "edit": "Editar Perfil",
+    "no_activity": "Sin actividad aún",
+    "contrib": {
+      "posts": "Posts",
+      "blocks": "Bloques",
+      "courses": "Cursos",
+      "discussions": "Discusiones"
+    },
+    "filters": {
+      "all": "Todo",
+      "posts": "Posts",
+      "blocks": "Bloques",
+      "courses": "Cursos",
+      "discussions": "Discusiones"
+    },
     "blocks": {
       "title": "Bloques",
       "create": "Crear bloque",
@@ -262,16 +278,22 @@
       "no_discussions_title": "No se encontraron discusiones",
       "no_discussions_subtitle": "Intenta seleccionar otra categoría o crea una nueva discusión."
     },
-    "search_placeholder": "Buscar discusiones...",
-    "explore": {
-      "filters_title": "Filtros de Exploración",
-      "tags": "Etiquetas",
-      "tags_placeholder": "Filtrar por etiquetas...",
-      "last_days": "Creadas en los últimos (días)",
-      "activity_hours": "Actividad reciente (horas)",
-      "reset": "Reiniciar",
-      "apply": "Aplicar Filtros"
-    }
+    "search_placeholder": "Buscar discusiones..."
+
+  },
+  "explore": {
+    "filters_title": "Filtros de Exploración",
+    "tags": "Etiquetas",
+    "tags_placeholder": "Filtrar por etiquetas...",
+    "last_days": "Creadas en los últimos (días)",
+    "activity_hours": "Actividad reciente (horas)",
+    "reset": "Reiniciar",
+    "apply": "Aplicar Filtros",
+    "any_time": "Cualquier fecha",
+    "last_day": "Últimas 24h",
+    "last_7days": "Últimos 7 días",
+    "last_30days": "Últimos 30 días",
+    "last_90days": "Últimos 90 días"
   },
   "chat": {
     "title": "Chats",
@@ -481,11 +503,14 @@
     "recent": "Recientes",
     "popular": "Populares",
     "following": "Siguiendo",
+    "yours": "Tus publicaciones",
+    "new_posts": "Nuevas",
     "create_post": "Crear publicación",
     "new": "Nueva publicación",
     "write_something": "Escribe algo...",
     "publish": "Publicar",
-    "empty": "No hay publicaciones aún"
+    "empty": "No hay publicaciones aún",
+    "reached_end": "Llegaste al final"
   },
   "course": {
     "sidebar": {
@@ -622,13 +647,13 @@
     "courses": "Cursos",
     "blocks": "Bloques",
     "content": "Contenido",
-    "min_points": "Puntos mín.",
     "step_info": "Información",
     "step_content": "Contenido",
     "days_left": "días restantes",
     "rewards": "Recompensas",
     "admin_actions": "Acciones de Admin",
     "finish": "Finalizar",
+    "level_required": "Necesitas nivel {{ level }} o superior para participar",
     "achievements": "Logros",
     "list": {
       "title": "Desafíos",
@@ -636,6 +661,8 @@
       "active": "Activos",
       "upcoming": "Próximos",
       "finished": "Finalizados",
+      "preparation": "En preparación",
+      "active_tab": "En curso",
       "empty": "No hay desafíos disponibles aún",
       "starts": "Comienza"
     },

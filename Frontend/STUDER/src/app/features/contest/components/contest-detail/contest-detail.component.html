@@ -3,6 +3,7 @@
   @else if (error) { <div class="cd-err">{{ error }}</div> }
   @else if (contest) {
     <div class="cd-card">
+      <button class="cd-back" routerLink="/contests"><i class="pi pi-arrow-left"></i></button>
       <div class="cd-head">
         <div class="cd-head-top">
           <h1>{{ contest.title }}</h1>
@@ -11,11 +12,10 @@
         @if (contest.description) { <p class="cd-desc">{{ contest.description }}</p> }
       </div>
 
-      <div class="cd-numbers">
-        <div class="cd-num"><i class="pi pi-users"></i><strong>{{ contest.participantCount }}</strong><span>{{ 'contest.participants' | translate }}</span></div>
-        <div class="cd-num"><i class="pi pi-book"></i><strong>{{ contest.courseCount }}</strong><span>{{ 'contest.courses' | translate }}</span></div>
-        <div class="cd-num"><i class="pi pi-box"></i><strong>{{ contest.blockCount }}</strong><span>{{ 'contest.blocks' | translate }}</span></div>
-        @if (contest.minPoints) { <div class="cd-num"><i class="pi pi-star"></i><strong>{{ contest.minPoints }}</strong><span>{{ 'contest.min_points' | translate }}</span></div> }
+      <div class="cd-dates">
+        <div class="cd-dt"><i class="pi pi-calendar cd-dt-icon"></i><div><label>{{ 'contest.start_date' | translate }}</label><span>{{ contest.startDate | date:'mediumDate' }}</span></div></div>
+        @if (contest.preparationEndDate) { <div class="cd-dt"><i class="pi pi-clock cd-dt-icon"></i><div><label>{{ 'contest.preparation_end' | translate }}</label><span>{{ contest.preparationEndDate | date:'mediumDate' }}</span></div></div> }
+        @if (contest.validationEndDate) { <div class="cd-dt"><i class="pi pi-clock cd-dt-icon"></i><div><label>{{ 'contest.validation_end' | translate }}</label><span>{{ contest.validationEndDate | date:'mediumDate' }}</span></div></div> }
       </div>
 
       <div class="cd-phase">
@@ -30,10 +30,11 @@
         </div>
       </div>
 
-      <div class="cd-dates">
-        <div class="cd-dt"><label>{{ 'contest.start_date' | translate }}</label><span>{{ contest.startDate | date:'medium' }}</span></div>
-        @if (contest.preparationEndDate) { <div class="cd-dt"><label>{{ 'contest.preparation_end' | translate }}</label><span>{{ contest.preparationEndDate | date:'medium' }}</span></div> }
-        @if (contest.validationEndDate) { <div class="cd-dt"><label>{{ 'contest.validation_end' | translate }}</label><span>{{ contest.validationEndDate | date:'medium' }}</span></div> }
+      <div class="cd-numbers">
+        <div class="cd-num"><i class="pi pi-users"></i><strong>{{ contest.participantCount }}</strong><span>{{ 'contest.participants' | translate }}</span></div>
+        <div class="cd-num"><i class="pi pi-book"></i><strong>{{ contest.courseCount }}</strong><span>{{ 'contest.courses' | translate }}</span></div>
+        <div class="cd-num"><i class="pi pi-box"></i><strong>{{ contest.blockCount }}</strong><span>{{ 'contest.blocks' | translate }}</span></div>
+        @if (minLevel) { <div class="cd-num"><i class="pi pi-star"></i><strong>{{ minLevel }}</strong><span>{{ 'contest.min_level' | translate }}</span></div> }
       </div>
 
       <div class="cd-tabs">
@@ -49,6 +50,11 @@
           @if (canSubmit) {
             <button class="btn btn--primary" (click)="showSubmitForm = !showSubmitForm">{{ showSubmitForm ? ('common.cancel' | translate) : ('contest.submit_course' | translate) }}</button>
             @if (showSubmitForm) { <div class="cd-submit"><studer-course-create [contestId]="contest.id" (saved)="showSubmitForm = false; loadContest()"></studer-course-create></div> }
+          } @else if (contest.status === 'PREPARATION' && !hasMinLevel) {
+            <div class="cd-level-required">
+              <i class="pi pi-lock"></i>
+              <span>{{ 'contest.level_required' | translate: { level: minLevel } }}</span>
+            </div>
           }
           @if (canValidate) {
             <button class="btn btn--primary" (click)="getRandomCourse()" [disabled]="showValidation">{{ 'contest.validate_random' | translate }}</button>
@@ -74,6 +80,12 @@
             </div>
             <table class="cd-tbl"><thead><tr><th>#</th><th>{{ 'contest.course_name' | translate }}</th><th>{{ 'contest.rating' | translate }}</th><th>{{ 'contest.score' | translate }}</th></tr></thead><tbody>@for (e of leaderboard; track e.courseId; let i = $index) { <tr [class.top]="i < 3"><td>{{ i + 1 }}</td><td>{{ e.courseName }}</td><td>{{ e.averageRating | number:'1.1-1' }} ({{ e.ratingCount }})</td><td class="sc">{{ e.score | number:'1.2-2' }}</td></tr> }</tbody></table>
           } @else { <p class="cd-empty">{{ 'contest.leaderboard_empty' | translate }}</p> }
+        </div>
+      }
+
+      @if (isAdmin && contest.status !== 'RESULTS' && contest.status !== 'CANCELLED') {
+        <div class="cd-admin">
+          <button class="btn btn--primary" (click)="finishContest()">{{ 'contest.finish' | translate }}</button>
         </div>
       }
     </div>

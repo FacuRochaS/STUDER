@@ -1,118 +1,51 @@
-<div class="activity-creator-wrapper">
-
-  <div class="config-panel">
-    <div class="form-group flex-1">
-      <label class="form-label">{{ 'activity.creator.type_label' | translate }}</label>
-      <div class="custom-select-wrapper">
-        <select class="styled-select" [(ngModel)]="data.activityType" (ngModelChange)="onTypeChange()">
-          <option value="multiple_choice">{{ 'activity.types.multiple_choice' | translate }}</option>
-          <option value="matching">{{ 'activity.types.matching' | translate }}</option>
-          <option value="ordering">{{ 'activity.types.ordering' | translate }}</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="toggles-group">
-      <label class="toggle-switch">
-        <input type="checkbox" [(ngModel)]="data.allowRetry" (ngModelChange)="updateModel()">
-        <span class="slider"></span>
-        <span class="toggle-label">{{ 'activity.creator.allow_retry' | translate }}</span>
-      </label>
-    </div>
+<div class="activity">
+  <div class="type-select">
+    <label>{{ 'activity.creator.type_label' | translate }}</label>
+    <select class="type-dropdown" [(ngModel)]="data.activityType" (ngModelChange)="onTypeChange()">
+      <option value="multiple_choice">{{ 'activity.types.multiple_choice' | translate }}</option>
+      <option value="matching">{{ 'activity.types.matching' | translate }}</option>
+      <option value="ordering">{{ 'activity.types.ordering' | translate }}</option>
+    </select>
   </div>
 
-  <div class="section-container">
-    <div class="section-header">
-      <i class="pi pi-file-edit section-icon"></i>
-      <h4 class="section-title">{{ 'activity.creator.statement_title' | translate }}</h4>
-    </div>
-
-    <div class="nodes-container">
-      @for (node of data.statement; track $index; let i = $index) {
-        <div class="rich-node-row">
-          <div class="node-type-badge">{{ 'activity.nodes.' + node.type | translate }}</div>
-          <div class="node-input-wrapper">
-            @if (node.type === 'text') {
-              <input type="text" class="styled-input" [(ngModel)]="node.value" (ngModelChange)="updateModel()"
-                placeholder="{{ 'activity.creator.placeholders.statement_text' | translate }}">
-            } @else if (node.type === 'image') {
-              <div class="file-inline-group">
-                <input type="text" class="styled-input" [(ngModel)]="node.value" (ngModelChange)="updateModel()"
-                  placeholder="{{ 'activity.creator.placeholders.image_url' | translate }}">
-                <label class="btn-file-inline">
-                  <i class="pi pi-upload"></i>
-                  <input type="file" accept="image/*" (change)="onStatementImageSelected($event, i)" />
-                </label>
-              </div>
-            }
-          </div>
-          <button class="btn-icon-danger" (click)="removeStatementNode(i)"><i class="pi pi-trash"></i></button>
-        </div>
-      }
-    </div>
-
-    <div class="action-bar">
-      <button class="btn-chip" (click)="addStatementNode('text')"><i class="pi pi-font"></i> {{ 'activity.nodes.text' | translate }}</button>
-      <button class="btn-chip" (click)="addStatementNode('image')"><i class="pi pi-image"></i> {{ 'activity.nodes.image' | translate }}</button>
-    </div>
+  <div class="statement">
+    <label>{{ 'activity.creator.statement_title' | translate }}</label>
+    <input type="text" class="inp" [(ngModel)]="statementText" (ngModelChange)="onStatementChange()"
+      placeholder="{{ 'activity.creator.placeholders.statement_text' | translate }}">
   </div>
 
-  <div class="divider"></div>
-
-  <div class="section-container">
-    <div class="section-header">
-      <i class="pi pi-list section-icon"></i>
-      <h4 class="section-title">{{ 'activity.creator.options_title' | translate }}</h4>
-    </div>
-
-    <div class="options-grid">
+  <div class="options">
+    <label>{{ 'activity.creator.options_title' | translate }}</label>
+    <div class="options-list">
       @for (option of data.options; track option.id; let i = $index) {
-        <div class="option-card simple-card">
-          <div class="option-content-edit">
-            <span class="option-number">{{ i + 1 }}.</span>
-            <input type="text" class="styled-input main-opt-input" [(ngModel)]="option.text" (ngModelChange)="updateModel()"
-              placeholder="{{ 'activity.creator.placeholders.option_text' | translate }}">
-            <div class="file-inline-group">
-              @if (option.imageUrl) {
-                <div class="opt-img-preview">
-                  <img [src]="option.imageUrl" alt="preview" />
-                  <button class="btn-clear-img" (click)="option.imageUrl = null; updateModel()"><i class="pi pi-times"></i></button>
-                </div>
-              }
-              @if (uploadingImageIndex === i) {
-                <i class="pi pi-spin pi-spinner"></i>
-              } @else {
-                <label class="btn-file-inline">
-                  <i class="pi pi-image"></i>
-                  <input type="file" accept="image/*" (change)="onOptionImageSelected($event, i)" />
-                </label>
-              }
+        <div class="opt-row">
+          <span class="opt-num">{{ i + 1 }}</span>
+          <input type="text" class="inp" [(ngModel)]="option.text" (ngModelChange)="updateModel()"
+            placeholder="{{ 'activity.creator.placeholders.option_text' | translate }}">
+          @if (option.imageUrl) {
+            <div class="opt-img" [style.background-image]="'url(' + option.imageUrl + ')'">
+              <button class="opt-img-x" (click)="option.imageUrl = null; updateModel()"><i class="pi pi-times"></i></button>
             </div>
-          </div>
+          }
+          <label class="opt-upload">
+            <i class="fa-solid fa-image"></i>
+            <input type="file" accept="image/*" (change)="onOptionImageSelected($event, i)" hidden />
+          </label>
 
-          <div class="option-rules-area">
-            @if (data.activityType === 'multiple_choice') {
-              <button class="btn-truth" [class.is-true]="option.isCorrect" (click)="toggleCorrect(option)">
-                <i class="pi" [ngClass]="option.isCorrect ? 'pi-check-circle' : 'pi-circle'"></i>
-                {{ (option.isCorrect ? 'activity.creator.correct' : 'activity.creator.incorrect') | translate }}
-              </button>
-            }
-            @else if (data.activityType === 'matching') {
-              <div class="matching-arrow"><i class="pi pi-arrow-right"></i></div>
-              <input type="text" class="styled-input match-input" [(ngModel)]="option.matchText" (ngModelChange)="updateModel()"
-                placeholder="{{ 'activity.creator.placeholders.match_key' | translate }}">
-            }
-            @else if (data.activityType === 'ordering') {
-              <span class="order-badge"><i class="pi pi-sort"></i> {{ 'activity.creator.position' | translate }} {{ option.orderIndex }}</span>
-            }
-            <button class="btn-icon-danger ml-2" (click)="removeOption(i)"><i class="pi pi-times"></i></button>
-          </div>
+          @if (data.activityType === 'multiple_choice') {
+            <button class="opt-bool" [class.is-true]="option.isCorrect" (click)="toggleCorrect(option)">
+              <i class="pi" [ngClass]="option.isCorrect ? 'pi-check-circle' : 'pi-circle'"></i>
+            </button>
+          } @else if (data.activityType === 'matching') {
+            <input type="text" class="inp match" [(ngModel)]="option.matchText" (ngModelChange)="updateModel()"
+              placeholder="{{ 'activity.creator.placeholders.match_key' | translate }}">
+          } @else if (data.activityType === 'ordering') {
+            <span class="opt-order">{{ option.orderIndex }}</span>
+          }
+          <button class="opt-del" (click)="removeOption(i)"><i class="pi pi-trash"></i></button>
         </div>
       }
     </div>
-
-    <button class="btn-add-option" (click)="addOption()">
-      <i class="pi pi-plus-circle"></i> {{ 'activity.creator.add_option' | translate }}
-    </button>
+    <button class="add-opt" (click)="addOption()"><i class="pi pi-plus"></i> {{ 'activity.creator.add_option' | translate }}</button>
   </div>
 </div>

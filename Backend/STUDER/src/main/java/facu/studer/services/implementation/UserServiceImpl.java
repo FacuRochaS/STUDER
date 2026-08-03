@@ -93,14 +93,6 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("user.not_found");
         }
 
-        if (request.getEmail() != null && !request.getEmail().isBlank()) {
-            User existingUser = userRepository.findByEmail(request.getEmail());
-            if (existingUser != null && !existingUser.getId().equals(currentUser.getId())) {
-                throw new IllegalArgumentException("user.email.unique");
-            }
-            currentUser.setEmail(request.getEmail());
-        }
-
         if (request.getPassword() != null && !request.getPassword().isBlank()) {
             currentUser.setPassword(passwordEncoder.encode(request.getPassword()));
         }

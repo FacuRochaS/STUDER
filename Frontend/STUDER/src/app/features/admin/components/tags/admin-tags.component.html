@@ -1,24 +1,12 @@
 <section class="cards">
   <div class="c c--purple"><span class="cv">{{ ck('totalTags') }}</span><span class="cl">{{ 'admin.cards.total_tags' | translate }}</span></div>
   <div class="c c--green"><span class="cv">{{ ck('usedTags') }}</span><span class="cl">{{ 'admin.cards.used_tags' | translate }}</span></div>
-  <div class="c c--red"><span class="cv">{{ ck('unusedTags') }}</span><span class="cl">{{ 'admin.cards.unused_tags' | translate }}</span></div>
   <div class="c c--blue"><span class="cv">{{ cs('avgBlocksPerTag') }}</span><span class="cl">{{ 'admin.cards.avg_blocks_tag' | translate }}</span></div>
-  <div class="c c--orange"><span class="cv">{{ cs('mostUsedTag') }}</span><span class="cl">{{ 'admin.cards.most_used_tag' | translate }}</span></div>
 </section>
 
 <div class="charts-grid">
   @if (chartsData.topTags?.length) { <div class="chart-box"><h3>{{ 'admin.charts.top_tags' | translate }}</h3><div class="ch-wrap ch-wrap--lg"><canvas id="g1"></canvas></div></div> }
   @if (chartsData.tagsCreated?.length) { <div class="chart-box"><h3>{{ 'admin.charts.tags_created' | translate }}</h3><div class="ch-wrap"><canvas id="g2"></canvas></div></div> }
   @if (chartsData.tagGrowth?.length) { <div class="chart-box"><h3>{{ 'admin.charts.tag_growth' | translate }}</h3><div class="ch-wrap"><canvas id="g3"></canvas></div></div> }
-  @if (chartsData.tagCoOccurrence?.length) {
-  <div class="chart-box chart-box--full"><h3>{{ 'admin.charts.tag_cooccurrence' | translate }}</h3>
-    @if (heatCells.length) {
-    <div class="heatmap">
-      @for (cell of heatCells; track cell.t1 + cell.t2) {
-        <span class="hm-cell" [style.background]="'rgba(126,87,194,' + (cell.pct/100 * 0.7) + ')'" [title]="cell.t1 + ' + ' + cell.t2 + ': ' + cell.val">{{ cell.val }}</span>
-      }
-    </div>
-    }
-  </div>
-  }
+
 </div>

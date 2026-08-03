@@ -36,6 +36,7 @@ export class ContestDetailComponent implements OnInit, OnDestroy {
   loading = true;
   currentUserId: number | null = null;
   currentUserRole: string | null = null;
+  currentUserPoints: number = 0;
   error = '';
 
   showValidation = false;
@@ -47,8 +48,19 @@ export class ContestDetailComponent implements OnInit, OnDestroy {
   activeTab = 'info';
 
   get isAdmin(): boolean { return this.currentUserRole === 'ADMIN'; }
-  get canSubmit(): boolean { return this.contest?.status === 'PREPARATION'; }
+  get hasMinLevel(): boolean {
+    if (!this.contest?.minPoints) return true;
+    return this.currentUserPoints >= this.contest.minPoints;
+  }
+  get canSubmit(): boolean {
+    return this.contest?.status === 'PREPARATION' && this.hasMinLevel;
+  }
   get canValidate(): boolean { return this.contest?.status === 'VALIDATION'; }
+
+  get minLevel(): number | null {
+    if (!this.contest?.minPoints) return null;
+    return pointsToLevel(this.contest.minPoints);
+  }
 
   phases = ['ANNOUNCED', 'PREPARATION', 'VALIDATION', 'RESULTS'];
 
@@ -76,6 +88,7 @@ export class ContestDetailComponent implements OnInit, OnDestroy {
     this.authState.user$.pipe(takeUntil(this.destroy$)).subscribe((u: any) => {
       this.currentUserId = u?.id ?? null;
       this.currentUserRole = u?.role ?? null;
+      this.currentUserPoints = u?.points ?? 0;
     });
 
     this.route.paramMap.pipe(
@@ -209,4 +222,10 @@ getStatusLabel(status: string): string {
   isAfter(dateStr: string): boolean {
     return !!dateStr && new Date(dateStr).getTime() < Date.now();
   }
+}
+
+const LVL = [0, 10, 20, 40, 80, 100, 200, 300, 500, 700, 1000, 2000, 4000, 8000, 16000];
+function pointsToLevel(pts: number): number {
+  for (let i = LVL.length - 1; i >= 0; i--) { if (pts >= LVL[i]) return i + 1; }
+  return 1;
 }

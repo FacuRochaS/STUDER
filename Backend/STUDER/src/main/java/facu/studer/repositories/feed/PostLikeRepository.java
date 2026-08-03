@@ -18,4 +18,6 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
 
     @Query("SELECT CASE WHEN COUNT(pl) > 0 THEN true ELSE false END FROM PostLike pl WHERE pl.post.id = :postId AND pl.user.username = :username AND pl.isActive = true")
     boolean isLikedByUser(@Param("postId") Long postId, @Param("username") String username);
+
+    Optional<PostLike> findByUserUsernameAndPostIdAndIsActiveFalse(String userUsername, Long postId);
 }

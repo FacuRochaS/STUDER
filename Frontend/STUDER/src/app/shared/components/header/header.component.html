@@ -1,11 +1,12 @@
-<header class="header">
-  <!-- Logo -->
-  <div class="header__logo">
-    <studer-logo [size]="1.5" animation="bounce" (logoClick)="goHome()"></studer-logo>
-  </div>
+<!-- Logo -->
+<div class="header__logo">
+  <studer-logo [size]="1.8" animation="bounce" (logoClick)="goHome()"></studer-logo>
+</div>
 
-  <!-- Search -->
-  <div class="header__search" #searchContainer>
+<div class="header__body">
+
+<!-- Search -->
+<div class="header__search" #searchContainer>
     <span class="pi pi-search header__search-icon"></span>
     <input
       type="text"
@@ -55,7 +56,6 @@
 
   <!-- Controls -->
   <div class="header__controls">
-    <!-- Theme toggle -->
     <button
       type="button"
       class="header__control-btn"
@@ -64,7 +64,6 @@
       <span [class]="currentThemeIcon"></span>
     </button>
 
-    <!-- Language toggle -->
     <button
       type="button"
       class="header__control-btn header__lang-btn"
@@ -73,7 +72,6 @@
       {{ currentLanguageLabel }}
     </button>
 
-    <!-- Notifications -->
     <studer-overlay position="bottom-right" [contentTemplate]="notificationContent">
       <div class="header__notification-trigger">
         <span class="pi pi-bell"></span>
@@ -83,9 +81,9 @@
       </div>
     </studer-overlay>
   </div>
-</header>
+
+</div>
 
 <ng-template #notificationContent>
   <studer-notification-panel></studer-notification-panel>
 </ng-template>
-

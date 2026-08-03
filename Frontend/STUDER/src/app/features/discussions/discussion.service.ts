@@ -170,5 +170,8 @@ export class DiscussionService {
     );
   }
 
-
+  getUserDiscussions(username: string, page = 0): Observable<DiscussionPageResponseDTO> {
+    const params = new HttpParams().set('page', page.toString());
+    return this.http.get<DiscussionPageResponseDTO>(`${this.base}/user/${username}`, { params });
+  }
 }

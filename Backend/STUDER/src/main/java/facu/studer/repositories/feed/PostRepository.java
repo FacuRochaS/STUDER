@@ -27,4 +27,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE p.isActive = true AND p.user.id = :userId ORDER BY p.createdDatetime DESC")
     Page<Post> findByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.isActive = true AND p.createdDatetime >= :since ORDER BY p.createdDatetime DESC")
+    Page<Post> findNewPosts(@Param("since") java.time.LocalDateTime since, Pageable pageable);
 }

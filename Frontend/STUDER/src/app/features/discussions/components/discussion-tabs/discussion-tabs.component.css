@@ -1,0 +1,129 @@
+/* ===== Fixed Tab Bar ===== */
+.disc-tabs {
+  display: flex;
+  flex-shrink: 0;
+
+}
+
+.disc-tabs__nav {
+  width: 100%;
+  background: var(--color-bg);
+  border-radius: 14px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.disc-tabs__row {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.disc-tabs__spacer {
+  flex: 1;
+}
+
+.disc-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secu);
+  padding: 0.6rem 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.disc-tab:hover {
+  color: var(--color-text-prim);
+}
+
+.disc-tab.active {
+  background: var(--input-background);
+  color: var(--color-primary);
+}
+
+.disc-tab i {
+  font-size: 0.95rem;
+}
+
+.disc-tab--create {
+  background: var(--color-primary);
+  color: var(--color-text-btn);
+}
+
+.disc-tab--create:hover {
+  background: var(--color-primary);
+  opacity: 0.9;
+  color: var(--color-text-btn);
+}
+
+/* ===== Explore Filters ===== */
+.disc-tabs__filters {
+  margin-top: 0.5rem;
+  padding: 0.75rem 0.6rem 0.6rem;
+  border-top: 1px solid var(--border);
+}
+
+.filters-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-secu);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.filter-tags {
+  flex: 1;
+  min-width: 180px;
+}
+
+.filter-select {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--input-background);
+  color: var(--color-text-prim);
+  font-size: 0.82rem;
+  font-family: inherit;
+  width: auto;
+  min-width: 120px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-text-btn);
+}
+
+.btn--primary:hover {
+  opacity: 0.9;
+}

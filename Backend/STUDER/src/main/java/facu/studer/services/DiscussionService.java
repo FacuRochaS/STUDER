@@ -63,6 +63,8 @@ public interface DiscussionService {
      */
     DiscussionPageResponseDTO getUserOwnDiscussions(String username, int page);
 
+    DiscussionPageResponseDTO getDiscussionsByUsername(String targetUsername, int page);
+
     DiscussionPageResponseDTO getNewDiscussions(
             String username,
             int page );

@@ -1,62 +1,41 @@
-<div class="gallery-creator-wrapper">
-  <div class="section-container">
-    <div class="section-header">
-      <h4 class="section-title">{{ 'gallery.images' | translate }}</h4>
-    </div>
-
-    <div class="add-image-row">
-      <label class="file-upload-btn" [class.uploading]="uploading">
-        @if (uploading) {
-          <i class="pi pi-spin pi-spinner"></i>
-          <span>{{ 'common.uploading' | translate }}</span>
-        } @else {
-          <i class="pi pi-upload"></i>
-          <span>{{ 'gallery.add_image' | translate }}</span>
-        }
-        <input type="file" accept="image/*" (change)="onFileSelected($event)" [disabled]="uploading" />
-      </label>
-      <input type="text" class="styled-input alt-input" [(ngModel)]="newImageAlt" (keyup.enter)="onFileSelected($event)" placeholder="{{ 'gallery.image_alt_placeholder' | translate }}" />
-    </div>
-
-    <div class="image-list">
-      @for (image of data.images; track $index; let i = $index) {
-        <div class="image-preview-card">
-          <div class="preview-thumb">
-            @if (image.url) {
-              <img [src]="image.url" [alt]="image.alt" />
-            } @else {
-              <div class="no-preview">{{ 'gallery.no_preview' | translate }}</div>
-            }
-          </div>
-          <div class="preview-info">
-            <input type="text" class="styled-input compact" [(ngModel)]="image.alt" (ngModelChange)="emitChange()" placeholder="{{ 'gallery.image_alt_placeholder' | translate }}" />
-            <input type="text" class="styled-input compact" [(ngModel)]="image.caption" (ngModelChange)="emitChange()" placeholder="{{ 'gallery.caption_placeholder' | translate }}" />
-          </div>
-          <button class="btn-icon-danger" (click)="removeImage(i)">
-            <i class="pi pi-trash"></i>
-          </button>
-        </div>
+<div class="gallery-creator">
+  <div class="add-row">
+    <label class="upload-btn" [class.uploading]="uploading">
+      @if (uploading) {
+        <i class="pi pi-spin pi-spinner"></i>
+        <span>{{ 'common.uploading' | translate }}</span>
+      } @else {
+        <i class="pi pi-plus"></i>
+        <span>{{ 'gallery.add_image' | translate }}</span>
       }
+      <input type="file" accept="image/*" (change)="onFileSelected($event)" [disabled]="uploading" hidden />
+    </label>
+
+    <div class="layout-pills">
+      <button class="layout-pill" [class.active]="data.layout === 'grid'" (click)="setLayout('grid')">
+        <i class="fa-solid fa-table-cells"></i> Grid
+      </button>
+      <button class="layout-pill" [class.active]="data.layout === 'carousel'" (click)="setLayout('carousel')">
+        <i class="fa-solid fa-sliders"></i> Carousel
+      </button>
+      <button class="layout-pill" [class.active]="data.layout === 'masonry'" (click)="setLayout('masonry')">
+        <i class="fa-solid fa-layer-group"></i> Collage
+      </button>
     </div>
   </div>
 
-  <div class="divider"></div>
-
-  <div class="section-container">
-    <div class="section-header">
-      <h4 class="section-title">{{ 'gallery.layout' | translate }}</h4>
-    </div>
-
-    <div class="layout-options">
-      <button class="layout-btn" [class.active]="data.layout === 'carousel'" (click)="setLayout('carousel')">
-        {{ 'gallery.carousel' | translate }}
-      </button>
-      <button class="layout-btn" [class.active]="data.layout === 'grid'" (click)="setLayout('grid')">
-        {{ 'gallery.grid' | translate }}
-      </button>
-      <button class="layout-btn" [class.active]="data.layout === 'masonry'" (click)="setLayout('masonry')">
-        {{ 'gallery.masonry' | translate }}
-      </button>
-    </div>
+  <div class="image-list">
+    @for (image of data.images; track $index; let i = $index) {
+      <div class="image-card">
+        <div class="image-card__thumb">
+          @if (image.url) {
+            <img [src]="image.url" alt="" />
+          } @else {
+            <div class="no-preview"><i class="fa-solid fa-image"></i></div>
+          }
+        </div>
+        <button class="remove-btn" (click)="removeImage(i)"><i class="pi pi-times"></i></button>
+      </div>
+    }
   </div>
 </div>

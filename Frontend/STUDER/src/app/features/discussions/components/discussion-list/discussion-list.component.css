@@ -11,28 +11,32 @@
 }
 
 .empty-state {
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 2.5rem;
+  padding: 3rem 2rem;
+  color: var(--color-warning);
 }
 
 .empty-state i {
-  font-size: 3rem;
-  color: var(--color-text-secu);
+  font-size: 3.5rem;
+  opacity: 0.7;
   margin-bottom: 1rem;
+  color: var(--color-warning);
 }
 
 .empty-state h3 {
-  font-size: 1.25rem;
-  margin: 0 0 0.5rem 0;
-  color: var(--color-text-prim);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  color: var(var(--color-warning));
 }
 
 .empty-state p {
-  color: var(--color-text-secu);
+  color: var(var(--color-warning));
   margin: 0;
+  font-size: 0.85rem;
 }

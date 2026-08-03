@@ -4,6 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CourseResponseDTO } from '../../course.model';
 import { CourseService } from '../../course.service';
 import { UsernameComponent } from '../../../../shared/components/username/username.component';
+import { AutoAnimateDirective } from '../../../../shared/directives/auto-animate.directive';
 
 @Component({
   selector: 'studer-course-list',
@@ -12,6 +13,7 @@ import { UsernameComponent } from '../../../../shared/components/username/userna
     CommonModule,
     TranslateModule,
     UsernameComponent,
+    AutoAnimateDirective,
   ],
   templateUrl: './course-list.component.html',
   styleUrls: ['./course-list.component.css'],

@@ -8,6 +8,7 @@ import facu.studer.DTOs.feed.PostCreateRequestDTO;
 import facu.studer.DTOs.feed.PostPageResponseDTO;
 import facu.studer.DTOs.feed.PostResponseDTO;
 import facu.studer.entities.Tag;
+import facu.studer.entities.discussions.MessageLike;
 import facu.studer.entities.feed.Post;
 import facu.studer.entities.feed.PostLike;
 import facu.studer.entities.users.Friend;
@@ -79,28 +80,47 @@ public class FeedServiceImpl implements FeedService {
 
     @Override
     @Transactional(readOnly = true)
-    public PostPageResponseDTO getFeed(String username, int page, String filter) {
+    public PostPageResponseDTO getYourPosts(String username, int page) {
         User user = findUserByUsername(username);
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
-        Page<Post> postPage;
+        Page<Post> postPage = postRepository.findByUserId(user.getId(), pageable);
+        return toPageResponse(postPage, username, page);
+    }
 
-        if ("following".equalsIgnoreCase(filter)) {
-            List<Friend> friendships = friendRepository.findConfirmedFriends(user);
-            Set<Long> friendIds = friendships.stream()
-                    .map(f -> f.getSender().getId().equals(user.getId()) ? f.getReceiver().getId() : f.getSender().getId())
-                    .collect(Collectors.toSet());
-            friendIds.add(user.getId());
-            postPage = postRepository.findByUserIds(new ArrayList<>(friendIds), pageable);
-        } else if ("popular".equalsIgnoreCase(filter)) {
-            postPage = postRepository.findPopularPosts(pageable);
-        } else {
-            postPage = postRepository.findRecentPosts(pageable);
-        }
+    @Override
+    @Transactional(readOnly = true)
+    public PostPageResponseDTO getFollowingPosts(String username, int page) {
+        User user = findUserByUsername(username);
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        List<Friend> friendships = friendRepository.findFollows(user);
+        Set<Long> friendIds = friendships.stream()
+                .map(f -> f.getSender().getId().equals(user.getId()) ? f.getReceiver().getId() : f.getSender().getId())
+                .collect(Collectors.toSet());
+        friendIds.add(user.getId());
+        Page<Post> postPage = postRepository.findByUserIds(new ArrayList<>(friendIds), pageable);
+        return toPageResponse(postPage, username, page);
+    }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PostPageResponseDTO getPopularPosts(String username, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<Post> postPage = postRepository.findPopularPosts(pageable);
+        return toPageResponse(postPage, username, page);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PostPageResponseDTO getNewPosts(String username, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<Post> postPage = postRepository.findNewPosts(java.time.LocalDateTime.now().minusDays(7), pageable);
+        return toPageResponse(postPage, username, page);
+    }
+
+    private PostPageResponseDTO toPageResponse(Page<Post> postPage, String username, int page) {
         List<PostResponseDTO> dtos = postPage.getContent().stream()
                 .map(p -> mapToDTO(p, username))
                 .collect(Collectors.toList());
-
         return PostPageResponseDTO.builder()
                 .posts(dtos)
                 .totalElements(postPage.getTotalElements())
@@ -131,8 +151,22 @@ public class FeedServiceImpl implements FeedService {
     @Transactional
     public MessageDTO likePost(String username, Long postId) {
         if (postLikeRepository.existsByUserUsernameAndPostIdAndIsActiveTrue(username, postId)) {
-            throw new IllegalArgumentException("post.already_liked");
+            return MessageDTO.builder()
+                    .success(true)
+                    .message("post.like_added")
+                    .build();
         }
+
+        Optional<PostLike> postLike = postLikeRepository.findByUserUsernameAndPostIdAndIsActiveFalse(username, postId);
+        if (postLike.isPresent()) {
+            postLike.get().setIsActive(true);
+            postLikeRepository.save(postLike.get());
+            return MessageDTO.builder()
+                    .success(true)
+                    .message("discussion.message.like_added")
+                    .build();
+        }
+
 
         User user = findUserByUsername(username);
         Post post = postRepository.findById(postId)

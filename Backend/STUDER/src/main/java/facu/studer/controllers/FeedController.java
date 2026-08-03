@@ -23,42 +23,42 @@ public class FeedController {
     }
 
     @PostMapping
-    public ResponseEntity<PostResponseDTO> createPost(
-            @Valid @RequestBody PostCreateRequestDTO request) {
-        String username = securityUtils.requireCurrentUsername();
-        PostResponseDTO response = feedService.createPost(username, request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<PostResponseDTO> createPost(@Valid @RequestBody PostCreateRequestDTO request) {
+        return ResponseEntity.ok(feedService.createPost(securityUtils.requireCurrentUsername(), request));
     }
 
-    @GetMapping
-    public ResponseEntity<PostPageResponseDTO> getFeed(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "recent") String filter) {
-        String username = securityUtils.requireCurrentUsername();
-        PostPageResponseDTO response = feedService.getFeed(username, page, filter);
-        return ResponseEntity.ok(response);
+    @GetMapping("/yours")
+    public ResponseEntity<PostPageResponseDTO> getYourPosts(@RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(feedService.getYourPosts(securityUtils.requireCurrentUsername(), page));
+    }
+
+    @GetMapping("/following")
+    public ResponseEntity<PostPageResponseDTO> getFollowingPosts(@RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(feedService.getFollowingPosts(securityUtils.requireCurrentUsername(), page));
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<PostPageResponseDTO> getPopularPosts(@RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(feedService.getPopularPosts(securityUtils.requireCurrentUsername(), page));
+    }
+
+    @GetMapping("/new")
+    public ResponseEntity<PostPageResponseDTO> getNewPosts(@RequestParam(defaultValue = "0") int page) {
+        return ResponseEntity.ok(feedService.getNewPosts(securityUtils.requireCurrentUsername(), page));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<PostPageResponseDTO> getUserPosts(
-            @RequestParam(defaultValue = "0") int page,
-            @PathVariable Long userId) {
-        String username = securityUtils.requireCurrentUsername();
-        PostPageResponseDTO response = feedService.getUserPosts(username, page, userId);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<PostPageResponseDTO> getUserPosts(@RequestParam(defaultValue = "0") int page, @PathVariable Long userId) {
+        return ResponseEntity.ok(feedService.getUserPosts(securityUtils.requireCurrentUsername(), page, userId));
     }
 
     @PostMapping("/{id}/like")
     public ResponseEntity<MessageDTO> likePost(@PathVariable Long id) {
-        String username = securityUtils.requireCurrentUsername();
-        MessageDTO response = feedService.likePost(username, id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(feedService.likePost(securityUtils.requireCurrentUsername(), id));
     }
 
     @DeleteMapping("/{id}/like")
     public ResponseEntity<MessageDTO> unlikePost(@PathVariable Long id) {
-        String username = securityUtils.requireCurrentUsername();
-        MessageDTO response = feedService.unlikePost(username, id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(feedService.unlikePost(securityUtils.requireCurrentUsername(), id));
     }
 }

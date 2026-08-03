@@ -1,5 +1,6 @@
 <div class="course-list-container">
   @if (courses.length > 0) {
+    <div appAutoAnimate style="display:contents">
     @for (course of courses; track trackByCourseId; let i = $index) {
       <div tabindex="0" class="course-card" (click)="onCourseClick(course.id)" (keydown.enter)="onCourseClick(course.id)">
         <div class="course-card__media">
@@ -47,9 +48,10 @@
         </div>
       </div>
     }
+    </div>
   } @else {
     <div class="empty-state">
-      <i class="pi pi-book"></i>
+      <i class="fa-solid fa-book"></i>
       <h3>{{ 'course.list.no_courses_title' | translate }}</h3>
       <p>{{ 'course.list.no_courses_subtitle' | translate }}</p>
     </div>

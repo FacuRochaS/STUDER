@@ -1,8 +1,13 @@
 <div class="course-container">
-  <studer-course-sidebar
-    (categorySelected)="onCategorySelected($event)">
-  </studer-course-sidebar>
-
+  <div class="course-padding">
+  <studer-course-tabs
+    [activeTab]="selectedCategory"
+    [showCreate]="showCreateForm"
+    (tabSelected)="onCategorySelected($event)"
+    (createToggled)="toggleCreate()"
+    (filtersChanged)="onFiltersChanged($event)">
+  </studer-course-tabs>
+  </div>
   <main class="course-content">
     @if (selectedCourseId) {
       <studer-course-detail
@@ -10,23 +15,17 @@
         [backToList]="true"
         (closed)="onDetailClosed()"
       ></studer-course-detail>
-    } @else {
-      @if (selectedCategory === 'explore') {
-        <studer-explore-filters (filtersChanged)="onFiltersChanged($event)"></studer-explore-filters>
-      }
-
-      @if (showCreateForm) {
+    } @else if (showCreateForm) {
+      <div appAutoAnimate>
         <studer-course-create (saved)="showCreateForm = false; onCategorySelected('yours')"></studer-course-create>
-      } @else if (loading) {
-        <div class="loading-spinner">
-          <studer-loader></studer-loader>
-        </div>
-      } @else {
-        <studer-course-list
-          [courses]="courses"
-          (courseSelected)="onCourseSelected($event)"
-        ></studer-course-list>
-      }
+      </div>
+    } @else if (loading) {
+      <studer-loader></studer-loader>
+    } @else {
+      <studer-course-list
+        [courses]="courses"
+        (courseSelected)="onCourseSelected($event)"
+      ></studer-course-list>
     }
   </main>
 </div>

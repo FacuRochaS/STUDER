@@ -25,13 +25,14 @@
   </div>
   }
 
-  @if (chartData.activityPeaks?.length) { <div class="chart-box chart-box--full"><h3>{{ 'admin.charts.activity_peaks' | translate }}</h3><div class="ch-wrap ch-wrap--lg"><canvas id="ch2"></canvas></div></div> }
-
   @if (chartData.contentDistribution) { <div class="chart-box"><h3>{{ 'admin.charts.content_distribution' | translate }}</h3><div class="ch-wrap ch-wrap--sq"><canvas id="ch3"></canvas></div></div> }
 
   @if (chartData.usersOverTime?.length) { <div class="chart-box"><h3>{{ 'admin.charts.users_over_time' | translate }}</h3><div class="ch-wrap"><canvas id="ch4"></canvas></div></div> }
 
+
+  @if (chartData.activityPeaks?.length) { <div class="chart-box chart-box--full"><h3>{{ 'admin.charts.activity_peaks' | translate }}</h3><div class="ch-wrap ch-wrap--lg"><canvas id="ch2"></canvas></div></div> }
+
+
   @if (chartData.weeklyGrowth?.length) { <div class="chart-box chart-box--full"><h3>{{ 'admin.charts.weekly_growth' | translate }}</h3><div class="ch-wrap ch-wrap--lg"><canvas id="ch5"></canvas></div></div> }
 
-  @if (chartData.topTags?.length) { <div class="chart-box"><h3>{{ 'admin.charts.top_tags' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="ch6"></canvas></div></div> }
 </div>
