@@ -23,4 +23,12 @@ public interface BlockRepository extends JpaRepository<Block, Long> {
             Pageable pageable);
 
     List<Block> findByParentBlock_Id(Long parentBlockId);
+
+    Integer countBlocksByName(String name);
+
+    @Query("SELECT COUNT(b) FROM Block b WHERE b.parentBlock.id = :blockId AND b.isActive = true")
+    long countForksByParentId(@Param("blockId") Long blockId);
+
+    @Query("SELECT COUNT(bv) FROM BlockVersion bv WHERE bv.block.id = :blockId AND bv.isActive = true")
+    long countVersionsByBlockId(@Param("blockId") Long blockId);
 }

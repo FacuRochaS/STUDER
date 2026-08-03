@@ -1,0 +1,31 @@
+<div class="course-container">
+  <div class="course-padding">
+  <studer-course-tabs
+    [activeTab]="selectedCategory"
+    [showCreate]="showCreateForm"
+    (tabSelected)="onCategorySelected($event)"
+    (createToggled)="toggleCreate()"
+    (filtersChanged)="onFiltersChanged($event)">
+  </studer-course-tabs>
+  </div>
+  <main class="course-content">
+    @if (selectedCourseId) {
+      <studer-course-detail
+        [courseId]="selectedCourseId"
+        [backToList]="true"
+        (closed)="onDetailClosed()"
+      ></studer-course-detail>
+    } @else if (showCreateForm) {
+      <div appAutoAnimate>
+        <studer-course-create (saved)="showCreateForm = false; onCategorySelected('yours')"></studer-course-create>
+      </div>
+    } @else if (loading) {
+      <studer-loader></studer-loader>
+    } @else {
+      <studer-course-list
+        [courses]="courses"
+        (courseSelected)="onCourseSelected($event)"
+      ></studer-course-list>
+    }
+  </main>
+</div>

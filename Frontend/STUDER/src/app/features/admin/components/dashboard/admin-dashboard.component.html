@@ -1,0 +1,38 @@
+<section class="cards">
+  <div class="c c--blue"><span class="cv">{{ ck('totalUsers') }}</span><span class="cl">{{ 'admin.cards.total_users' | translate }}</span></div>
+  <div class="c c--green"><span class="cv">{{ ck('activeUsersToday') }}</span><span class="cl">{{ 'admin.cards.active_users_today' | translate }}</span></div>
+  <div class="c c--purple"><span class="cv">{{ ck('totalBlocks') }}</span><span class="cl">{{ 'admin.cards.total_blocks' | translate }}</span></div>
+  <div class="c c--green"><span class="cv">{{ ck('totalCourses') }}</span><span class="cl">{{ 'admin.cards.total_courses' | translate }}</span></div>
+  <div class="c c--red"><span class="cv">{{ ck('activeContests') }}</span><span class="cl">{{ 'admin.cards.active_contests' | translate }}</span></div>
+  <div class="c c--orange"><span class="cv">{{ ck('totalLikes') }}</span><span class="cl">{{ 'admin.cards.total_likes' | translate }}</span></div>
+</section>
+
+<div class="charts-grid">
+  @if (heatCells.length) {
+  <div class="chart-box chart-box--full">
+    <h3>{{ 'admin.charts.activity_heatmap' | translate }}</h3>
+    <div class="heat-header">@for (h of [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]; track h) { <span>{{h}}h</span> }</div>
+    <div class="hm-grid">
+      @for (sec of ['posts','blocks','courses','discussions','messages']; track sec) {
+        <div class="hm-row"><span class="hm-label">{{sec}}</span>
+          @for (h of [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]; track h) {
+            <span class="hm-cell" [style.background]="'rgba(66,133,244,' + (cellOpacity(sec, h)) + ')'" [title]="sec + ' ' + h + 'h: ' + (cellVal(sec, h))"></span>
+          }
+        </div>
+      }
+      <div class="hm-legend"><span class="hm-ld">0</span><span class="hm-lb" [style.background]="'linear-gradient(to right, rgba(66,133,244,0), rgba(66,133,244,0.35))'"></span><span class="hm-ld">max</span></div>
+    </div>
+  </div>
+  }
+
+  @if (chartData.contentDistribution) { <div class="chart-box"><h3>{{ 'admin.charts.content_distribution' | translate }}</h3><div class="ch-wrap ch-wrap--sq"><canvas id="ch3"></canvas></div></div> }
+
+  @if (chartData.usersOverTime?.length) { <div class="chart-box"><h3>{{ 'admin.charts.users_over_time' | translate }}</h3><div class="ch-wrap"><canvas id="ch4"></canvas></div></div> }
+
+
+  @if (chartData.activityPeaks?.length) { <div class="chart-box chart-box--full"><h3>{{ 'admin.charts.activity_peaks' | translate }}</h3><div class="ch-wrap ch-wrap--lg"><canvas id="ch2"></canvas></div></div> }
+
+
+  @if (chartData.weeklyGrowth?.length) { <div class="chart-box chart-box--full"><h3>{{ 'admin.charts.weekly_growth' | translate }}</h3><div class="ch-wrap ch-wrap--lg"><canvas id="ch5"></canvas></div></div> }
+
+</div>

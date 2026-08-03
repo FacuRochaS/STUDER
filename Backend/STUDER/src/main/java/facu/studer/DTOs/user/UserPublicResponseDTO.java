@@ -20,6 +20,8 @@ public class UserPublicResponseDTO {
     private String username;
     private String firstName;
     private String lastName;
+    private Long points;
+    private Long followers;
     private String profilePictureOriginalUrl;
     private String profilePictureAvatarUrl;
     private String profilePictureWebpUrl;

@@ -1,0 +1,84 @@
+<div class="chatbot" [class.chatbot--open]="isOpen" [class.chatbot--minimized]="isMinimized">
+  @if (isOpen) {
+    <div class="chatbot__window">
+      <!-- Header -->
+      <div class="chatbot__header">
+        <div class="chatbot__header-left">
+          <div class="chatbot__avatar">
+            <i class="pi pi-microchip-ai"></i>
+          </div>
+          <div class="chatbot__header-info">
+            <span class="chatbot__header-title">{{ 'chatbot.title' | translate }}</span>
+            <span class="chatbot__header-subtitle">{{ 'chatbot.subtitle' | translate }}</span>
+          </div>
+        </div>
+        <div class="chatbot__header-actions">
+          <button (click)="toggle()" title="Minimizar"><i class="pi pi-minus"></i></button>
+          <button (click)="close()" title="Cerrar"><i class="pi pi-times"></i></button>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="chatbot__body" #chatBody>
+        @if (messages.length === 0) {
+          <div class="chatbot__welcome">
+            <div class="chatbot__welcome-icon"><i class="pi pi-microchip-ai"></i></div>
+            <h3>{{ 'chatbot.title' | translate }}</h3>
+            <p>{{ 'chatbot.subtitle' | translate }}</p>
+            <div class="chatbot__suggestions">
+              <button (click)="userInput = 'chatbot.suggest_1'; sendMessage()">
+                <i class="pi pi-question-circle"></i> {{ 'chatbot.suggest_1' | translate }}
+              </button>
+              <button (click)="userInput = 'chatbot.suggest_2'; sendMessage()">
+                <i class="pi pi-info-circle"></i> {{ 'chatbot.suggest_2' | translate }}
+              </button>
+              <button (click)="userInput = 'chatbot.suggest_3'; sendMessage()">
+                <i class="pi pi-lightbulb"></i> {{ 'chatbot.suggest_3' | translate }}
+              </button>
+            </div>
+          </div>
+        }
+        @for (msg of messages; track $index) {
+          <div class="chatbot__msg" [class.chatbot__msg--user]="msg.role === 'user'" [class.chatbot__msg--assistant]="msg.role === 'assistant'">
+            @if (msg.role === 'assistant') {
+              <div class="chatbot__msg-avatar"><i class="pi pi-microchip-ai"></i></div>
+            }
+            <div class="chatbot__bubble" [class.chatbot__bubble--user]="msg.role === 'user'" [class.chatbot__bubble--assistant]="msg.role === 'assistant'">
+              @if (msg.text.startsWith('chatbot.')) {
+                {{ msg.text | translate }}
+              } @else {
+                <span [innerHTML]="formatText(msg.text)"></span>
+              }
+            </div>
+          </div>
+        }
+        @if (loading) {
+          <div class="chatbot__msg chatbot__msg--assistant">
+            <div class="chatbot__msg-avatar"><i class="pi pi-microchip-ai"></i></div>
+            <div class="chatbot__bubble chatbot__bubble--assistant chatbot__typing">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Input -->
+      <div class="chatbot__input">
+        <textarea #chatInput
+          [(ngModel)]="userInput"
+          (keydown)="onKeydown($event)"
+          [placeholder]="'chatbot.placeholder' | translate"
+          rows="1"
+          [disabled]="loading"
+        ></textarea>
+        <button (click)="sendMessage()" [disabled]="!userInput.trim() || loading"
+          [title]="'chatbot.send' | translate">
+          <i class="pi pi-send"></i>
+        </button>
+      </div>
+    </div>
+  }
+  <button class="chatbot__fab" (click)="toggle()" [title]="'chatbot.title' | translate">
+    <i class="pi" [class.pi-comments]="!isOpen" [class.pi-times]="isOpen"></i>
+  </button>
+</div>

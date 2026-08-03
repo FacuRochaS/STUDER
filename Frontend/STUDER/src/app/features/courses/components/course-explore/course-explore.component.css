@@ -1,0 +1,29 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.course-padding {
+  padding-bottom: 1rem;
+}
+.course-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.course-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /*padding: 1.5rem;*/
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}

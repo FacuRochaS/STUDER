@@ -14,15 +14,15 @@ import { RichTextComponent } from '../../../../../shared/components/rich-text/ri
 export class InfoTabComponent {
   @Input() block: BlockResponseDTO | BlockCompleteResponseDTO | null = null;
 
-  get versionNumber(): number | undefined {
-    if (!this.block) return undefined;
-    if ('version' in this.block) {
-      return this.block.version.versionNumber;
+  get versionNumber(): string {
+    if (!this.block) return '?';
+    if ('version' in this.block && this.block.version) {
+      return String(this.block.version.versionNumber);
     }
-    if (this.block.versions && this.block.versions.length > 0) {
-      return this.block.versions[this.block.versions.length - 1].versionNumber;
+    if ('versions' in this.block && (this.block as BlockCompleteResponseDTO).versions?.length) {
+      return String((this.block as BlockCompleteResponseDTO).versions.slice(-1)[0].versionNumber);
     }
-    return undefined;
+    return 'Latest';
   }
 
   get tagsAsText(): string {
@@ -31,5 +31,18 @@ export class InfoTabComponent {
 
   get authorAsText(): string {
     return this.block ? `@${this.block.owner.username}` : '';
+  }
+
+  get forkCount(): number {
+    if (!this.block) return 0;
+    if ('forkCount' in this.block) return (this.block as any).forkCount ?? 0;
+    return 0;
+  }
+
+  get likeCount(): number {
+    if (!this.block) return 0;
+    if ('likeCount' in this.block) return this.block.likeCount ?? 0;
+    if ('likesCount' in this.block) return (this.block as any).likesCount ?? 0;
+    return 0;
   }
 }

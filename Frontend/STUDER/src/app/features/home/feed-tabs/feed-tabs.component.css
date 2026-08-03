@@ -1,0 +1,62 @@
+/* ===== Fixed Tab Bar ===== */
+.feed-tabs {
+  display: flex;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.feed-tabs__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  width: 100%;
+  background: var(--color-bg);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+}
+
+.feed-tabs__spacer {
+  flex: 1;
+}
+
+.feed-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secu);
+  padding: 0.6rem 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+
+.feed-tab:hover {
+  color: var(--color-text-prim);
+}
+
+.feed-tab.active {
+  background: var(--input-background);
+  color: var(--color-primary);
+}
+
+.feed-tab i {
+  font-size: 0.95rem;
+}
+
+.feed-tab--create {
+  background: var(--color-primary);
+  color: var(--color-text-btn);
+}
+
+.feed-tab--create:hover {
+  background: var(--color-primary);
+  opacity: 0.9;
+  color: var(--color-text-btn);
+}

@@ -11,6 +11,7 @@ import facu.studer.mappers.FriendMapper;
 import facu.studer.repositories.FriendRepository;
 import facu.studer.repositories.UserRepository;
 import facu.studer.services.FriendService;
+import facu.studer.services.PointsService;
 import facu.studer.services.support.NewNotificationService;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -34,20 +35,23 @@ public class FriendServiceImpl implements FriendService {
 
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
-
     private final NewNotificationService newNotificationService;
     private final MessageSource messageSource;
+    private final PointsService pointsService;
 
 
     public FriendServiceImpl(
             FriendRepository friendRepository,
             UserRepository userRepository,
-            NewNotificationService newNotificationService, MessageSource messageSource) {
+
+            NewNotificationService newNotificationService, MessageSource messageSource,
+            PointsService pointsService) {
         this.friendRepository = friendRepository;
         this.userRepository = userRepository;
 
         this.newNotificationService = newNotificationService;
         this.messageSource = messageSource;
+        this.pointsService = pointsService;
     }
 
     /**
@@ -110,6 +114,7 @@ public class FriendServiceImpl implements FriendService {
         // Create notification for the receiver
         if (isNewFollowing || existingRequest.isPresent()) {
             createFollowNotification(targetUser, currentUser);
+            pointsService.addPoints(targetUser, 10L);
         }
 
         return FriendMapper.toResponseDTO(friendshipRecord, currentUser.getId());

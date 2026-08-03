@@ -1,5 +1,6 @@
 package facu.studer.services;
 
+import facu.studer.DTOs.MessageDTO;
 import facu.studer.DTOs.blocks.*;
 import jakarta.validation.Valid;
 
@@ -25,4 +26,12 @@ public interface BlockService {
     BlockPageResponseDTO getBlockByUser(Long id, String username, int page);
 
     BlockPageResponseDTO getMyBlock(String username, int page);
+
+    MessageDTO likeBlock(String username, Long blockId);
+
+    MessageDTO unlikeBlock(String username, Long blockId);
+
+    BlockStatsDTO getBlockStats(Long blockId);
+
+    BlockPageResponseDTO exploreBlocks(String username, int page, String query, List<String> tags, String difficulty, Boolean mine, Boolean following, Boolean liked);
 }

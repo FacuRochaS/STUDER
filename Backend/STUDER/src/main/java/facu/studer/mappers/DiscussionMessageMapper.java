@@ -33,7 +33,7 @@ public final class DiscussionMessageMapper {
 
         return DiscussionMessageResponseDTO.builder()
                 .id(message.getId())
-                .sender(UserMapper.toPublicResponseDTO(message.getSender()) )
+                .sender(UserMapper.toPublicSimpleResponseDTO(message.getSender()) )
                 .content(message.getContent())
                 .imageRef(message.getLink())
                 .createdAt(message.getCreatedDatetime())

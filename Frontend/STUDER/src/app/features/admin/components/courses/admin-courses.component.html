@@ -1,0 +1,12 @@
+<section class="cards">
+  <div class="c c--green"><span class="cv">{{ ck('totalCourses') }}</span><span class="cl">{{ 'admin.cards.total_courses' | translate }}</span></div>
+  <div class="c c--blue"><span class="cv">{{ ck('publishedCourses') }}</span><span class="cl">{{ 'admin.cards.published_courses' | translate }}</span></div>
+  <div class="c c--red"><span class="cv">{{ ck('draftCourses') }}</span><span class="cl">{{ 'admin.cards.draft_courses' | translate }}</span></div>
+  <div class="c c--teal"><span class="cv">{{ cs('avgBlocksPerCourse') }}</span><span class="cl">{{ 'admin.cards.avg_blocks_course' | translate }}</span></div>
+  <div class="c c--orange"><span class="cv">{{ cs('avgCourseDuration') }}</span><span class="cl">{{ 'admin.cards.avg_duration' | translate }}</span></div>
+</section>
+
+<div class="charts-grid">
+  @if (chartsData.coursesCreated?.length) { <div class="chart-box"><h3>{{ 'admin.charts.courses_created' | translate }}</h3><div class="ch-wrap"><canvas id="c1"></canvas></div></div> }
+  @if (chartsData.blocksPerCourse?.length) { <div class="chart-box"><h3>{{ 'admin.charts.blocks_per_course' | translate }}</h3><div class="ch-wrap"><canvas id="c2"></canvas></div></div> }
+</div>

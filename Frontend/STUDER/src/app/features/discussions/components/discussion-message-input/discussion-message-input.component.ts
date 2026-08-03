@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -20,6 +20,8 @@ export class DiscussionMessageInputComponent {
   @Output() messageSent = new EventEmitter<{ content: string, file?: File }>();
   @Output() replyCancelled = new EventEmitter<void>();
 
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
+
   content = '';
   attachedFile: File | null = null;
   isSending = false;
@@ -28,6 +30,7 @@ export class DiscussionMessageInputComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       this.attachedFile = input.files[0];
+      input.value = '';
     }
   }
 
@@ -59,5 +62,8 @@ export class DiscussionMessageInputComponent {
     this.content = '';
     this.attachedFile = null;
     this.isSending = false;
+    if (this.fileInputRef) {
+      this.fileInputRef.nativeElement.value = '';
+    }
   }
 }

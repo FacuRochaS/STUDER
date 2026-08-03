@@ -1,0 +1,15 @@
+<nav class="feed-tabs">
+  <div class="feed-tabs__nav" appAutoAnimate>
+    @for (tab of tabs; track tab.id) {
+      <button class="feed-tab" [class.active]="activeTab === tab.id" (click)="selectTab(tab.id)">
+        <i [class]="tab.icon"></i>
+        <span>{{ tab.label | translate }}</span>
+      </button>
+    }
+    <div class="feed-tabs__spacer"></div>
+    <button class="feed-tab feed-tab--create" (click)="toggleCreate()">
+      <i [class]="showCreate ? 'pi pi-times' : 'pi pi-plus'"></i>
+      <span>{{ showCreate ? ('common.cancel' | translate) : ('feed.new' | translate) }}</span>
+    </button>
+  </div>
+</nav>

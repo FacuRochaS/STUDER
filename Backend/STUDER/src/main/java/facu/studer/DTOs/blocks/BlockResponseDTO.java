@@ -40,4 +40,8 @@ public class BlockResponseDTO {
 
     private BlockVersionResponseDTO version;
 
+    private long likeCount;
+
+    private boolean likedByCurrentUser;
+
 }

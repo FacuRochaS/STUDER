@@ -1,0 +1,25 @@
+<div class="sidebar-container">
+  <ul class="nav-list">
+    <li (click)="selectCategory('recent')" [class.active]="selectedCategory === 'recent'">
+      <i class="pi pi-history"></i>
+      <span>{{ 'feed.recent' | translate }}</span>
+    </li>
+    <li (click)="selectCategory('popular')" [class.active]="selectedCategory === 'popular'">
+      <i class="pi pi-bolt"></i>
+      <span>{{ 'feed.popular' | translate }}</span>
+    </li>
+    <li (click)="selectCategory('following')" [class.active]="selectedCategory === 'following'">
+      <i class="pi pi-users"></i>
+      <span>{{ 'feed.following' | translate }}</span>
+    </li>
+  </ul>
+
+  <hr class="divider">
+
+  <ul class="nav-list">
+    <li (click)="selectCategory('create')" [class.active]="selectedCategory === 'create'">
+      <i class="pi pi-plus-circle"></i>
+      <span>{{ 'feed.new' | translate }}</span>
+    </li>
+  </ul>
+</div>

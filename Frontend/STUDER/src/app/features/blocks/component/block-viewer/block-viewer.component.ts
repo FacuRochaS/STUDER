@@ -4,6 +4,8 @@ import { BlockContentItem } from '../../interfaces/content.interfaces';
 import {TranslatePipe} from '@ngx-translate/core';
 import {TextViewerComponent} from '../../text/viewer/text-viewer.component';
 import {ActivityViewerComponent} from '../../activity/viewer/activity-viewer.component';
+import {VideoViewerComponent} from '../../video/viewer/video-viewer.component';
+import {GalleryViewerComponent} from '../../gallery/viewer/gallery-viewer.component';
 
 
 @Component({
@@ -23,6 +25,8 @@ export class BlockViewerComponent {
   private readonly componentRegistry: Record<string, Type<any>> = {
     'text': TextViewerComponent,
      'activity': ActivityViewerComponent,
+    'video': VideoViewerComponent,
+    'gallery': GalleryViewerComponent,
   };
 
   /**

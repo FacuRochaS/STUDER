@@ -1,0 +1,11 @@
+<section class="cards">
+  <div class="c c--blue"><span class="cv">{{ ck('totalPosts') }}</span><span class="cl">{{ 'admin.cards.total_posts' | translate }}</span></div>
+  <div class="c c--red"><span class="cv">{{ ck('totalLikes') }}</span><span class="cl">{{ 'admin.cards.total_likes' | translate }}</span></div>
+  <div class="c c--orange"><span class="cv">{{ cs('avgLikesPerPost') }}</span><span class="cl">{{ 'admin.cards.avg_likes' | translate }}</span></div>
+</section>
+
+<div class="charts-grid">
+  @if (chartsData.postsCreated?.length) { <div class="chart-box"><h3>{{ 'admin.charts.posts_created' | translate }}</h3><div class="ch-wrap"><canvas id="f1"></canvas></div></div> }
+  @if (chartsData.likesOverTime?.length) { <div class="chart-box"><h3>{{ 'admin.charts.likes_over_time' | translate }}</h3><div class="ch-wrap"><canvas id="f3"></canvas></div></div> }
+  @if (chartsData.topPosts?.length) { <div class="chart-box chart-box--full"><h3>{{ 'admin.charts.top_posts' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="f5"></canvas></div></div> }
+</div>

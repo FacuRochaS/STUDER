@@ -127,10 +127,15 @@
         <div class="auth-field">
           <div class="auth-input-wrap" [class.auth-input-wrap--invalid]="isControlInvalid(getRegisterControl('birthDate'))">
             <span class="pi pi-calendar auth-input-icon"></span>
-            <input type="date" class="auth-input" formControlName="birthDate" />
+            <input type="date" class="auth-input" formControlName="birthDate" [max]="maxDate" />
           </div>
           @if (isControlInvalid(getRegisterControl('birthDate'))) {
-            <span class="auth-field-error">{{ 'register.birthdate_error' | translate }}</span>
+            @if (getRegisterControl('birthDate')?.errors?.['required']) {
+              <span class="auth-field-error">{{ 'register.birthdate_error' | translate }}</span>
+            }
+            @if (getRegisterControl('birthDate')?.errors?.['minAge']) {
+              <span class="auth-field-error">{{ 'register.birthdate_age_error' | translate }}</span>
+            }
           }
         </div>
 
@@ -179,7 +184,12 @@
             </button>
           </div>
           @if (isControlInvalid(getRegisterControl('password'))) {
-            <span class="auth-field-error">{{ 'register.password_error' | translate }}</span>
+            @if (getRegisterControl('password')?.errors?.['minlength']) {
+              <span class="auth-field-error">{{ 'register.password_error' | translate }}</span>
+            }
+            @if (getRegisterControl('password')?.errors?.['passwordComplexity']) {
+              <span class="auth-field-error">{{ 'register.password_complexity_error' | translate }}</span>
+            }
           }
         </div>
 

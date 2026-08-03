@@ -1,16 +1,43 @@
 :host {
   display: block;
-  border: 1px solid var(--border);
   border-radius: 8px;
   background-color: var(--sidebar-bg);
-  overflow: hidden; /* Crucial para que los hijos respeten el borde redondeado */
+  overflow: hidden;
+  box-shadow: 0 1px 3px var(--box-shadow-color);
   transition: box-shadow 0.2s;
+  margin: 0.5rem;
 }
 
 :host:hover {
-  box-shadow: var(--overlay-shadow);
+  box-shadow: 0 4px 12px var(--box-shadow-color);
 }
 
 .block-card__content {
-  padding: 1.5rem;
+  padding: 0;
+}
+
+.block-card__version-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--input-background);
+  border-bottom: 1px solid var(--border);
+}
+
+.block-card__version-selector label {
+  font-size: 0.75rem;
+  color: var(--color-text-secu);
+  white-space: nowrap;
+}
+
+.block-card__version-selector select {
+  flex: 1;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--color-bg);
+  color: var(--color-text-prim);
+  font-size: 0.75rem;
+  font-family: inherit;
 }

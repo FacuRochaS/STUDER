@@ -1,11 +1,12 @@
-<header class="header">
-  <!-- Logo -->
-  <div class="header__logo">
-    <studer-logo [size]="1.5" animation="bounce" (logoClick)="goHome()"></studer-logo>
-  </div>
+<!-- Logo -->
+<div class="header__logo">
+  <studer-logo [size]="1.8" animation="bounce" (logoClick)="goHome()"></studer-logo>
+</div>
 
-  <!-- Search -->
-  <div class="header__search" #searchContainer>
+<div class="header__body">
+
+<!-- Search -->
+<div class="header__search" #searchContainer>
     <span class="pi pi-search header__search-icon"></span>
     <input
       type="text"
@@ -30,20 +31,14 @@
           @if (searchResults.length === 0) {
             <div class="header__search-empty">{{ 'search.empty_preview' | translate }}</div>
           } @else {
-            @for (user of searchResults; track trackByUserId($index, user)) {
-              <a class="header__search-item" [routerLink]="['/user', '@' + user.username]" (click)="closeSearchPanel()">
-                <div class="header__search-avatar">
-                  @if (user.profilePictureThumbnailUrl) {
-                    <img [src]="user.profilePictureThumbnailUrl" [alt]="user.username" />
-                  } @else {
-                    <span>{{ getUserInitials(user) }}</span>
-                  }
+            @for (r of searchResults; track trackByResult($index, r)) {
+              <a class="header__search-item" [routerLink]="[r.link]" (click)="closeSearchPanel()">
+                <div class="header__search-avatar" [class]="'header__search-avatar--' + r.type">
+                  <i [class]="r.icon"></i>
                 </div>
                 <div class="header__search-info">
-                  <div class="header__search-name">{{ user.firstName }} {{ user.lastName }}</div>
-                  <div class="header__search-username">
-                    <studer-rich-text [text]="'@' + user.username"></studer-rich-text>
-                  </div>
+                  <div class="header__search-name">{{ r.label }}</div>
+                  <div class="header__search-username">{{ r.sublabel }}</div>
                 </div>
               </a>
             }
@@ -61,7 +56,6 @@
 
   <!-- Controls -->
   <div class="header__controls">
-    <!-- Theme toggle -->
     <button
       type="button"
       class="header__control-btn"
@@ -70,7 +64,6 @@
       <span [class]="currentThemeIcon"></span>
     </button>
 
-    <!-- Language toggle -->
     <button
       type="button"
       class="header__control-btn header__lang-btn"
@@ -79,7 +72,6 @@
       {{ currentLanguageLabel }}
     </button>
 
-    <!-- Notifications -->
     <studer-overlay position="bottom-right" [contentTemplate]="notificationContent">
       <div class="header__notification-trigger">
         <span class="pi pi-bell"></span>
@@ -89,9 +81,9 @@
       </div>
     </studer-overlay>
   </div>
-</header>
+
+</div>
 
 <ng-template #notificationContent>
   <studer-notification-panel></studer-notification-panel>
 </ng-template>
-

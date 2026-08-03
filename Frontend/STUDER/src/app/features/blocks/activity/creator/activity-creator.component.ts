@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { v4 as uuidv4 } from 'uuid';
+import { UploadService } from '../../../../core/services/upload.service';
 import { ActivityContentData, ActivityOption, RichNodeType } from '../../interfaces/content.interfaces';
 
 @Component({
@@ -16,14 +17,28 @@ export class ActivityCreatorComponent implements OnInit {
   @Input() data!: ActivityContentData;
   @Output() dataChange = new EventEmitter<ActivityContentData>();
 
+  uploadingImageIndex: number | null = null;
+  statementText = '';
+
+  constructor(private readonly uploadService: UploadService) {}
+
   ngOnInit(): void {
     if (!this.data || !this.data.activityType) {
       this.data = { activityType: 'multiple_choice', statement: [], options: [], allowRetry: true, showFeedback: true };
     }
+    this.data.allowRetry = true;
+    if (this.data.statement.length > 0 && this.data.statement[0].type === 'text') {
+      this.statementText = this.data.statement[0].value || '';
+    }
+  }
+
+  onStatementChange(): void {
+    this.data.statement = [{ type: 'text', value: this.statementText }];
+    this.updateModel();
   }
 
   onTypeChange(): void {
-    this.data.options = []; // Limpiamos opciones al cambiar de tipo
+    this.data.options = [];
     this.updateModel();
   }
 
@@ -35,6 +50,20 @@ export class ActivityCreatorComponent implements OnInit {
   removeStatementNode(index: number): void {
     this.data.statement.splice(index, 1);
     this.updateModel();
+  }
+
+  onStatementImageSelected(event: Event, index: number): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.uploadService.uploadImage(file, 'activity').subscribe({
+      next: (res) => {
+        this.data.statement[index].value = res.url;
+        this.updateModel();
+        input.value = '';
+      },
+    });
   }
 
   addOption(): void {
@@ -52,7 +81,6 @@ export class ActivityCreatorComponent implements OnInit {
 
   removeOption(index: number): void {
     this.data.options.splice(index, 1);
-    // Reindexar si es de ordenamiento
     if (this.data.activityType === 'ordering') {
       this.data.options.forEach((opt, i) => opt.orderIndex = i + 1);
     }
@@ -62,6 +90,25 @@ export class ActivityCreatorComponent implements OnInit {
   toggleCorrect(option: ActivityOption): void {
     option.isCorrect = !option.isCorrect;
     this.updateModel();
+  }
+
+  onOptionImageSelected(event: Event, index: number): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.uploadingImageIndex = index;
+    this.uploadService.uploadImage(file, 'activity').subscribe({
+      next: (res) => {
+        this.data.options[index].imageUrl = res.url;
+        this.uploadingImageIndex = null;
+        this.updateModel();
+        input.value = '';
+      },
+      error: () => {
+        this.uploadingImageIndex = null;
+      },
+    });
   }
 
   updateModel(): void {

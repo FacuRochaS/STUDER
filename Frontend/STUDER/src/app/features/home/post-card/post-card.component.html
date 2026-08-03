@@ -1,0 +1,44 @@
+<article class="post-card">
+  <div class="post-card__header">
+    <div class="post-card__avatar">
+      @if (post.user.profilePictureThumbnailUrl) {
+        <img [src]="post.user.profilePictureThumbnailUrl" alt="" />
+      } @else {
+        <span class="post-card__avatar-placeholder">{{ post.user.firstName.charAt(0) }}{{ post.user.lastName.charAt(0) }}</span>
+      }
+    </div>
+    <div class="post-card__author">
+      <studer-username [username]="post.user.username"></studer-username>
+      <span class="post-card__name">{{ post.user.firstName }} {{ post.user.lastName }}</span>
+    </div>
+    <span class="post-card__time">{{ post.createdDatetime | relativeTime }}</span>
+  </div>
+
+  <div class="post-card__body">
+    @if (parsedContent?.paragraphs) {
+      <studer-text-viewer [data]="parsedContent"></studer-text-viewer>
+    } @else if (parsedContent?.text) {
+      <studer-rich-text [text]="parsedContent.text"></studer-rich-text>
+    } @else if (parsedContent) {
+      <p class="post-card__text">{{ parsedContent?.text || '' }}</p>
+    }
+    @if (parsedContent?.gallery) {
+      <div class="post-card__gallery">
+        <studer-gallery-viewer [data]="parsedContent.gallery"></studer-gallery-viewer>
+      </div>
+    }
+  </div>
+
+  @if (post.tags?.length) {
+    <div class="post-card__tags">
+      @for (tag of post.tags; track tag) { <studer-tag [name]="tag"></studer-tag> }
+    </div>
+  }
+
+  <div class="post-card__actions">
+    <button class="like-btn" [class.liked]="post.likedByCurrentUser" (click)="toggleLike()">
+      <i class="pi" [class.pi-heart-fill]="post.likedByCurrentUser" [class.pi-heart]="!post.likedByCurrentUser"></i>
+      <span>{{ post.likeCount }}</span>
+    </button>
+  </div>
+</article>

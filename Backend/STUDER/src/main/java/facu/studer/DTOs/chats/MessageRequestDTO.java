@@ -10,7 +10,6 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class MessageRequestDTO {
 
-    @NotBlank(message = "Content cannot be empty")
     private String content;
 
     private Long replyToId;

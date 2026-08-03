@@ -1,12 +1,20 @@
 <div class="landing">
   <!-- Navbar flotante -->
-  <nav class="landing-nav">
+  <nav class="landing-nav" [class.landing-nav--scrolled]="navScrolled">
     <div class="landing-nav__logo">
       <studer-logo [size]="1.6" animation="bounce"></studer-logo>
     </div>
     <div class="landing-nav__actions">
       <a class="landing-nav__link" href="#features">{{ 'landing.nav_features' | translate }}</a>
+      <a class="landing-nav__link" href="#how">{{ 'landing.nav_how' | translate }}</a>
       <a class="landing-nav__link" href="#about">{{ 'landing.nav_about' | translate }}</a>
+      <a class="landing-nav__link" routerLink="/faq">{{ 'landing.nav_faq' | translate }}</a>
+      <button class="landing-nav__icon-btn" (click)="toggleTheme($event)" [title]="'header.toggle_theme' | translate">
+        <span [class]="themeIcon"></span>
+      </button>
+      <button class="landing-nav__icon-btn landing-nav__lang-btn" (click)="toggleLanguage()" [title]="'header.toggle_language' | translate">
+        {{ langLabel }}
+      </button>
       <button class="landing-nav__cta" (click)="scrollToLogin()">{{ 'login.submit' | translate }}</button>
     </div>
   </nav>
@@ -24,6 +32,28 @@
       </div>
       <div class="hero__form" id="login-section">
         <app-login-register></app-login-register>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="landing-stats landing-section">
+    <div class="stats__grid">
+      <div class="stat-item">
+        <div class="stat-item__number">10K+</div>
+        <div class="stat-item__label">{{ 'landing.stat_students' | translate }}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-item__number">500+</div>
+        <div class="stat-item__label">{{ 'landing.stat_courses' | translate }}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-item__number">98%</div>
+        <div class="stat-item__label">{{ 'landing.stat_satisfaction' | translate }}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-item__number">50+</div>
+        <div class="stat-item__label">{{ 'landing.stat_countries' | translate }}</div>
       </div>
     </div>
   </section>
@@ -84,6 +114,68 @@
     </div>
   </section>
 
+  <!-- How It Works -->
+  <section class="landing-how" id="how">
+    <div class="how__inner">
+      <h2 class="how__title">{{ 'landing.how_title' | translate }}</h2>
+      <div class="how__steps">
+        <div class="how-step landing-section">
+          <div class="how-step__number">1</div>
+          <h3 class="how-step__title">{{ 'landing.how_step1_title' | translate }}</h3>
+          <p class="how-step__text">{{ 'landing.how_step1_text' | translate }}</p>
+        </div>
+        <div class="how-step landing-section">
+          <div class="how-step__number">2</div>
+          <h3 class="how-step__title">{{ 'landing.how_step2_title' | translate }}</h3>
+          <p class="how-step__text">{{ 'landing.how_step2_text' | translate }}</p>
+        </div>
+        <div class="how-step landing-section">
+          <div class="how-step__number">3</div>
+          <h3 class="how-step__title">{{ 'landing.how_step3_title' | translate }}</h3>
+          <p class="how-step__text">{{ 'landing.how_step3_text' | translate }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="landing-testimonials" id="testimonials">
+    <h2 class="testimonials__title">{{ 'landing.testimonials_title' | translate }}</h2>
+    <p class="testimonials__subtitle">{{ 'landing.testimonials_subtitle' | translate }}</p>
+    <div class="testimonials__grid">
+      <div class="testimonial-card landing-section">
+        <p class="testimonial-card__text">{{ 'landing.testimonial_1_text' | translate }}</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar"><span class="pi pi-user"></span></div>
+          <div>
+            <p class="testimonial-card__name">{{ 'landing.testimonial_1_name' | translate }}</p>
+            <p class="testimonial-card__role">{{ 'landing.testimonial_1_role' | translate }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card landing-section">
+        <p class="testimonial-card__text">{{ 'landing.testimonial_2_text' | translate }}</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar"><span class="pi pi-user"></span></div>
+          <div>
+            <p class="testimonial-card__name">{{ 'landing.testimonial_2_name' | translate }}</p>
+            <p class="testimonial-card__role">{{ 'landing.testimonial_2_role' | translate }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card landing-section">
+        <p class="testimonial-card__text">{{ 'landing.testimonial_3_text' | translate }}</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar"><span class="pi pi-user"></span></div>
+          <div>
+            <p class="testimonial-card__name">{{ 'landing.testimonial_3_name' | translate }}</p>
+            <p class="testimonial-card__role">{{ 'landing.testimonial_3_role' | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- About / Value -->
   <section class="landing-about" id="about">
     <div class="about__content landing-section">
@@ -109,6 +201,12 @@
     <span class="landing-footer__brand">
       <studer-logo [size]="1" animation="pulse"></studer-logo>
     </span>
-    <span class="landing-footer__copy">© 2026 Studer — {{ 'landing.footer_rights' | translate }}</span>
+    <div class="landing-footer__links">
+      <a class="landing-footer__link" href="#features">{{ 'landing.nav_features' | translate }}</a>
+      <a class="landing-footer__link" href="#how">{{ 'landing.nav_how' | translate }}</a>
+      <a class="landing-footer__link" href="#about">{{ 'landing.nav_about' | translate }}</a>
+    </div>
+    <span class="landing-footer__copy">&copy; 2026 Studer &mdash; {{ 'landing.footer_rights' | translate }}</span>
   </footer>
 </div>
+<studer-chatbot></studer-chatbot>

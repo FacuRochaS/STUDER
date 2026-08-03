@@ -1,5 +1,6 @@
 export const API_CONFIG = {
-  baseUrl: 'http://localhost:1583/api/v1',
+   baseUrl: 'http://localhost:8081/api/v1', //todo change for production
+  // baseUrl: 'http://localhost:1583/api/v1', //nginx proxy
   auth: '/auth',
   users: '/users',
   notifications: '/notifications',
@@ -7,5 +8,10 @@ export const API_CONFIG = {
   friends: '/friends',
   messages: '/messages',
   chats: '/chats',
-  blocks:'/blocks'
+  blocks: '/blocks',
+  courses: '/courses',
+  feed: '/feed',
+  contests: '/contests',
+  admin: '/admin',
+  upload: '/upload'
 };

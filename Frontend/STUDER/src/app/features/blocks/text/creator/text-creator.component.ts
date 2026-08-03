@@ -1,8 +1,9 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { TextContentData, ParagraphData, TextRunData, TextAlign, TextSize, TextColor } from '../../interfaces/content.interfaces';
+import { UploadService } from '../../../../core/services/upload.service';
 
 @Component({
   selector: 'studer-text-creator',
@@ -72,18 +73,89 @@ export class TextCreatorComponent implements OnInit {
     }
   }
 
+  private readonly uploadService = inject(UploadService);
+
+  showLinkModal = false;
+  showImageModal = false;
+  linkUrl = '';
+  imageUploading = false;
+  private savedRange: Range | null = null;
+
   promptLink(): void {
-    const url = prompt('Ingrese la URL del enlace:');
-    if (url) {
-      this.execute('createLink', url);
+    this.saveSelection();
+    this.linkUrl = '';
+    this.showLinkModal = true;
+  }
+
+  insertLink(): void {
+    if (this.linkUrl) {
+      this.restoreSelection();
+      this.insertHtml(`<a href="${this.linkUrl}" target="_blank">${this.linkUrl}</a>`);
     }
+    this.showLinkModal = false;
+    this.editableArea.nativeElement.focus();
   }
 
   promptImage(): void {
-    const url = prompt('Ingrese la URL de la imagen:');
-    if (url) {
-      this.execute('insertImage', url);
+    this.saveSelection();
+    this.showImageModal = true;
+  }
+
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.imageUploading = true;
+    this.uploadService.uploadImage(file, 'blocks').subscribe({
+      next: (res) => {
+        this.restoreSelection();
+        this.insertHtml(`<img src="${res.url}" alt="image">`);
+        this.imageUploading = false;
+        this.showImageModal = false;
+        this.editableArea.nativeElement.focus();
+        input.value = '';
+      },
+      error: () => {
+        this.imageUploading = false;
+      }
+    });
+  }
+
+  private saveSelection(): void {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      this.savedRange = sel.getRangeAt(0).cloneRange();
     }
+  }
+
+  private restoreSelection(): void {
+    const sel = window.getSelection();
+    if (sel && this.savedRange) {
+      sel.removeAllRanges();
+      sel.addRange(this.savedRange);
+    } else if (this.editableArea) {
+      this.editableArea.nativeElement.focus();
+    }
+  }
+
+  private insertHtml(html: string): void {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      if (this.editableArea.nativeElement.contains(range.commonAncestorContainer)) {
+        range.deleteContents();
+        const fragment = range.createContextualFragment(html);
+        range.insertNode(fragment);
+        range.collapse(false);
+        this.editableArea.nativeElement.focus();
+        this.updateModel();
+        return;
+      }
+    }
+    const el = this.editableArea.nativeElement;
+    el.focus();
+    el.insertAdjacentHTML('beforeend', html);
+    this.updateModel();
   }
 
   // =========================================================================
@@ -148,11 +220,8 @@ export class TextCreatorComponent implements OnInit {
 
         // Si es una imagen
         if (tag === 'IMG') {
-          currentParagraph.runs.push({
-            ...currentFormat,
-            text: '',
-            imageUrl: el.getAttribute('src'),
-          });
+          const src = el.getAttribute('src') || (el as any).src || '';
+          currentParagraph.runs.push({ ...currentFormat, text: '', imageUrl: src || null });
           return;
         }
 

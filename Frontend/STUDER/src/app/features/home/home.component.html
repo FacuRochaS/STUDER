@@ -1,32 +1,82 @@
-@if (!user) {
-  <studer-loader></studer-loader>
-} @else {
-<div class="home">
-  <div class="home__welcome">
-    <h1 class="home__title">
-      {{ 'home.welcome' | translate: { name: user.firstName || '' } }}
-    </h1>
-    <p class="home__subtitle">{{ 'home.subtitle' | translate }}</p>
-  </div>
+<section class="feed">
+  <nav class="feed-tabs">
+    <div class="feed-tabs__nav" appAutoAnimate>
+      @for (tab of tabs; track tab.id) {
+        <button class="feed-tab" [class.active]="currentFilter === tab.id" (click)="selectTab(tab.id)">
+          <i [class]="tab.icon"></i>
+          <span>{{ tab.label | translate }}</span>
+        </button>
+      }
+      <div class="feed-tabs__spacer"></div>
+      <button class="feed-tab feed-tab--create" (click)="showCreateForm = !showCreateForm">
+        <i [class]="showCreateForm ? 'pi pi-times' : 'pi pi-plus'"></i>
+        <span>{{ showCreateForm ? ('common.cancel' | translate) : ('feed.new' | translate) }}</span>
+      </button>
+    </div>
+  </nav>
 
-  <div class="home__cards">
-    <div class="home__card home__card--courses">
-      <span class="pi pi-book home__card-icon"></span>
-      <span class="home__card-label">{{ 'sidebar.courses' | translate }}</span>
+  <div class="feed__scroll" (scroll)="onScroll($event)">
+    <div appAutoAnimate>
+      @if (showCreateForm) {
+        <div class="feed__create">
+          <div class="feed__form">
+            <studer-text-creator [data]="postContentData" (dataChange)="postContentData = $event"></studer-text-creator>
+            <studer-gallery-creator [data]="postGalleryData" (dataChange)="postGalleryData = $event"></studer-gallery-creator>
+            <div class="feed__form-actions">
+              <button class="btn btn--primary" (click)="createPost()">{{ 'feed.publish' | translate }}</button>
+              <button class="btn btn--secondary" (click)="showCreateForm = false">{{ 'common.cancel' | translate }}</button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
-    <div class="home__card home__card--calendar">
-      <span class="pi pi-calendar home__card-icon"></span>
-      <span class="home__card-label">{{ 'sidebar.calendar' | translate }}</span>
-    </div>
-    <div class="home__card home__card--discussions">
-      <span class="pi pi-megaphone home__card-icon"></span>
-      <span class="home__card-label">{{ 'sidebar.discussions' | translate }}</span>
-    </div>
-    <div class="home__card home__card--messages">
-      <span class="pi pi-comments home__card-icon"></span>
-      <span class="home__card-label">{{ 'sidebar.messages' | translate }}</span>
-    </div>
-  </div>
-</div>
-}
 
+
+    @if (!showCreateForm) {
+
+      @if (loading) {
+        <studer-loader></studer-loader>
+      } @else {
+
+      <div class="feed__columns">
+        <div class="feed__col" appAutoAnimate>
+          @for (post of posts; track post.id; let i = $index) {
+            @if (i % 2 === 0) {
+              <studer-post-card [post]="post" (like)="toggleLike(post)"></studer-post-card>
+            }
+          }
+        </div>
+        <div class="feed__col" appAutoAnimate>
+          @for (post of posts; track post.id; let i = $index) {
+            @if (i % 2 !== 0) {
+              <studer-post-card [post]="post" (like)="toggleLike(post)"></studer-post-card>
+            }
+          }
+        </div>
+      </div>
+
+      @if (loadingMore) {
+        <div class="feed__loading-more">
+          <studer-loader></studer-loader>
+        </div>
+      }
+
+      @if (reachedEnd && posts.length > 0) {
+        <div class="feed__end">
+          <div class="feed__end-line"></div>
+          <span>{{ 'feed.reached_end' | translate }}</span>
+          <div class="feed__end-line"></div>
+        </div>
+      }
+
+      @if (posts.length === 0 && !loading) {
+        <div class="feed__empty">
+          <i class="pi pi-inbox feed__empty-icon"></i>
+          <p>{{ 'feed.empty' | translate }}</p>
+        </div>
+      }
+    }
+    }
+    </div>
+
+</section>

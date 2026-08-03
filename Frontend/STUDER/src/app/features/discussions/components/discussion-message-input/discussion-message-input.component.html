@@ -1,7 +1,7 @@
 <div class="message-input-container">
   @if (replyingTo) {
     <div class="replying-to-banner">
-      <span>{{ 'discussion.item.replying_to' | translate }} <strong>&#64;{{ replyingTo.sender.username }}</strong></span>
+      <span>{{ 'discussions.replying_to' | translate }} <strong>&#64;{{ replyingTo.sender.username }}</strong></span>
       <button class="cancel-reply-btn" (click)="cancelReply()"><i class="pi pi-times"></i></button>
     </div>
   }
@@ -16,7 +16,7 @@
   <div class="input-area">
     <input type="file" #fileInput hidden (change)="onFileSelected($event)">
     <button class="action-btn" (click)="fileInput.click()" [disabled]="isSending" title="{{ 'discussion.item.attach_file' | translate }}">
-      <i class="pi pi-paperclip"></i>
+      <i class="fa-solid fa-image"></i>
     </button>
 
     <input type="text"

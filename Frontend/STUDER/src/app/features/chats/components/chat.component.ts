@@ -6,17 +6,18 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ChatService } from '../chats.service';
 import { ChatSummaryDTO, MessageResponseDTO } from '../chats.model';
 import { AuthStateService } from '../../../core/auth/auth-state.service';
-import { Subject, takeUntil, filter, switchMap, map } from 'rxjs';
+import { Subject, takeUntil, filter, switchMap, map, firstValueFrom } from 'rxjs';
 import { FriendResponseDTO } from '../../friends/friend.model';
 import { FriendService } from '../../friends/friend.service';
 import { NewNotificationService } from '../../../core/notifications/new-notification.service';
 import { NotificationResponseDTO } from '../../notifications/notification.model';
 import { RichTextComponent } from '../../../shared/rich-text.index';
+import { AutoAnimateDirective } from '../../../shared/directives/auto-animate.directive';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, RichTextComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, RichTextComponent, AutoAnimateDirective],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
@@ -28,6 +29,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private router = inject(Router);
 
   @ViewChild('scrollMe') private messagesContainer!: ElementRef;
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
 
   allChats: ChatSummaryDTO[] = [];
   chats: ChatSummaryDTO[] = [];
@@ -51,10 +53,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     private readonly friendService: FriendService,
   ) {}
 
-  ngOnInit(): void {
-    this.authState.user$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(user => this.currentUserId = user?.id ?? null);
+  async ngOnInit(): Promise<void> {
+    const user = await firstValueFrom(this.authState.user$.pipe(filter(u => u !== null)));
+    this.currentUserId = user?.id ?? null;
 
     this.loadFriends();
     this.subscribeToNotifications();
@@ -188,27 +189,45 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   sendMessage(): void {
     if ((!this.newMessage.trim() && !this.selectedFile) || !this.activeChat) return;
 
-    const request = { content: this.newMessage.trim() };
+    const content = this.newMessage.trim();
     const file = this.selectedFile;
     const currentActiveChat = this.activeChat;
 
     this.newMessage = '';
     this.removeSelectedFile();
 
+    // Optimistic: add message immediately
+    const tempId = -Date.now();
+    const optimistic: any = {
+      id: tempId,
+      chatId: currentActiveChat.chatId,
+      senderId: this.currentUserId!,
+      content: content,
+      link: file ? URL.createObjectURL(file) : null,
+      createdDatetime: new Date().toISOString(),
+    };
+    this.messages = [...this.messages, optimistic];
+    this.needsScroll = true;
+
+    const request = { content };
     if (currentActiveChat.chatId === 0) {
       this.chatService.sendMessageToUser(currentActiveChat.otherUser.id, request, file ?? undefined).subscribe({
         next: (msg) => {
+          this.messages = this.messages.map(m => m.id === tempId ? msg : m);
           this.router.navigate(['/messages', msg.chatId]);
         }
       });
     } else {
       this.chatService.sendMessageToChat(currentActiveChat.chatId, request, file ?? undefined).subscribe({
         next: (msg) => {
-          const idx = this.messages.findIndex(m => m.id === msg.id);
-          if (idx === -1) {
-            this.messages.push(msg);
-            this.needsScroll = true;
-          }
+          // Update temp message with real ID, keep the rest from API
+          this.messages = this.messages.map(m => {
+            if (m.id === tempId) {
+              return { ...m, id: msg.id, createdDatetime: msg.createdDatetime, senderId: this.currentUserId! };
+            }
+            return m;
+          });
+          this.needsScroll = true;
           const chatInList = this.allChats.find(c => c.chatId === currentActiveChat.chatId);
           if (chatInList) {
             chatInList.lastMessage = {
@@ -230,6 +249,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       const reader = new FileReader();
       reader.onload = () => this.filePreview = reader.result;
       reader.readAsDataURL(this.selectedFile);
+      input.value = '';
     }
   }
 

@@ -113,6 +113,14 @@ public class DiscussionController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/user/{username}")
+    public ResponseEntity<DiscussionPageResponseDTO> getDiscussionsByUser(
+            @PathVariable String username,
+            @RequestParam(defaultValue = "0") int page) {
+        DiscussionPageResponseDTO response = discussionService.getDiscussionsByUsername(username, page);
+        return ResponseEntity.ok(response);
+    }
+
     /**
      * Gets paginated popular discussions
      *

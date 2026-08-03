@@ -29,8 +29,8 @@ export class ThemeService {
     }
 
     // 1. Obtener las coordenadas del clic. Si no hay evento, usamos el centro de la pantalla.
-    const x = event ? event.clientX : window.innerWidth / 2;
-    const y = event ? event.clientY : window.innerHeight / 2;
+    const x = (event?.clientX && event.clientX > 0) ? event.clientX : window.innerWidth / 2;
+    const y = (event?.clientY && event.clientY > 0) ? event.clientY : window.innerHeight / 2;
 
     // 2. Calcular la distancia desde el clic hasta la esquina más lejana de la pantalla (Radio final)
     const endRadius = Math.hypot(

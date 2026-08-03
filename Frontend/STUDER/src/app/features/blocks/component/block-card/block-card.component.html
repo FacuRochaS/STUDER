@@ -1,14 +1,34 @@
 <div class="block-card">
-  <studer-block-header [block]="block"></studer-block-header>
-  <studer-tabs [tabs]="tabs" [activeTabId]="activeTabId" (tabChange)="onTabChange($event)"></studer-tabs>
-  <div class="block-card__content">
-    @switch (activeTabId) {
-      @case ('content') {
-        <studer-block-viewer [content]="parseContent(block.version.content)"></studer-block-viewer>
-      }
-      @case ('info') {
-        <studer-info-tab [block]="block"></studer-info-tab>
-      }
+  <studer-block-header
+    [block]="block"
+    (toggleContent)="toggleContent()"
+    (openTree)="onOpenTree()"
+    (edit)="onEdit()">
+  </studer-block-header>
+  @if (contentVisible) {
+    @if (hasMultipleVersions) {
+      <div class="block-card__version-selector">
+        <label>{{ 'course.create.select_version' | translate }}</label>
+        <select [ngModel]="selectedVersionId" (ngModelChange)="selectedVersionId = $event; onVersionChange()">
+          @for (v of allVersions; track v.id) {
+            <option [value]="v.id">v{{ v.versionNumber }} — {{ v.changeDescription || '' }}</option>
+          }
+        </select>
+      </div>
     }
-  </div>
+    <studer-tabs [tabs]="tabs" [activeTabId]="activeTabId" (tabChange)="onTabChange($event)"></studer-tabs>
+    <div class="block-card__content">
+      @switch (activeTabId) {
+        @case ('content') {
+          <studer-block-viewer [content]="parsedContent"></studer-block-viewer>
+        }
+        @case ('info') {
+          <studer-info-tab [block]="block"></studer-info-tab>
+        }
+        @case ('stats') {
+          <studer-stats-tab [blockId]="block.id"></studer-stats-tab>
+        }
+      }
+    </div>
+  }
 </div>

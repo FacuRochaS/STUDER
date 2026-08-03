@@ -23,15 +23,15 @@ export class AuthApiService {
   }
 
   login(data: LoginRequestDTO): Observable<LoginResponseDTO> {
-    return this.http.post<LoginResponseDTO>(`${API_CONFIG.baseUrl}${API_CONFIG.auth}/login`, data);
+    return this.http.post<LoginResponseDTO>(`${API_CONFIG.baseUrl}${API_CONFIG.auth}/login`, data, { withCredentials: true });
   }
 
   refresh(): Observable<RefreshResponseDTO> {
-    return this.http.post<RefreshResponseDTO>(`${API_CONFIG.baseUrl}${API_CONFIG.auth}/refresh`, {});
+    return this.http.post<RefreshResponseDTO>(`${API_CONFIG.baseUrl}${API_CONFIG.auth}/refresh`, {}, { withCredentials: true });
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(`${API_CONFIG.baseUrl}${API_CONFIG.auth}/logout`, {});
+    return this.http.post<void>(`${API_CONFIG.baseUrl}${API_CONFIG.auth}/logout`, {}, { withCredentials: true });
   }
 
 

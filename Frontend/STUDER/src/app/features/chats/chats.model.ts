@@ -39,7 +39,6 @@ export interface MessageResponseDTO {
   replyToId: number;
   isRead: boolean;
   createdDatetime: string;
-  fileUrl: string | null;
 }
 
 export interface MessageRequestDTO {

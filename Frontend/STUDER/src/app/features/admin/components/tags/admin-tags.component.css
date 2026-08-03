@@ -1,0 +1,29 @@
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; margin-bottom: 0.6rem; }
+.c { background: var(--color-bg); padding: 0.65rem 0.85rem; border-radius: 10px; box-shadow: 0 1px 2px var(--box-shadow-color); position: relative; }
+.c::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; border-radius: 10px 0 0 10px; }
+.c--blue::before { background: #4285f4; } .c--green::before { background: #00bf63; } .c--red::before { background: #ff3131; }
+.c--orange::before { background: #ff9800; } .c--purple::before { background: #7E57C2; }
+.cv { font-size: 1.25rem; font-weight: 800; display: block; line-height: 1.2; }
+.cl { font-size: 0.6rem; color: var(--color-text-secu); text-transform: uppercase; letter-spacing: 0.3px; }
+
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+.chart-box { background: var(--color-bg); padding: 0.75rem 0.85rem; border-radius: 10px; box-shadow: 0 1px 2px var(--box-shadow-color); overflow: hidden; }
+.chart-box--full { grid-column: 1 / -1; }
+.chart-box h3 { margin: 0 0 0.4rem; font-size: 0.78rem; color: var(--color-text-prim); }
+.ch-wrap { position: relative; height: 160px; }
+.ch-wrap canvas { width: 100% !important; height: 100% !important; }
+.ch-wrap--lg { height: 320px; }
+
+.heatmap { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
+.hm-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 600; color: var(--color-text-prim); border-radius: 3px; cursor: default; transition: transform 0.15s; }
+.hm-cell:hover { transform: scale(1.15); z-index: 2; }
+
+.empty { text-align: center; padding: 1rem; color: var(--color-text-secu); font-size: 0.8rem; }
+
+@media (max-width: 768px) {
+  .cards { grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 0.4rem; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .c { padding: 0.5rem 0.65rem; }
+  .cv { font-size: 1.1rem; }
+  .heatmap { grid-template-columns: repeat(9, 1fr); }
+}

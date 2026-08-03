@@ -10,6 +10,7 @@ import { DiscussionCreateRequestDTO } from '../../discussion.model';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule, TagInputComponent],
   templateUrl: './discussion-create-form.component.html',
+  styleUrls: ['./discussion-create-form.component.css'],
 })
 export class DiscussionCreateFormComponent {
   @Output() save = new EventEmitter<DiscussionCreateRequestDTO>();

@@ -27,6 +27,8 @@ public final class UserMapper {
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .birthDate(dto.getBirthDate())
+                .points(0L)
+                .role("USER")
                 .build();
     }
 
@@ -50,6 +52,8 @@ public final class UserMapper {
                 .profilePictureAvatarUrl(user.getProfilePictureAvatarUrl())
                 .profilePictureWebpUrl(user.getProfilePictureWebpUrl())
                 .profilePictureThumbnailUrl(user.getProfilePictureThumbnailUrl())
+                .role(user.getRole())
+                .points(user.getPoints())
                 .build();
     }
 
@@ -58,7 +62,7 @@ public final class UserMapper {
      * @param user the User entity
      * @return the public response DTO
      */
-    public static UserPublicResponseDTO toPublicResponseDTO(User user) {
+    public static UserPublicResponseDTO toPublicResponseDTO(User user, long followers) {
         if (user == null) {
             return null;
         }
@@ -67,6 +71,30 @@ public final class UserMapper {
                 .username(user.getUsername())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .points(user.getPoints())
+                .followers(followers)
+                .profilePictureOriginalUrl(user.getProfilePictureOriginalUrl())
+                .profilePictureAvatarUrl(user.getProfilePictureAvatarUrl())
+                .profilePictureWebpUrl(user.getProfilePictureWebpUrl())
+                .profilePictureThumbnailUrl(user.getProfilePictureThumbnailUrl())
+                .build();
+    }
+
+    /**
+     * Maps a User entity to a public response DTO.
+     * @param user the User entity
+     * @return the public response DTO
+     */
+    public static UserPublicResponseDTO toPublicSimpleResponseDTO(User user) {
+        if (user == null) {
+            return null;
+        }
+        return UserPublicResponseDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .points(user.getPoints())
                 .profilePictureOriginalUrl(user.getProfilePictureOriginalUrl())
                 .profilePictureAvatarUrl(user.getProfilePictureAvatarUrl())
                 .profilePictureWebpUrl(user.getProfilePictureWebpUrl())

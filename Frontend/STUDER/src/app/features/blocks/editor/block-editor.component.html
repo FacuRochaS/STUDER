@@ -1,17 +1,23 @@
-<div class="editor-layout">
+<div class="editor-container">
+  @if (mode !== 'edit') {
+    <div class="editor-stepper">
+      <button class="step" [class.active]="currentStep === 1" [class.done]="currentStep > 1" (click)="goToStep(1)">
+        <span class="step__badge">{{ currentStep > 1 ? '✓' : '1' }}</span>
+        <span class="step__label">{{ 'course.create.info' | translate }}</span>
+      </button>
+      <div class="step__line" [class.done]="currentStep > 1"></div>
+      <button class="step" [class.active]="currentStep === 2">
+        <span class="step__badge">{{ currentStep === 2 ? '2' : '2' }}</span>
+        <span class="step__label">{{ 'blocks.editor.content.title' | translate }}</span>
+      </button>
+    </div>
+  }
 
-  <aside class="editor-sidebar">
-    <div class="metadata-card">
-      <h3 class="sidebar-title">{{ 'blocks.editor.metadata.title' | translate }}</h3>
-
+  @if (currentStep === 1 && mode !== 'edit') {
+    <div class="editor-body">
       <div class="form-group">
         <label for="block-name">{{ 'blocks.editor.metadata.name' | translate }}</label>
-        <input
-          id="block-name"
-          type="text"
-          class="form-control"
-          [(ngModel)]="metadata.name"
-          (ngModelChange)="generateSlug()"
+        <input id="block-name" type="text" class="form-control" [(ngModel)]="metadata.name"
           [placeholder]="'blocks.editor.metadata.name_placeholder' | translate">
       </div>
 
@@ -30,75 +36,95 @@
         <studer-tag-input [(tags)]="metadata.tags"></studer-tag-input>
       </div>
 
-      <div class="form-switch">
-        <input id="block-published" type="checkbox" [(ngModel)]="metadata.published">
-        <label for="block-published">{{ 'blocks.editor.metadata.published' | translate }}</label>
+      <div class="editor-actions">
+        <button class="btn btn--primary" (click)="goToStep(2)" [disabled]="!metadata.name.trim()">
+          {{ 'course.create.next' | translate }}
+          <i class="pi pi-arrow-right"></i>
+        </button>
       </div>
-
-      <button class="btn btn-primary w-100 mt-4" (click)="onSave()">
-        {{ 'blocks.editor.actions.save' | translate }}
-      </button>
     </div>
-  </aside>
+  }
 
-  <main class="editor-main">
-    <div class="content-header">
-      <h2>{{ 'blocks.editor.content.title' | translate }}</h2>
-
-      <div class="add-block-controls">
-        <select class="form-control selector-sm" #newComponentType>
+  @if (currentStep === 2) {
+    <div class="editor-body">
+      <div class="toolbar">
+        <select class="form-control toolbar-select" #newComponentType>
           <option value="" disabled selected>{{ 'blocks.editor.content.select_type' | translate }}</option>
           @for (type of availableContentTypes; track type) {
             <option [value]="type">{{ 'blocks.types.' + type | translate }}</option>
           }
         </select>
-        <button class="btn btn-secondary" (click)="addComponent(newComponentType.value)">
-          + {{ 'blocks.editor.content.add' | translate }}
+        <button class="btn btn--primary" (click)="addComponent(newComponentType.value)">
+          <i class="pi pi-plus"></i>
+          {{ 'blocks.editor.content.add' | translate }}
+        </button>
+      </div>
+
+      <div class="blocks-list">
+        @if (content.length === 0) {
+          <div class="empty">
+            <p>{{ 'blocks.editor.content.empty' | translate }}</p>
+          </div>
+        }
+
+        @for (item of content; track item.id; let i = $index) {
+          <div class="block-item">
+            <div class="block-item__head">
+              <span class="block-item__type">{{ 'blocks.types.' + item.type | translate }}</span>
+              <div class="block-item__tools">
+                <button class="btn-icon" [disabled]="i === 0" (click)="moveComponent(i, 'up')" title="{{ 'action.up' | translate }}">
+                  <i class="pi pi-chevron-up"></i>
+                </button>
+                <button class="btn-icon" [disabled]="i === content.length - 1" (click)="moveComponent(i, 'down')" title="{{ 'action.down' | translate }}">
+                  <i class="pi pi-chevron-down"></i>
+                </button>
+                <button class="btn-icon btn-icon--danger" (click)="deleteComponent(item.id!)" title="{{ 'action.delete' | translate }}">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="block-item__body">
+              @switch (item.type) {
+                @case ('text') {
+                  <studer-text-creator [data]="$any(item.data)" (dataChange)="onComponentDataChange(item.id!, $event)"></studer-text-creator>
+                }
+                @case ('activity') {
+                  <studer-activity-creator [data]="$any(item.data)" (dataChange)="onComponentDataChange(item.id!, $event)"></studer-activity-creator>
+                }
+                @case ('video') {
+                  <studer-video-creator [data]="$any(item.data)" (dataChange)="onComponentDataChange(item.id!, $event)"></studer-video-creator>
+                }
+                @case ('gallery') {
+                  <studer-gallery-creator [data]="$any(item.data)" (dataChange)="onComponentDataChange(item.id!, $event)"></studer-gallery-creator>
+                }
+                @default {
+                  <div class="unsupported">{{'blocks.empty-state' | translate }} {{ item.type }}</div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (mode === 'edit') {
+        <div class="form-group">
+          <label for="change-desc">{{ 'blocks.editor.change_description' | translate }}</label>
+          <input id="change-desc" type="text" class="form-control" [(ngModel)]="changeDescription"
+            [placeholder]="'blocks.editor.change_description_placeholder' | translate">
+        </div>
+      }
+      <div class="editor-actions">
+        @if (mode !== 'edit') {
+          <button class="btn btn--secondary" (click)="goToStep(1)">
+            <i class="pi pi-arrow-left"></i>
+            {{ 'course.create.back' | translate }}
+          </button>
+        }
+        <button class="btn btn--primary" (click)="onSave()">
+          {{ 'blocks.editor.actions.save' | translate }}
         </button>
       </div>
     </div>
-
-    <div class="blocks-container">
-      @if (content.length === 0) {
-        <div class="empty-state">
-          <p>{{ 'blocks.editor.content.empty' | translate }}</p>
-        </div>
-      }
-
-      @for (item of content; track item.id; let i = $index) {
-        <div class="block-card">
-
-          <div class="block-card-header">
-            <span class="block-badge">{{ 'blocks.types.' + item.type | translate }}</span>
-            <div class="block-actions">
-              <button class="btn-icon" [disabled]="i === 0" (click)="moveComponent(i, 'up')" [title]="'action.up' | translate">↑</button>
-              <button class="btn-icon" [disabled]="i === content.length - 1" (click)="moveComponent(i, 'down')" [title]="'action.down' | translate">↓</button>
-              <button class="btn-icon btn-danger" (click)="deleteComponent(item.id!)" [title]="'action.delete' | translate">✕</button>
-            </div>
-          </div>
-
-          <div class="block-card-body">
-            @switch (item.type) {
-              @case ('text') {
-                <studer-text-creator
-                  [data]="$any(item.data)"
-                  (dataChange)="onComponentDataChange(item.id!, $event)">
-                </studer-text-creator>
-              }
-              @case ('activity') {
-                <studer-activity-creator
-                  [data]="$any(item.data)"
-                  (dataChange)="onComponentDataChange(item.id!, $event)">
-                </studer-activity-creator>
-              }
-              @default {
-                <div class="unsupported-block">{{'block.empty-state' | translate }} {{ item.type }}</div>
-              }
-            }
-          </div>
-
-        </div>
-      }
-    </div>
-  </main>
+  }
 </div>

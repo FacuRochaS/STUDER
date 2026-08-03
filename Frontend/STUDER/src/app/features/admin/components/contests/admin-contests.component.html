@@ -1,0 +1,16 @@
+<section class="cards">
+  <div class="c c--red"><span class="cv">{{ ck('totalContests') }}</span><span class="cl">{{ 'admin.cards.total_contests' | translate }}</span></div>
+  <div class="c c--orange"><span class="cv">{{ ck('activeContests') }}</span><span class="cl">{{ 'admin.cards.active_contests' | translate }}</span></div>
+  <div class="c c--green"><span class="cv">{{ ck('finishedContests') }}</span><span class="cl">{{ 'admin.cards.finished_contests' | translate }}</span></div>
+  <div class="c c--blue"><span class="cv">{{ ck('totalParticipants') }}</span><span class="cl">{{ 'admin.cards.total_participants' | translate }}</span></div>
+  <div class="c c--purple"><span class="cv">{{ cs('avgParticipants') }}</span><span class="cl">{{ 'admin.cards.avg_participants' | translate }}</span></div>
+  <div class="c c--teal"><span class="cv">{{ ck('totalSubmissions') }}</span><span class="cl">{{ 'admin.cards.total_submissions' | translate }}</span></div>
+</section>
+
+<div class="charts-grid">
+  @if (chartsData.contestsCreated?.length) { <div class="chart-box"><h3>{{ 'admin.charts.contests_created' | translate }}</h3><div class="ch-wrap"><canvas id="t1"></canvas></div></div> }
+  @if (chartsData.participantsPerContest?.length) { <div class="chart-box"><h3>{{ 'admin.charts.participants_per_contest' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="t2"></canvas></div></div> }
+  @if (chartsData.submissionsOverTime?.length) { <div class="chart-box"><h3>{{ 'admin.charts.submissions_over_time' | translate }}</h3><div class="ch-wrap"><canvas id="t3"></canvas></div></div> }
+  @if (chartsData.completionRate) { <div class="chart-box"><h3>{{ 'admin.charts.completion_rate' | translate }}</h3><div class="ch-wrap ch-wrap--sq"><canvas id="t4"></canvas></div></div> }
+  @if (chartsData.mostPopular?.length) { <div class="chart-box"><h3>{{ 'admin.charts.most_popular' | translate }}</h3><div class="ch-wrap ch-wrap--md"><canvas id="t5"></canvas></div></div> }
+</div>

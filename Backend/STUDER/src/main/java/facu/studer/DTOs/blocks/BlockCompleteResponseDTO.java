@@ -39,4 +39,9 @@ public class BlockCompleteResponseDTO {
     private List<BlockVersionResponseDTO> versions;
 
     private BlockResponseDTO parent;
+
+    private long likeCount;
+
+    private boolean likedByCurrentUser;
+
 }

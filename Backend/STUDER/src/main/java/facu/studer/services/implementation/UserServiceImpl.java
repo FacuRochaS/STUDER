@@ -5,6 +5,7 @@ import facu.studer.DTOs.user.*;
 import facu.studer.entities.LinkedType;
 import facu.studer.entities.users.User;
 import facu.studer.mappers.UserMapper;
+import facu.studer.repositories.FriendRepository;
 import facu.studer.repositories.UserRepository;
 import facu.studer.services.support.NewNotificationService;
 import facu.studer.services.UserService;
@@ -26,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,11 +43,12 @@ public class UserServiceImpl implements UserService {
 
 
     private final NewNotificationService newNotificationService;
+    private final FriendRepository friendRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            RestTemplate restTemplate,
-                           @Value("${app.media.service.url}") String mediaServiceUrl, NewNotificationService newNotificationService) {
+                           @Value("${app.media.service.url}") String mediaServiceUrl, NewNotificationService newNotificationService, FriendRepository friendRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.restTemplate = restTemplate;
@@ -53,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
 
         this.newNotificationService = newNotificationService;
+        this.friendRepository = friendRepository;
     }
 
     @Override
@@ -87,14 +91,6 @@ public class UserServiceImpl implements UserService {
         User currentUser = userRepository.findByUsername(currentUsername);
         if (currentUser == null) {
             throw new IllegalArgumentException("user.not_found");
-        }
-
-        if (request.getEmail() != null && !request.getEmail().isBlank()) {
-            User existingUser = userRepository.findByEmail(request.getEmail());
-            if (existingUser != null && !existingUser.getId().equals(currentUser.getId())) {
-                throw new IllegalArgumentException("user.email.unique");
-            }
-            currentUser.setEmail(request.getEmail());
         }
 
         if (request.getPassword() != null && !request.getPassword().isBlank()) {
@@ -155,7 +151,8 @@ public class UserServiceImpl implements UserService {
         if (user.isEmpty()) {
             throw new IllegalArgumentException("user.not_found");
         }
-        return UserMapper.toPublicResponseDTO(user.get());
+        Long followers = friendRepository.countAllByReceiverOrSender(user.get(),user.get());
+        return UserMapper.toPublicResponseDTO(user.get(), followers);
     }
 
     @Override
@@ -175,7 +172,8 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new IllegalArgumentException("user.not_found");
         }
-        return UserMapper.toPublicResponseDTO(user);
+        Long followers = friendRepository.countAllByReceiverOrSender(user,user);
+        return UserMapper.toPublicResponseDTO(user, followers);
     }
 
     @Override
@@ -185,9 +183,10 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(page, size);
         Page<User> userPage = userRepository.findByUsernameContainingIgnoreCase(normalized, pageable);
 
-        List<UserPublicResponseDTO> users = userPage.getContent().stream()
-                .map(UserMapper::toPublicResponseDTO)
-                .collect(Collectors.toList());
+        List<UserPublicResponseDTO> users = new ArrayList<>();
+        for (User user : userPage.getContent()) {
+            users.add(UserMapper.toPublicResponseDTO(user, friendRepository.countAllByReceiverOrSender(user, user)));
+        }
 
         return UserSearchPageResponseDTO.builder()
                 .users(users)

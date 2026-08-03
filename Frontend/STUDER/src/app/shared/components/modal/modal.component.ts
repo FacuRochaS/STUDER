@@ -47,7 +47,7 @@ export class ModalComponent implements OnInit, OnDestroy {
 
     if (this.inputs) {
       for (const key in this.inputs) {
-        this.componentRef.instance[key] = this.inputs[key];
+        this.componentRef.setInput(key, this.inputs[key]);
       }
     }
 

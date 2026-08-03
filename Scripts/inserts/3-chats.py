@@ -1,6 +1,13 @@
 import random
 from datetime import datetime, timedelta
 
+end_dt = datetime(2026, 7, 24, 16, 0, 0)
+start_dt = end_dt - timedelta(days=180)
+
+
+def rand_dt():
+    return start_dt + timedelta(seconds=random.randint(0, int((end_dt - start_dt).total_seconds())))
+
 
 class ChatEntity:
     def __init__(self, chat_id, user_1, user_2):
@@ -8,7 +15,7 @@ class ChatEntity:
         self.user_1 = user_1
         self.user_2 = user_2
 
-        self.created_datetime = datetime.utcnow() - timedelta(days=random.randint(1, 30))
+        self.created_datetime = rand_dt()
         self.last_updated_datetime = self.created_datetime
 
     def to_sql(self):
@@ -58,11 +65,25 @@ mock_contents = [
     "Nos vemos luego.", "¿Pudiste revisar el código?",
     "Genial, gracias.", "Dale, un abrazo.", "Te hablo más tarde.",
     "¿Sale juntada el finde?", "Mañana te confirmo.",
-    "Jaja sí, tal cual.", "Pasame el link cuando puedas."
+    "Jaja sí, tal cual.", "Pasame el link cuando puedas.",
+    "Che, vi tu bloque nuevo, ¡está buenísimo!",
+    "¿Me ayudas con un ejercicio de Álgebra? No entiendo nada.",
+    "Gracias por likear mi curso!",
+    "¿Viste el desafío nuevo de Spring Boot?",
+    "Dale, después lo miro. Estoy a full con el laburo.",
+    "Te mandé DM para coordinar el TP.",
+    "¿Conocés algún tutorial bueno de Docker?",
+    "Sí, en STUDER hay uno de @juancito que es excelente.",
+    "Felicitaciones por los 100 seguidores!!",
+    "Jajajajaja noooo, me pasó lo mismo.",
+    "Estoy armando un grupo de estudio, ¿te prendés?",
+    "Ayer estuve hasta las 3am debuggeando un error boludo.",
+    "Oka, ahí te paso el repo por privado.",
+    "Chequé el PR, dejé un par de comentarios.",
 ]
 
 for i in range(1, num_users + 1):
-    target = random.randint(2, 3)
+    target = random.randint(3, 6)
     attempts = 0
 
     while user_chat_count[i] < target and attempts < 50:
@@ -80,7 +101,7 @@ for i in range(1, num_users + 1):
                 chats.append(chat)
 
 
-                num_msgs = random.randint(1, 2)
+                num_msgs = random.choices([1, 2, 3, 4, 5, 8, 12], weights=[5, 15, 20, 15, 10, 5, 2], k=1)[0]
                 first_sender = random.choice([i, j])
                 dt = chat.created_datetime + timedelta(minutes=random.randint(1, 60))
 

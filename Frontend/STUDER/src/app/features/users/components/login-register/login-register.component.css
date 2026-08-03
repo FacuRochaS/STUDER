@@ -17,7 +17,6 @@
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 1.25rem;
   padding: 2.25rem 2rem 2rem;
   width: 100%;
@@ -219,20 +218,20 @@
   font-weight: 700;
   background: var(--input-background);
   color: var(--color-text-secu);
-  border: 2px solid var(--input-background);
-  transition: background 0.25s, border-color 0.25s, color 0.25s, transform 0.25s;
+  box-shadow: 0 0 0 2px var(--input-background);
+  transition: background 0.25s, box-shadow 0.25s, color 0.25s, transform 0.25s;
 }
 
 .auth-step--active .auth-step__dot {
   background: var(--color-primary);
-  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
   color: var(--color-text-btn);
   transform: scale(1.1);
 }
 
 .auth-step--done .auth-step__dot {
   background: var(--color-correct);
-  border-color: var(--color-correct);
+  box-shadow: 0 0 0 2px var(--color-correct);
   color: var(--color-text-btn);
 }
 
@@ -322,19 +321,19 @@
   align-items: center;
   gap: 0.3rem;
   background: transparent;
-  border: 1.5px solid var(--border);
+  box-shadow: 0 0 0 1px var(--border);
   border-radius: 0.6rem;
   padding: 0.65rem 1rem;
   color: var(--color-text-secu);
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  transition: box-shadow 0.2s, color 0.2s;
   font-family: inherit;
 }
 
 .auth-back-btn:hover {
-  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
   color: var(--color-primary);
 }
 
